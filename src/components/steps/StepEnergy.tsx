@@ -1,5 +1,5 @@
 import type { FormData, EnergySource } from "@/lib/types";
-import { HelpCircle, Zap, Flame, Droplets, Leaf, Shuffle } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 
 interface Props {
   data: FormData;
@@ -7,67 +7,115 @@ interface Props {
 }
 
 const HelperText = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-start gap-2 rounded-lg bg-secondary/60 p-3 text-xs text-muted-foreground">
-    <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+  <div className="flex items-start gap-2 rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
+    <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
     <span>{children}</span>
   </div>
 );
 
+const OptionRow = ({
+  selected,
+  label,
+  desc,
+  onClick,
+}: {
+  selected: boolean;
+  label: string;
+  desc: string;
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`w-full border px-4 py-3 text-left transition ${
+      selected
+        ? "border-primary bg-primary/5"
+        : "border-border hover:border-primary/40"
+    }`}
+  >
+    <div className="flex items-start gap-3">
+      <div
+        className={`mt-1 h-3 w-3 rounded-full border ${
+          selected ? "bg-primary border-primary" : "border-muted-foreground"
+        }`}
+      />
+      <div>
+        <div className="text-sm font-medium text-foreground">{label}</div>
+        <div className="text-xs text-muted-foreground">{desc}</div>
+      </div>
+    </div>
+  </button>
+);
+
 const StepEnergy = ({ data, onChange }: Props) => {
-  const energySources: { value: EnergySource; label: string; icon: React.ElementType; desc: string }[] = [
-    { value: "electricity", label: "Électricité", icon: Zap, desc: "Énergie la plus courante, facteur de conversion élevé" },
-    { value: "gas", label: "Gaz naturel", icon: Flame, desc: "Moins cher que l'électricité pour le chauffage" },
-    { value: "fuel", label: "Fioul", icon: Droplets, desc: "Énergie fossile, en voie d'interdiction" },
-    { value: "renewable", label: "Énergies renouvelables", icon: Leaf, desc: "Bois, solaire, géothermie..." },
-    { value: "hybrid", label: "Mixte / Hybride", icon: Shuffle, desc: "Combinaison de plusieurs sources" },
+  const energySources: {
+    value: EnergySource | "unknown";
+    label: string;
+    desc: string;
+  }[] = [
+    {
+      value: "electricity",
+      label: "Électricité",
+      desc: "Énergie la plus courante, pénalisée dans le calcul DPE (facteur 2.3).",
+    },
+    {
+      value: "gas",
+      label: "Gaz naturel",
+      desc: "Moins pénalisant que l’électricité pour le chauffage.",
+    },
+    {
+      value: "fuel",
+      label: "Fioul",
+      desc: "Énergie fossile en voie d’interdiction, très défavorable au DPE.",
+    },
+    {
+      value: "renewable",
+      label: "Énergies renouvelables",
+      desc: "Bois, solaire, géothermie… très favorable au DPE.",
+    },
+    {
+      value: "hybrid",
+      label: "Mixte / Hybride",
+      desc: "Combinaison de plusieurs sources d’énergie.",
+    },
+    {
+      value: "unknown",
+      label: "Je ne sais pas",
+      desc: "Nous utiliserons la configuration la plus courante pour estimer votre situation.",
+    },
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
-        <h3 className="mb-1 font-serif text-lg font-semibold text-foreground">
-          Source d'énergie principale
+        <h3 className="text-lg font-semibold text-foreground">
+          Source d’énergie principale du logement
         </h3>
         <HelperText>
-          Le type d'énergie influence le DPE de deux façons : par son coût et par son facteur de conversion en énergie primaire.
-          L'électricité a un facteur de 2.3 (elle consomme 2.3 kWh primaires pour 1 kWh livré), ce qui pénalise les logements tout-électrique dans le calcul DPE.
+          Le type d’énergie influence fortement le DPE, à cause du facteur de
+          conversion en énergie primaire utilisé dans le calcul officiel.
         </HelperText>
-        <div className="mt-4 grid gap-3">
-          {energySources.map((e) => {
-            const Icon = e.icon;
-            return (
-              <button
-                key={e.value}
-                type="button"
-                onClick={() => onChange({ energySource: e.value })}
-                className={`flex items-start gap-4 rounded-xl border-2 px-5 py-4 text-left transition-all ${
-                  data.energySource === e.value
-                    ? "border-primary bg-primary/5 shadow-md"
-                    : "border-border bg-card hover:border-primary/30 hover:shadow-sm"
-                }`}
-              >
-                <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
-                  data.energySource === e.value ? "hero-gradient" : "bg-muted"
-                }`}>
-                  <Icon className={`h-5 w-5 ${
-                    data.energySource === e.value ? "text-primary-foreground" : "text-muted-foreground"
-                  }`} />
-                </div>
-                <div>
-                  <span className={`text-sm font-semibold ${
-                    data.energySource === e.value ? "text-primary" : "text-foreground"
-                  }`}>
-                    {e.label}
-                  </span>
-                  <p className="mt-0.5 text-xs text-muted-foreground">{e.desc}</p>
-                </div>
-              </button>
-            );
-          })}
-        </div>
+      </div>
+
+      <div className="space-y-2">
+        {energySources.map((e) => (
+          <OptionRow
+            key={e.value}
+            selected={data.energySource === e.value}
+            label={e.label}
+            desc={e.desc}
+            onClick={() =>
+              onChange({
+                energySource:
+                  e.value === "unknown" ? undefined : (e.value as EnergySource),
+              })
+            }
+          />
+        ))}
       </div>
     </div>
   );
 };
 
 export default StepEnergy;
+
