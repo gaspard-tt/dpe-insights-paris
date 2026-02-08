@@ -1,5 +1,5 @@
 import type { FormData, VentilationType, AirLeakage } from "@/lib/types";
-import { HelpCircle, Wind } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 
 interface Props {
   data: FormData;
@@ -7,122 +7,119 @@ interface Props {
 }
 
 const HelperText = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-start gap-2 rounded-lg bg-secondary/60 p-3 text-xs text-muted-foreground">
-    <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+  <div className="flex items-start gap-2 rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
+    <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
     <span>{children}</span>
   </div>
 );
 
+const OptionRow = ({
+  selected,
+  label,
+  desc,
+  onClick,
+}: {
+  selected: boolean;
+  label: string;
+  desc?: string;
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`w-full border px-4 py-3 text-left transition ${
+      selected
+        ? "border-primary bg-primary/5"
+        : "border-border hover:border-primary/40"
+    }`}
+  >
+    <div className="flex items-start gap-3">
+      <div
+        className={`mt-1 h-3 w-3 rounded-full border ${
+          selected ? "bg-primary border-primary" : "border-muted-foreground"
+        }`}
+      />
+      <div>
+        <div className="text-sm font-medium text-foreground">{label}</div>
+        {desc && <div className="text-xs text-muted-foreground">{desc}</div>}
+      </div>
+    </div>
+  </button>
+);
+
 const StepVentilation = ({ data, onChange }: Props) => {
-  const ventilationTypes: { value: VentilationType; label: string; desc: string; efficiency: string }[] = [
-    {
-      value: "natural",
-      label: "Ventilation naturelle",
-      desc: "Pas de système mécanique, aération par les ouvertures",
-      efficiency: "Pertes non contrôlées",
-    },
-    {
-      value: "vmc_simple",
-      label: "VMC simple flux",
-      desc: "Extraction mécanique, entrée d'air passive",
-      efficiency: "Standard, pertes modérées",
-    },
-    {
-      value: "vmc_double",
-      label: "VMC double flux",
-      desc: "Récupère 70-90% de la chaleur de l'air sortant",
-      efficiency: "Très performante",
-    },
-  ];
-
-  const leakageLevels: { value: AirLeakage; label: string; desc: string; emoji: string }[] = [
-    { value: "none", label: "Aucune", desc: "Logement bien étanche", emoji: "✅" },
-    { value: "slight", label: "Légères", desc: "Quelques courants d'air mineurs", emoji: "🟡" },
-    { value: "moderate", label: "Modérées", desc: "Courants d'air notables", emoji: "🟠" },
-    { value: "significant", label: "Importantes", desc: "Infiltrations évidentes", emoji: "🔴" },
-  ];
-
   return (
     <div className="space-y-8">
-      <div>
-        <h3 className="mb-1 font-serif text-lg font-semibold text-foreground">
+      {/* Ventilation type */}
+      <div className="space-y-3">
+        <h3 className="text-lg font-semibold text-foreground">
           Type de ventilation
         </h3>
         <HelperText>
-          La ventilation renouvelle l'air intérieur mais représente 20 à 25% des pertes thermiques.
-          Une VMC double flux récupère la chaleur de l'air sortant pour préchauffer l'air entrant.
+          La ventilation représente jusqu’à 25% des pertes thermiques. Une VMC double flux récupère la chaleur de l’air sortant.
         </HelperText>
-        <div className="mt-4 grid gap-3">
-          {ventilationTypes.map((v) => (
-            <button
-              key={v.value}
-              type="button"
-              onClick={() => onChange({ ventilationType: v.value })}
-              className={`flex items-start gap-4 rounded-xl border-2 px-5 py-4 text-left transition-all ${
-                data.ventilationType === v.value
-                  ? "border-primary bg-primary/5 shadow-md"
-                  : "border-border bg-card hover:border-primary/30 hover:shadow-sm"
-              }`}
-            >
-              <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
-                data.ventilationType === v.value ? "hero-gradient" : "bg-muted"
-              }`}>
-                <Wind className={`h-5 w-5 ${
-                  data.ventilationType === v.value ? "text-primary-foreground" : "text-muted-foreground"
-                }`} />
-              </div>
-              <div>
-                <span className={`text-sm font-semibold ${
-                  data.ventilationType === v.value ? "text-primary" : "text-foreground"
-                }`}>
-                  {v.label}
-                </span>
-                <p className="mt-0.5 text-xs text-muted-foreground">{v.desc}</p>
-                <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                  data.ventilationType === v.value
-                    ? "bg-primary/10 text-primary"
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  {v.efficiency}
-                </span>
-              </div>
-            </button>
-          ))}
-        </div>
+
+        <OptionRow
+          selected={data.ventilationType === "natural"}
+          label="Ventilation naturelle"
+          desc="Aération par ouverture des fenêtres, pertes non contrôlées"
+          onClick={() => onChange({ ventilationType: "natural" })}
+        />
+        <OptionRow
+          selected={data.ventilationType === "vmc_simple"}
+          label="VMC simple flux"
+          desc="Extraction mécanique, fonctionnement standard"
+          onClick={() => onChange({ ventilationType: "vmc_simple" })}
+        />
+        <OptionRow
+          selected={data.ventilationType === "vmc_double"}
+          label="VMC double flux"
+          desc="Récupération de 70–90% de la chaleur, très performante"
+          onClick={() => onChange({ ventilationType: "vmc_double" })}
+        />
+        <OptionRow
+          selected={!data.ventilationType}
+          label="Je ne sais pas"
+          desc="Nous utiliserons une estimation moyenne"
+          onClick={() => onChange({ ventilationType: undefined })}
+        />
       </div>
 
-      <div>
-        <h3 className="mb-1 font-serif text-lg font-semibold text-foreground">
-          Fuites d'air perçues
+      {/* Air leakage */}
+      <div className="space-y-3">
+        <h3 className="text-lg font-semibold text-foreground">
+          Fuites d’air perçues
         </h3>
         <HelperText>
-          Les infiltrations d'air parasites (autour des fenêtres, portes, prises électriques) peuvent augmenter la consommation de chauffage de 10 à 25%.
-          Testez en passant la main autour des fenêtres par temps venteux.
+          Les infiltrations d’air peuvent augmenter la consommation de chauffage de 10 à 25%.
         </HelperText>
-        <div className="mt-3 grid gap-2 sm:grid-cols-2">
-          {leakageLevels.map((l) => (
-            <button
-              key={l.value}
-              type="button"
-              onClick={() => onChange({ airLeakage: l.value })}
-              className={`flex items-start gap-3 rounded-lg border-2 px-4 py-3 text-left transition-all ${
-                data.airLeakage === l.value
-                  ? "border-primary bg-primary/5 shadow-sm"
-                  : "border-border bg-card hover:border-primary/30"
-              }`}
-            >
-              <span className="text-lg">{l.emoji}</span>
-              <div>
-                <span className={`text-sm font-semibold ${
-                  data.airLeakage === l.value ? "text-primary" : "text-foreground"
-                }`}>
-                  {l.label}
-                </span>
-                <p className="text-xs text-muted-foreground">{l.desc}</p>
-              </div>
-            </button>
-          ))}
-        </div>
+
+        <OptionRow
+          selected={data.airLeakage === "none"}
+          label="Aucune — logement bien étanche"
+          onClick={() => onChange({ airLeakage: "none" })}
+        />
+        <OptionRow
+          selected={data.airLeakage === "slight"}
+          label="Légères — quelques courants d’air"
+          onClick={() => onChange({ airLeakage: "slight" })}
+        />
+        <OptionRow
+          selected={data.airLeakage === "moderate"}
+          label="Modérées — courants d’air notables"
+          onClick={() => onChange({ airLeakage: "moderate" })}
+        />
+        <OptionRow
+          selected={data.airLeakage === "significant"}
+          label="Importantes — infiltrations évidentes"
+          onClick={() => onChange({ airLeakage: "significant" })}
+        />
+        <OptionRow
+          selected={!data.airLeakage}
+          label="Je ne sais pas"
+          desc="Nous utiliserons une estimation moyenne"
+          onClick={() => onChange({ airLeakage: undefined })}
+        />
       </div>
     </div>
   );
