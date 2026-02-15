@@ -1,10 +1,10 @@
 import type {
   FormData,
   InsulationQuality,
-  WindowType,
   Orientation,
 } from "@/lib/types";
 import { HelpCircle } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 interface Props {
   data: FormData;
@@ -52,135 +52,93 @@ const OptionRow = ({
   </button>
 );
 
-const QualityBlock = ({
-  title,
-  value,
-  onChange,
-  helper,
-}: {
-  title: string;
-  value: InsulationQuality;
-  onChange: (v: InsulationQuality | undefined) => void;
-  helper: string;
-}) => {
-  const options: {
+const StepEnvelope = ({ data, onChange }: Props) => {
+  const { t } = useI18n();
+
+  const insulationOptions: {
     value: InsulationQuality | "unknown";
-    label: string;
-    desc: string;
+    labelKey: string;
+    descKey: string;
   }[] = [
-    { value: "none", label: "Aucune", desc: "Pas d’isolation connue" },
-    { value: "poor", label: "Faible", desc: "Isolation ancienne ou partielle" },
-    { value: "average", label: "Moyenne", desc: "Isolation standard" },
-    { value: "good", label: "Bonne", desc: "Bonne performance thermique" },
-    { value: "excellent", label: "Excellente", desc: "Isolation très performante" },
-    {
-      value: "unknown",
-      label: "Je ne sais pas",
-      desc: "Nous utiliserons une valeur moyenne pour estimer.",
-    },
+    { value: "none", labelKey: "envelope.insulation.none", descKey: "envelope.insulation.none.desc" },
+    { value: "poor", labelKey: "envelope.insulation.poor", descKey: "envelope.insulation.poor.desc" },
+    { value: "average", labelKey: "envelope.insulation.average", descKey: "envelope.insulation.average.desc" },
+    { value: "good", labelKey: "envelope.insulation.good", descKey: "envelope.insulation.good.desc" },
+    { value: "excellent", labelKey: "envelope.insulation.excellent", descKey: "envelope.insulation.excellent.desc" },
+    { value: "unknown", labelKey: "envelope.insulation.idk", descKey: "envelope.insulation.idk.desc" },
   ];
 
-  return (
+  const QualityBlock = ({
+    title,
+    value,
+    onChangeVal,
+    helper,
+  }: {
+    title: string;
+    value: InsulationQuality;
+    onChangeVal: (v: InsulationQuality | undefined) => void;
+    helper: string;
+  }) => (
     <div className="space-y-3">
       <h3 className="text-lg font-semibold text-foreground">{title}</h3>
       <HelperText>{helper}</HelperText>
-
       <div className="space-y-2">
-        {options.map((o) => (
+        {insulationOptions.map((o) => (
           <OptionRow
             key={o.value}
             selected={value === o.value}
-            label={o.label}
-            desc={o.desc}
-            onClick={() =>
-              onChange(o.value === "unknown" ? undefined : (o.value as InsulationQuality))
-            }
+            label={t(o.labelKey)}
+            desc={t(o.descKey)}
+            onClick={() => onChangeVal(o.value === "unknown" ? undefined : (o.value as InsulationQuality))}
           />
         ))}
       </div>
     </div>
   );
-};
 
-const StepEnvelope = ({ data, onChange }: Props) => {
   return (
     <div className="space-y-8">
       <QualityBlock
-        title="Isolation des murs"
+        title={t("envelope.wall")}
         value={data.wallInsulation}
-        onChange={(v) => onChange({ wallInsulation: v })}
-        helper="Les murs représentent 20 à 25% des pertes thermiques."
+        onChangeVal={(v) => onChange({ wallInsulation: v })}
+        helper={t("envelope.wall.help")}
       />
-
       <QualityBlock
-        title="Isolation de la toiture"
+        title={t("envelope.roof")}
         value={data.roofInsulation}
-        onChange={(v) => onChange({ roofInsulation: v })}
-        helper="La toiture est le premier poste de déperdition thermique."
+        onChangeVal={(v) => onChange({ roofInsulation: v })}
+        helper={t("envelope.roof.help")}
       />
-
       <QualityBlock
-        title="Isolation du plancher"
+        title={t("envelope.floor")}
         value={data.floorInsulation}
-        onChange={(v) => onChange({ floorInsulation: v })}
-        helper="Le plancher bas contribue aux pertes thermiques du logement."
+        onChangeVal={(v) => onChange({ floorInsulation: v })}
+        helper={t("envelope.floor.help")}
       />
 
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-foreground">Type de vitrage</h3>
-        <HelperText>
-          Le vitrage influence fortement les pertes thermiques et le confort.
-        </HelperText>
-
-        <OptionRow
-          selected={data.windowType === "single"}
-          label="Simple vitrage"
-          desc="Très peu isolant"
-          onClick={() => onChange({ windowType: "single" })}
-        />
-        <OptionRow
-          selected={data.windowType === "double"}
-          label="Double vitrage"
-          desc="Standard actuel"
-          onClick={() => onChange({ windowType: "double" })}
-        />
-        <OptionRow
-          selected={data.windowType === "triple"}
-          label="Triple vitrage"
-          desc="Très performant"
-          onClick={() => onChange({ windowType: "triple" })}
-        />
-        <OptionRow
-          selected={!data.windowType}
-          label="Je ne sais pas"
-          desc="Nous utiliserons une valeur moyenne"
-          onClick={() => onChange({ windowType: undefined })}
-        />
+        <h3 className="text-lg font-semibold text-foreground">{t("envelope.window_type")}</h3>
+        <HelperText>{t("envelope.window_type.help")}</HelperText>
+        <OptionRow selected={data.windowType === "single"} label={t("envelope.window.single")} desc={t("envelope.window.single.desc")} onClick={() => onChange({ windowType: "single" })} />
+        <OptionRow selected={data.windowType === "double"} label={t("envelope.window.double")} desc={t("envelope.window.double.desc")} onClick={() => onChange({ windowType: "double" })} />
+        <OptionRow selected={data.windowType === "triple"} label={t("envelope.window.triple")} desc={t("envelope.window.triple.desc")} onClick={() => onChange({ windowType: "triple" })} />
+        <OptionRow selected={!data.windowType} label={t("envelope.window.idk")} desc={t("envelope.window.idk.desc")} onClick={() => onChange({ windowType: undefined })} />
       </div>
 
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-foreground">
-          Orientation principale
-        </h3>
-        <HelperText>
-          L’orientation sud permet de bénéficier des apports solaires en hiver.
-        </HelperText>
-
+        <h3 className="text-lg font-semibold text-foreground">{t("envelope.orientation")}</h3>
+        <HelperText>{t("envelope.orientation.help")}</HelperText>
         {(["north", "south", "east", "west"] as Orientation[]).map((o) => (
           <OptionRow
             key={o}
             selected={data.orientation === o}
             label={o.toUpperCase()}
-            desc="Orientation principale du logement"
+            desc={t("envelope.orientation.desc")}
             onClick={() => onChange({ orientation: o })}
           />
         ))}
-        <OptionRow
-          selected={!data.orientation}
-          label="Je ne sais pas"
-          desc="Nous utiliserons une valeur moyenne"
-          onClick={() => onChange({ orientation: undefined })}
-        />
+        <OptionRow selected={!data.orientation} label={t("envelope.orientation.idk")} desc={t("envelope.orientation.idk.desc")} onClick={() => onChange({ orientation: undefined })} />
       </div>
     </div>
   );

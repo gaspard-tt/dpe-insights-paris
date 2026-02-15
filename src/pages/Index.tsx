@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import DPEScale from "@/components/DPEScale";
 import heroImage from "@/assets/hero-house.jpg";
+import { useI18n } from "@/lib/i18n";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 24 },
@@ -23,6 +24,7 @@ const fadeInUp = {
 
 const Index = () => {
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   return (
     <div className="min-h-screen bg-background">
@@ -48,18 +50,17 @@ const Index = () => {
             >
               <span className="inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-sm">
                 <Thermometer className="h-3.5 w-3.5 text-primary" />
-                Simulateur DPE gratuit
+                {t("hero.badge")}
               </span>
 
               <h1 className="mt-6 font-serif text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                Comprenez la performance{" "}
-                <span className="text-gradient">énergétique</span>{" "}
-                de votre logement
+                {t("hero.title.1")}{" "}
+                <span className="text-gradient">{t("hero.title.highlight")}</span>{" "}
+                {t("hero.title.2")}
               </h1>
 
               <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-                Estimez votre classe DPE, identifiez les points faibles de votre habitat
-                et découvrez les rénovations les plus efficaces pour réduire vos factures.
+                {t("hero.desc")}
               </p>
 
               <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -69,11 +70,11 @@ const Index = () => {
                   onClick={() => navigate("/questionnaire")}
                   className="gap-3"
                 >
-                  Lancer mon diagnostic
+                  {t("hero.cta")}
                   <ArrowRight className="h-5 w-5" />
                 </Button>
                 <span className="text-xs text-muted-foreground">
-                  Gratuit · 5 minutes · Sans inscription
+                  {t("hero.sub")}
                 </span>
               </div>
             </motion.div>
@@ -86,11 +87,10 @@ const Index = () => {
         <div className="container mx-auto max-w-5xl px-4">
           <motion.div {...fadeInUp} transition={{ duration: 0.5 }} className="mb-12 text-center">
             <h2 className="font-serif text-3xl font-bold text-foreground">
-              Qu'est-ce que le DPE ?
+              {t("dpe.title")}
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              Le Diagnostic de Performance Énergétique classe les logements de A (très performant)
-              à G (très énergivore). Il est obligatoire pour vendre ou louer un bien en France.
+              {t("dpe.desc")}
             </p>
           </motion.div>
 
@@ -105,30 +105,18 @@ const Index = () => {
         <div className="container mx-auto max-w-5xl px-4">
           <motion.div {...fadeInUp} transition={{ duration: 0.5 }} className="mb-12 text-center">
             <h2 className="font-serif text-3xl font-bold text-foreground">
-              Pourquoi c'est important
+              {t("why.title")}
             </h2>
           </motion.div>
 
           <div className="grid gap-6 sm:grid-cols-3">
             {[
-              {
-                icon: TrendingDown,
-                title: "Réduire vos factures",
-                desc: "Un logement classe G consomme jusqu'à 6 fois plus qu'un logement classe A. Comprendre votre DPE, c'est identifier où partent vos euros.",
-              },
-              {
-                icon: Shield,
-                title: "Anticiper la réglementation",
-                desc: "Depuis 2025, les logements classe G sont interdits à la location. Les classes F suivront en 2028, puis les E en 2034.",
-              },
-              {
-                icon: Building2,
-                title: "Valoriser votre bien",
-                desc: "Un bon DPE augmente la valeur de votre logement. L'écart de prix entre une classe D et une classe B peut atteindre 10 à 15%.",
-              },
+              { icon: TrendingDown, title: t("why.bills.title"), desc: t("why.bills.desc") },
+              { icon: Shield, title: t("why.regulation.title"), desc: t("why.regulation.desc") },
+              { icon: Building2, title: t("why.value.title"), desc: t("why.value.desc") },
             ].map((item, i) => (
               <motion.div
-                key={item.title}
+                key={i}
                 {...fadeInUp}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
                 className="card-elevated rounded-xl border bg-card p-6"
@@ -153,38 +141,22 @@ const Index = () => {
         <div className="container mx-auto max-w-5xl px-4">
           <motion.div {...fadeInUp} transition={{ duration: 0.5 }} className="mb-12 text-center">
             <h2 className="font-serif text-3xl font-bold text-foreground">
-              Ce que cet outil vous apporte
+              {t("tool.title")}
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              Plus qu'un simple score : un diagnostic complet et des recommandations personnalisées.
+              {t("tool.desc")}
             </p>
           </motion.div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             {[
-              {
-                icon: BarChart3,
-                title: "Estimation de votre classe DPE",
-                desc: "Un score basé sur les caractéristiques réelles de votre logement.",
-              },
-              {
-                icon: TrendingDown,
-                title: "Analyse des déperditions",
-                desc: "Identifiez précisément où et pourquoi votre logement perd de l'énergie.",
-              },
-              {
-                icon: Wrench,
-                title: "Recommandations de rénovation",
-                desc: "Des priorités claires, classées par rapport coût/efficacité.",
-              },
-              {
-                icon: Lightbulb,
-                title: "Contenu éducatif",
-                desc: "Comprenez les mécanismes pour prendre des décisions éclairées.",
-              },
+              { icon: BarChart3, title: t("tool.estimate.title"), desc: t("tool.estimate.desc") },
+              { icon: TrendingDown, title: t("tool.losses.title"), desc: t("tool.losses.desc") },
+              { icon: Wrench, title: t("tool.reco.title"), desc: t("tool.reco.desc") },
+              { icon: Lightbulb, title: t("tool.edu.title"), desc: t("tool.edu.desc") },
             ].map((item, i) => (
               <motion.div
-                key={item.title}
+                key={i}
                 {...fadeInUp}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
                 className="flex items-start gap-4 rounded-xl border bg-background p-5"
@@ -209,11 +181,10 @@ const Index = () => {
         <div className="container mx-auto max-w-3xl px-4 text-center">
           <motion.div {...fadeInUp} transition={{ duration: 0.5 }}>
             <h2 className="font-serif text-3xl font-bold text-foreground">
-              Prêt à comprendre votre logement ?
+              {t("cta.title")}
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-              En 6 étapes simples, obtenez une analyse complète de la performance
-              énergétique de votre habitat et des pistes concrètes d'amélioration.
+              {t("cta.desc")}
             </p>
             <Button
               variant="hero"
@@ -221,7 +192,7 @@ const Index = () => {
               onClick={() => navigate("/questionnaire")}
               className="mt-8 gap-3"
             >
-              Commencer mon analyse
+              {t("cta.button")}
               <ArrowRight className="h-5 w-5" />
             </Button>
           </motion.div>
@@ -231,12 +202,9 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t bg-card py-8">
         <div className="container mx-auto px-4 text-center text-xs text-muted-foreground">
-          <p>
-            Cet outil fournit une estimation indicative. Il ne remplace pas un DPE officiel
-            réalisé par un diagnostiqueur certifié.
-          </p>
+          <p>{t("footer.disclaimer")}</p>
           <p className="mt-2">
-            © {new Date().getFullYear()} Mon DPE — Simulateur éducatif de performance énergétique
+            © {new Date().getFullYear()} {t("footer.copy")}
           </p>
         </div>
       </footer>

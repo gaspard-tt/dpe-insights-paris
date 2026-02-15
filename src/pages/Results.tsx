@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import DPEScale from "@/components/DPEScale";
 import type { DPEResult, FormData } from "@/lib/types";
+import { useI18n } from "@/lib/i18n";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -14,6 +15,7 @@ const fadeInUp = {
 const Results = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useI18n();
   const state = location.state as { result: DPEResult; formData: FormData } | null;
 
   if (!state) {
@@ -23,13 +25,13 @@ const Results = () => {
         <main className="container mx-auto flex max-w-2xl flex-col items-center justify-center px-4 py-20 text-center">
           <AlertTriangle className="mb-4 h-12 w-12 text-muted-foreground" />
           <h1 className="mb-2 font-serif text-2xl font-bold text-foreground">
-            Aucun résultat disponible
+            {t("results.none.title")}
           </h1>
           <p className="mb-6 text-muted-foreground">
-            Vous devez d'abord compléter le questionnaire pour obtenir votre diagnostic.
+            {t("results.none.desc")}
           </p>
           <Button variant="hero" size="lg" onClick={() => navigate("/questionnaire")}>
-            Commencer le diagnostic
+            {t("results.none.cta")}
           </Button>
         </main>
       </div>
@@ -46,9 +48,9 @@ const Results = () => {
   };
 
   const priorityLabels = {
-    high: "Priorité haute",
-    medium: "Priorité moyenne",
-    low: "Priorité basse",
+    high: t("results.priority.high"),
+    medium: t("results.priority.medium"),
+    low: t("results.priority.low"),
   };
 
   const severityColors = {
@@ -58,9 +60,15 @@ const Results = () => {
   };
 
   const categoryLabels = {
-    envelope: "Enveloppe",
-    heating: "Chauffage",
-    ventilation: "Ventilation",
+    envelope: t("results.cat.envelope"),
+    heating: t("results.cat.heating"),
+    ventilation: t("results.cat.ventilation"),
+  };
+
+  const impactLabels = {
+    high: t("results.impact.high"),
+    medium: t("results.impact.medium"),
+    low: t("results.impact.low"),
   };
 
   return (
@@ -72,10 +80,10 @@ const Results = () => {
           <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
             <div className="hero-gradient px-6 py-5 sm:px-8">
               <h1 className="font-serif text-2xl font-bold text-primary-foreground">
-                Votre diagnostic énergétique estimé
+                {t("results.title")}
               </h1>
               <p className="mt-1 text-sm text-primary-foreground/80">
-                Basé sur les caractéristiques de votre logement
+                {t("results.subtitle")}
               </p>
             </div>
             <div className="p-6 sm:p-8">
@@ -86,7 +94,7 @@ const Results = () => {
                 <div className="flex flex-col justify-center">
                   <div className="mb-4 text-center md:text-left">
                     <span className="text-sm font-medium text-muted-foreground">
-                      Classe estimée
+                      {t("results.class")}
                     </span>
                     <div className={`mt-1 inline-flex items-center gap-3 rounded-xl dpe-${dpeClass.toLowerCase()} px-6 py-3`}>
                       <span className="text-4xl font-bold">{dpeClass}</span>
@@ -94,7 +102,7 @@ const Results = () => {
                   </div>
                   <div className="mb-4 text-center md:text-left">
                     <span className="text-sm font-medium text-muted-foreground">
-                      Consommation estimée
+                      {t("results.consumption")}
                     </span>
                     <p className="text-3xl font-bold text-foreground">
                       {consumption}{" "}
@@ -107,7 +115,7 @@ const Results = () => {
                     <div className="flex items-start gap-2">
                       <Info className="mt-0.5 h-4 w-4 shrink-0 text-dpe-e" />
                       <p className="text-xs text-muted-foreground">
-                        <strong>Estimation indicative.</strong> Ce résultat ne remplace pas un DPE officiel réalisé par un diagnostiqueur certifié. Il vous permet de comprendre les facteurs clés de votre performance énergétique.
+                        <strong>{t("results.disclaimer").split(".")[0]}.</strong> {t("results.disclaimer").split(".").slice(1).join(".")}
                       </p>
                     </div>
                   </div>
@@ -121,21 +129,19 @@ const Results = () => {
         <motion.section {...fadeInUp} transition={{ delay: 0.1 }} className="mb-10">
           <h2 className="mb-4 flex items-center gap-2 font-serif text-xl font-bold text-foreground">
             <TrendingDown className="h-5 w-5 text-primary" />
-            Répartition de la consommation
+            {t("results.breakdown")}
           </h2>
           <div className="grid gap-4 sm:grid-cols-3">
             {[
-              { label: "Chauffage", value: energyBreakdown.heating, color: "bg-dpe-f" },
-              { label: "Eau chaude", value: energyBreakdown.hotWater, color: "bg-dpe-d" },
-              { label: "Pertes d'enveloppe", value: energyBreakdown.envelopeLosses, color: "bg-dpe-e" },
+              { label: t("results.breakdown.heating"), value: energyBreakdown.heating, color: "bg-dpe-f" },
+              { label: t("results.breakdown.hotwater"), value: energyBreakdown.hotWater, color: "bg-dpe-d" },
+              { label: t("results.breakdown.envelope"), value: energyBreakdown.envelopeLosses, color: "bg-dpe-e" },
             ].map((item) => {
               const pct = Math.round((item.value / energyBreakdown.total) * 100);
               return (
                 <div key={item.label} className="card-elevated rounded-xl border bg-card p-5">
                   <span className="text-sm font-medium text-muted-foreground">{item.label}</span>
-                  <p className="mt-1 text-2xl font-bold text-foreground">
-                    {pct}%
-                  </p>
+                  <p className="mt-1 text-2xl font-bold text-foreground">{pct}%</p>
                   <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
                     <motion.div
                       className={`h-full rounded-full ${item.color}`}
@@ -144,9 +150,7 @@ const Results = () => {
                       transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
                     />
                   </div>
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    ~{item.value} kWh/m²/an
-                  </p>
+                  <p className="mt-2 text-xs text-muted-foreground">~{item.value} kWh/m²/an</p>
                 </div>
               );
             })}
@@ -158,7 +162,7 @@ const Results = () => {
           <motion.section {...fadeInUp} transition={{ delay: 0.2 }} className="mb-10">
             <h2 className="mb-4 flex items-center gap-2 font-serif text-xl font-bold text-foreground">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              Points faibles identifiés
+              {t("results.weaknesses")}
             </h2>
             <div className="grid gap-3">
               {weaknesses.map((w, index) => (
@@ -182,15 +186,11 @@ const Results = () => {
                             ? "bg-dpe-e/10 text-dpe-e"
                             : "bg-muted text-muted-foreground"
                         }`}>
-                          Impact {w.severity === "high" ? "élevé" : w.severity === "medium" ? "moyen" : "faible"}
+                          {impactLabels[w.severity]}
                         </span>
                       </div>
-                      <h3 className="mt-1.5 text-sm font-semibold text-foreground">
-                        {w.label}
-                      </h3>
-                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                        {w.description}
-                      </p>
+                      <h3 className="mt-1.5 text-sm font-semibold text-foreground">{w.label}</h3>
+                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{w.description}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -203,7 +203,7 @@ const Results = () => {
         <motion.section {...fadeInUp} transition={{ delay: 0.3 }} className="mb-10">
           <h2 className="mb-4 flex items-center gap-2 font-serif text-xl font-bold text-foreground">
             <Wrench className="h-5 w-5 text-primary" />
-            Recommandations de rénovation
+            {t("results.recommendations")}
           </h2>
           <div className="grid gap-4">
             {recommendations.map((rec, index) => (
@@ -222,7 +222,7 @@ const Results = () => {
                           {priorityLabels[rec.priority]}
                         </span>
                         <span className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">
-                          ~{rec.estimatedSaving}% d'économies
+                          ~{rec.estimatedSaving}% {t("results.saving")}
                         </span>
                       </div>
                       <h3 className="text-base font-bold text-foreground">{rec.name}</h3>
@@ -233,19 +233,19 @@ const Results = () => {
                   <div className="mt-4 grid gap-2 sm:grid-cols-3">
                     <div className="rounded-lg bg-secondary/60 px-3 py-2">
                       <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                        Impact DPE
+                        {t("results.dpe_impact")}
                       </span>
                       <p className="mt-0.5 text-xs font-medium text-foreground">{rec.dpeImpact}</p>
                     </div>
                     <div className="rounded-lg bg-secondary/60 px-3 py-2">
                       <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                        Confort
+                        {t("results.comfort")}
                       </span>
                       <p className="mt-0.5 text-xs font-medium text-foreground">{rec.comfortImpact}</p>
                     </div>
                     <div className="rounded-lg bg-secondary/60 px-3 py-2">
                       <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                        Facture
+                        {t("results.bill")}
                       </span>
                       <p className="mt-0.5 text-xs font-medium text-foreground">{rec.billImpact}</p>
                     </div>
@@ -254,9 +254,7 @@ const Results = () => {
                   <div className="mt-4 rounded-lg border bg-background/50 p-4">
                     <div className="flex items-start gap-2">
                       <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                      <p className="text-xs leading-relaxed text-muted-foreground">
-                        {rec.explanation}
-                      </p>
+                      <p className="text-xs leading-relaxed text-muted-foreground">{rec.explanation}</p>
                     </div>
                   </div>
                 </div>
@@ -271,34 +269,20 @@ const Results = () => {
             <div className="bg-secondary/40 px-6 py-5 sm:px-8">
               <h2 className="flex items-center gap-2 font-serif text-xl font-bold text-foreground">
                 <CheckCircle className="h-5 w-5 text-accent" />
-                Comprendre pour mieux rénover
+                {t("results.edu.title")}
               </h2>
             </div>
             <div className="space-y-5 p-6 sm:p-8">
-              <div>
-                <h3 className="font-serif text-base font-semibold text-foreground">
-                  Le DPE est un indicateur, pas une fatalité
-                </h3>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                  Votre classe énergétique est déterminée par des facteurs identifiables et mesurables : l'enveloppe du bâtiment, le système de chauffage et vos usages. Chaque point faible peut être amélioré de façon ciblée.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-serif text-base font-semibold text-foreground">
-                  Ciblez le maillon le plus faible
-                </h3>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                  La rénovation la plus efficace est celle qui s'attaque au plus gros point faible. Changer de chauffage sans isoler revient à chauffer l'extérieur. Inversement, une bonne isolation réduit les besoins et permet de dimensionner un système de chauffage plus petit et moins coûteux.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-serif text-base font-semibold text-foreground">
-                  Le meilleur investissement n'est pas le plus gros
-                </h3>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                  L'isolation des combles ou le traitement des fuites d'air sont souvent les travaux les moins chers mais parmi les plus efficaces. Priorisez le rapport coût/efficacité plutôt que les travaux les plus visibles.
-                </p>
-              </div>
+              {[1, 2, 3].map((n) => (
+                <div key={n}>
+                  <h3 className="font-serif text-base font-semibold text-foreground">
+                    {t(`results.edu.${n}.title`)}
+                  </h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                    {t(`results.edu.${n}.desc`)}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </motion.section>
@@ -307,7 +291,7 @@ const Results = () => {
         <div className="flex justify-center pb-12">
           <Button variant="outline" size="lg" onClick={() => navigate("/questionnaire")} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Refaire le diagnostic
+            {t("results.redo")}
           </Button>
         </div>
       </main>

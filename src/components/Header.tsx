@@ -1,13 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, ClipboardList, BarChart3 } from "lucide-react";
+import { Home, ClipboardList, BarChart3, Languages } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+import { Button } from "@/components/ui/button";
 
 const Header = () => {
   const location = useLocation();
+  const { lang, toggleLang, t } = useI18n();
 
   const links = [
-    { to: "/", label: "Accueil", icon: Home },
-    { to: "/questionnaire", label: "Diagnostic", icon: ClipboardList },
-    { to: "/resultats", label: "Résultats", icon: BarChart3 },
+    { to: "/", label: t("nav.home"), icon: Home },
+    { to: "/questionnaire", label: t("nav.diagnostic"), icon: ClipboardList },
+    { to: "/resultats", label: t("nav.results"), icon: BarChart3 },
   ];
 
   return (
@@ -18,29 +21,42 @@ const Header = () => {
             <Home className="h-5 w-5 text-primary-foreground" />
           </div>
           <span className="font-serif text-xl font-bold text-foreground">
-            Mon DPE
+            {t("app.name")}
           </span>
         </Link>
 
-        <nav className="flex items-center gap-1">
-          {links.map(({ to, label, icon: Icon }) => {
-            const isActive = location.pathname === to;
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                <span className="hidden sm:inline">{label}</span>
-              </Link>
-            );
-          })}
-        </nav>
+        <div className="flex items-center gap-1">
+          <nav className="flex items-center gap-1">
+            {links.map(({ to, label, icon: Icon }) => {
+              const isActive = location.pathname === to;
+              return (
+                <Link
+                  key={to}
+                  to={to}
+                  className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleLang}
+            className="ml-2 gap-1.5 text-xs font-semibold"
+            aria-label="Switch language"
+          >
+            <Languages className="h-4 w-4" />
+            {lang === "fr" ? "EN" : "FR"}
+          </Button>
+        </div>
       </div>
     </header>
   );

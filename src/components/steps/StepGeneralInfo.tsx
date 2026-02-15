@@ -1,10 +1,9 @@
 import type {
   FormData,
-  HousingType,
   ConstructionPeriod,
-  ClimateZone,
 } from "@/lib/types";
 import { HelpCircle } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 interface Props {
   data: FormData;
@@ -53,6 +52,8 @@ const OptionRow = ({
 );
 
 const StepGeneralInfo = ({ data, onChange }: Props) => {
+  const { t } = useI18n();
+
   const constructionPeriods: ConstructionPeriod[] = [
     "before1948",
     "1948-1974",
@@ -64,110 +65,45 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
 
   return (
     <div className="space-y-8">
-      {/* Housing type */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-foreground">Type de logement</h3>
-        <HelperText>
-          Une maison a plus de surfaces en contact avec l’extérieur qu’un appartement,
-          ce qui augmente les pertes thermiques.
-        </HelperText>
-
-        <OptionRow
-          selected={data.housingType === "apartment"}
-          label="Appartement"
-          onClick={() => onChange({ housingType: "apartment" })}
-        />
-        <OptionRow
-          selected={data.housingType === "house"}
-          label="Maison"
-          onClick={() => onChange({ housingType: "house" })}
-        />
+        <h3 className="text-lg font-semibold text-foreground">{t("general.housing_type")}</h3>
+        <HelperText>{t("general.housing_type.help")}</HelperText>
+        <OptionRow selected={data.housingType === "apartment"} label={t("general.apartment")} onClick={() => onChange({ housingType: "apartment" })} />
+        <OptionRow selected={data.housingType === "house"} label={t("general.house")} onClick={() => onChange({ housingType: "house" })} />
       </div>
 
-      {/* Surface */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-foreground">
-          Surface habitable (m²)
-        </h3>
-        <HelperText>
-          La surface permet de rapporter la consommation au mètre carré, base du DPE.
-        </HelperText>
-
+        <h3 className="text-lg font-semibold text-foreground">{t("general.surface")}</h3>
+        <HelperText>{t("general.surface.help")}</HelperText>
         <input
           type="number"
           value={data.surfaceArea}
-          onChange={(e) =>
-            onChange({ surfaceArea: Number(e.target.value) || 0 })
-          }
+          onChange={(e) => onChange({ surfaceArea: Number(e.target.value) || 0 })}
           min={10}
           max={500}
           className="w-40 rounded border px-4 py-2 text-lg font-semibold text-foreground focus:border-primary focus:outline-none"
         />
       </div>
 
-      {/* Construction period */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-foreground">
-          Période de construction
-        </h3>
-        <HelperText>
-          Les réglementations thermiques ont évolué. Avant 1974, il n’y avait
-          généralement aucune isolation.
-        </HelperText>
-
+        <h3 className="text-lg font-semibold text-foreground">{t("general.construction")}</h3>
+        <HelperText>{t("general.construction.help")}</HelperText>
         {constructionPeriods.map((p) => (
-          <OptionRow
-            key={p}
-            selected={data.constructionPeriod === p}
-            label={p.replace("-", " – ")}
-            onClick={() => onChange({ constructionPeriod: p })}
-          />
+          <OptionRow key={p} selected={data.constructionPeriod === p} label={p.replace("-", " – ")} onClick={() => onChange({ constructionPeriod: p })} />
         ))}
-        <OptionRow
-          selected={!data.constructionPeriod}
-          label="Je ne sais pas"
-          desc="Nous utiliserons une estimation moyenne"
-          onClick={() => onChange({ constructionPeriod: undefined })}
-        />
+        <OptionRow selected={!data.constructionPeriod} label={t("general.idk")} desc={t("general.idk.desc")} onClick={() => onChange({ constructionPeriod: undefined })} />
       </div>
 
-      {/* Climate zone */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-foreground">
-          Zone climatique
-        </h3>
-        <HelperText>
-          Le climat influence directement les besoins de chauffage.
-        </HelperText>
-
-        <OptionRow
-          selected={data.climateZone === "H1"}
-          label="H1 — Nord & Est"
-          desc="Hivers froids"
-          onClick={() => onChange({ climateZone: "H1" })}
-        />
-        <OptionRow
-          selected={data.climateZone === "H2"}
-          label="H2 — Ouest & Centre"
-          desc="Tempéré"
-          onClick={() => onChange({ climateZone: "H2" })}
-        />
-        <OptionRow
-          selected={data.climateZone === "H3"}
-          label="H3 — Sud"
-          desc="Hivers doux"
-          onClick={() => onChange({ climateZone: "H3" })}
-        />
-        <OptionRow
-          selected={!data.climateZone}
-          label="Je ne sais pas"
-          desc="Nous utiliserons une estimation moyenne"
-          onClick={() => onChange({ climateZone: undefined })}
-        />
+        <h3 className="text-lg font-semibold text-foreground">{t("general.climate")}</h3>
+        <HelperText>{t("general.climate.help")}</HelperText>
+        <OptionRow selected={data.climateZone === "H1"} label={t("general.h1")} desc={t("general.h1.desc")} onClick={() => onChange({ climateZone: "H1" })} />
+        <OptionRow selected={data.climateZone === "H2"} label={t("general.h2")} desc={t("general.h2.desc")} onClick={() => onChange({ climateZone: "H2" })} />
+        <OptionRow selected={data.climateZone === "H3"} label={t("general.h3")} desc={t("general.h3.desc")} onClick={() => onChange({ climateZone: "H3" })} />
+        <OptionRow selected={!data.climateZone} label={t("general.idk")} desc={t("general.idk.desc")} onClick={() => onChange({ climateZone: undefined })} />
       </div>
     </div>
   );
 };
 
 export default StepGeneralInfo;
-

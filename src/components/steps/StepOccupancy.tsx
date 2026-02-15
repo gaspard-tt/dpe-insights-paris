@@ -1,5 +1,6 @@
-import type { FormData, UsageLevel } from "@/lib/types";
+import type { FormData } from "@/lib/types";
 import { HelpCircle } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 interface Props {
   data: FormData;
@@ -48,100 +49,41 @@ const OptionRow = ({
 );
 
 const StepOccupancy = ({ data, onChange }: Props) => {
+  const { t } = useI18n();
+
   return (
     <div className="space-y-8">
-      {/* Occupants */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-foreground">
-          Nombre d’occupants
-        </h3>
-        <HelperText>
-          Le nombre d’occupants influence l’eau chaude, la ventilation et les apports de chaleur internes.
-        </HelperText>
-
+        <h3 className="text-lg font-semibold text-foreground">{t("occupancy.count")}</h3>
+        <HelperText>{t("occupancy.count.help")}</HelperText>
         {[1, 2, 3, 4, 5].map((n) => (
           <OptionRow
             key={n}
             selected={data.occupants === n}
-            label={`${n} personne${n > 1 ? "s" : ""}`}
+            label={`${n} ${n > 1 ? t("occupancy.persons") : t("occupancy.person")}`}
             onClick={() => onChange({ occupants: n })}
           />
         ))}
-        <OptionRow
-          selected={data.occupants === 6}
-          label="6 personnes ou plus"
-          onClick={() => onChange({ occupants: 6 })}
-        />
-        <OptionRow
-          selected={!data.occupants}
-          label="Je ne sais pas"
-          desc="Nous utiliserons une estimation moyenne"
-          onClick={() => onChange({ occupants: undefined })}
-        />
+        <OptionRow selected={data.occupants === 6} label={t("occupancy.6plus")} onClick={() => onChange({ occupants: 6 })} />
+        <OptionRow selected={!data.occupants} label={t("occupancy.idk")} desc={t("occupancy.idk.desc")} onClick={() => onChange({ occupants: undefined })} />
       </div>
 
-      {/* Heating habits */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-foreground">
-          Habitudes de chauffage
-        </h3>
-        <HelperText>
-          Chaque degré en plus augmente la consommation d’environ 7%.
-        </HelperText>
-
-        <OptionRow
-          selected={data.heatingHabits === "low"}
-          label="Faible — ~18°C, pièces fermées"
-          onClick={() => onChange({ heatingHabits: "low" })}
-        />
-        <OptionRow
-          selected={data.heatingHabits === "average"}
-          label="Moyen — 19-20°C, confort standard"
-          onClick={() => onChange({ heatingHabits: "average" })}
-        />
-        <OptionRow
-          selected={data.heatingHabits === "high"}
-          label="Élevé — 21°C+, toutes pièces chauffées"
-          onClick={() => onChange({ heatingHabits: "high" })}
-        />
-        <OptionRow
-          selected={!data.heatingHabits}
-          label="Je ne sais pas"
-          desc="Nous utiliserons une estimation moyenne"
-          onClick={() => onChange({ heatingHabits: undefined })}
-        />
+        <h3 className="text-lg font-semibold text-foreground">{t("occupancy.heating_habits")}</h3>
+        <HelperText>{t("occupancy.heating_habits.help")}</HelperText>
+        <OptionRow selected={data.heatingHabits === "low"} label={t("occupancy.low")} onClick={() => onChange({ heatingHabits: "low" })} />
+        <OptionRow selected={data.heatingHabits === "average"} label={t("occupancy.average")} onClick={() => onChange({ heatingHabits: "average" })} />
+        <OptionRow selected={data.heatingHabits === "high"} label={t("occupancy.high")} onClick={() => onChange({ heatingHabits: "high" })} />
+        <OptionRow selected={!data.heatingHabits} label={t("occupancy.idk")} desc={t("occupancy.idk.desc")} onClick={() => onChange({ heatingHabits: undefined })} />
       </div>
 
-      {/* Hot water */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-foreground">
-          Consommation d’eau chaude
-        </h3>
-        <HelperText>
-          Les bains consomment 3 à 5 fois plus que les douches.
-        </HelperText>
-
-        <OptionRow
-          selected={data.hotWaterUsage === "low"}
-          label="Faible — douches courtes, peu fréquentes"
-          onClick={() => onChange({ hotWaterUsage: "low" })}
-        />
-        <OptionRow
-          selected={data.hotWaterUsage === "average"}
-          label="Moyen — douches quotidiennes"
-          onClick={() => onChange({ hotWaterUsage: "average" })}
-        />
-        <OptionRow
-          selected={data.hotWaterUsage === "high"}
-          label="Élevé — bains fréquents, longs"
-          onClick={() => onChange({ hotWaterUsage: "high" })}
-        />
-        <OptionRow
-          selected={!data.hotWaterUsage}
-          label="Je ne sais pas"
-          desc="Nous utiliserons une estimation moyenne"
-          onClick={() => onChange({ hotWaterUsage: undefined })}
-        />
+        <h3 className="text-lg font-semibold text-foreground">{t("occupancy.hot_water")}</h3>
+        <HelperText>{t("occupancy.hot_water.help")}</HelperText>
+        <OptionRow selected={data.hotWaterUsage === "low"} label={t("occupancy.hw_low")} onClick={() => onChange({ hotWaterUsage: "low" })} />
+        <OptionRow selected={data.hotWaterUsage === "average"} label={t("occupancy.hw_average")} onClick={() => onChange({ hotWaterUsage: "average" })} />
+        <OptionRow selected={data.hotWaterUsage === "high"} label={t("occupancy.hw_high")} onClick={() => onChange({ hotWaterUsage: "high" })} />
+        <OptionRow selected={!data.hotWaterUsage} label={t("occupancy.idk")} desc={t("occupancy.idk.desc")} onClick={() => onChange({ hotWaterUsage: undefined })} />
       </div>
     </div>
   );
