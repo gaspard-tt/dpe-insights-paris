@@ -1,5 +1,6 @@
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
+import { useI18n } from "@/lib/i18n";
 
 interface WizardProgressProps {
   currentStep: number;
@@ -8,13 +9,14 @@ interface WizardProgressProps {
 }
 
 const WizardProgress = ({ currentStep, totalSteps, stepLabels }: WizardProgressProps) => {
+  const { t } = useI18n();
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
   return (
     <div className="mb-8">
       <div className="mb-4 flex items-center justify-between">
         <span className="text-sm font-medium text-muted-foreground">
-          Étape {currentStep + 1} / {totalSteps}
+          {t("wizard.step")} {currentStep + 1} / {totalSteps}
         </span>
         <span className="text-sm font-semibold text-primary">
           {stepLabels[currentStep]}
@@ -29,9 +31,7 @@ const WizardProgress = ({ currentStep, totalSteps, stepLabels }: WizardProgressP
               index <= currentStep ? "text-primary" : "text-muted-foreground/40"
             }`}
             initial={false}
-            animate={{
-              scale: index === currentStep ? 1.1 : 1,
-            }}
+            animate={{ scale: index === currentStep ? 1.1 : 1 }}
           >
             <div
               className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors ${

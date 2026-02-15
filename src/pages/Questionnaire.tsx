@@ -14,21 +14,23 @@ import Header from "@/components/Header";
 import type { FormData } from "@/lib/types";
 import { DEFAULT_FORM_DATA } from "@/lib/types";
 import { calculateDPE } from "@/lib/dpe-calculator";
-
-const STEP_LABELS = [
-  "Général",
-  "Enveloppe",
-  "Chauffage",
-  "Énergie",
-  "Ventilation",
-  "Usages",
-];
+import { useI18n } from "@/lib/i18n";
 
 const Questionnaire = () => {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>(DEFAULT_FORM_DATA);
   const [direction, setDirection] = useState(1);
+
+  const STEP_LABELS = [
+    t("step.general"),
+    t("step.envelope"),
+    t("step.heating"),
+    t("step.energy"),
+    t("step.ventilation"),
+    t("step.usage"),
+  ];
 
   const updateFormData = (updates: Partial<FormData>) => {
     setFormData((prev) => ({ ...prev, ...updates }));
@@ -109,17 +111,17 @@ const Questionnaire = () => {
               className="gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              Précédent
+              {t("wizard.prev")}
             </Button>
 
             {isLastStep ? (
               <Button variant="hero" size="lg" onClick={handleSubmit} className="gap-2">
                 <BarChart3 className="h-4 w-4" />
-                Voir mes résultats
+                {t("wizard.submit")}
               </Button>
             ) : (
               <Button onClick={nextStep} className="gap-2">
-                Suivant
+                {t("wizard.next")}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             )}

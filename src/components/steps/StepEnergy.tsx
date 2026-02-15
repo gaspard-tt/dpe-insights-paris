@@ -1,5 +1,6 @@
 import type { FormData, EnergySource } from "@/lib/types";
 import { HelpCircle } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 interface Props {
   data: FormData;
@@ -48,53 +49,26 @@ const OptionRow = ({
 );
 
 const StepEnergy = ({ data, onChange }: Props) => {
+  const { t } = useI18n();
+
   const energySources: {
     value: EnergySource | "unknown";
-    label: string;
-    desc: string;
+    labelKey: string;
+    descKey: string;
   }[] = [
-    {
-      value: "electricity",
-      label: "Électricité",
-      desc: "Énergie la plus courante, pénalisée dans le calcul DPE (facteur 2.3).",
-    },
-    {
-      value: "gas",
-      label: "Gaz naturel",
-      desc: "Moins pénalisant que l’électricité pour le chauffage.",
-    },
-    {
-      value: "fuel",
-      label: "Fioul",
-      desc: "Énergie fossile en voie d’interdiction, très défavorable au DPE.",
-    },
-    {
-      value: "renewable",
-      label: "Énergies renouvelables",
-      desc: "Bois, solaire, géothermie… très favorable au DPE.",
-    },
-    {
-      value: "hybrid",
-      label: "Mixte / Hybride",
-      desc: "Combinaison de plusieurs sources d’énergie.",
-    },
-    {
-      value: "unknown",
-      label: "Je ne sais pas",
-      desc: "Nous utiliserons la configuration la plus courante pour estimer votre situation.",
-    },
+    { value: "electricity", labelKey: "energy.electricity", descKey: "energy.electricity.desc" },
+    { value: "gas", labelKey: "energy.gas", descKey: "energy.gas.desc" },
+    { value: "fuel", labelKey: "energy.fuel", descKey: "energy.fuel.desc" },
+    { value: "renewable", labelKey: "energy.renewable", descKey: "energy.renewable.desc" },
+    { value: "hybrid", labelKey: "energy.hybrid", descKey: "energy.hybrid.desc" },
+    { value: "unknown", labelKey: "energy.unknown", descKey: "energy.unknown.desc" },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-foreground">
-          Source d’énergie principale du logement
-        </h3>
-        <HelperText>
-          Le type d’énergie influence fortement le DPE, à cause du facteur de
-          conversion en énergie primaire utilisé dans le calcul officiel.
-        </HelperText>
+        <h3 className="text-lg font-semibold text-foreground">{t("energy.title")}</h3>
+        <HelperText>{t("energy.help")}</HelperText>
       </div>
 
       <div className="space-y-2">
@@ -102,8 +76,8 @@ const StepEnergy = ({ data, onChange }: Props) => {
           <OptionRow
             key={e.value}
             selected={data.energySource === e.value}
-            label={e.label}
-            desc={e.desc}
+            label={t(e.labelKey)}
+            desc={t(e.descKey)}
             onClick={() =>
               onChange({
                 energySource:
@@ -118,4 +92,3 @@ const StepEnergy = ({ data, onChange }: Props) => {
 };
 
 export default StepEnergy;
-
