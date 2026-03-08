@@ -704,8 +704,12 @@ const Results = () => {
           </div>
         </motion.section>
 
-        {/* ── Redo button ── */}
-        <div className="flex justify-center pb-10">
+        {/* ── Action buttons ── */}
+        <div className="flex flex-wrap justify-center gap-3 pb-10">
+          <Button onClick={handleExportPDF} disabled={isExporting} size="lg" className="gap-2">
+            {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            {t("results.export")}
+          </Button>
           <Button variant="outline" size="lg" onClick={() => navigate("/questionnaire")} className="gap-2">
             <RefreshCw className="h-4 w-4" />
             {t("results.redo")}
