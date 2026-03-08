@@ -58,6 +58,18 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.copy": "Mon DPE Paris — Simulateur éducatif de performance énergétique",
     "footer.privacy": "Vos données restent sur votre appareil — rien n'est envoyé ni stocké.",
 
+    // About section
+    "about.title": "Qui sommes-nous ?",
+    "about.desc": "Nous sommes une petite équipe passionnée par la transition énergétique et convaincue que chacun mérite de comprendre la performance de son logement — sans jargon technique ni devis commercial. Cet outil est gratuit, éducatif et respectueux de vos données.",
+
+    // 404 page
+    "notfound.title": "Page introuvable",
+    "notfound.desc": "La page que vous cherchez n'existe pas ou a été déplacée.",
+    "notfound.cta": "Retour à l'accueil",
+
+    // DPE scale
+    "dpe.unit": "kWh/m²/an",
+
     // Questionnaire
     "wizard.step": "Étape",
     "wizard.prev": "Précédent",
