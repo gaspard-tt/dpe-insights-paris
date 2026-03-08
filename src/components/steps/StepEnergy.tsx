@@ -8,7 +8,7 @@ interface Props {
 }
 
 const HelperText = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-start gap-2 rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
+  <div className="flex items-start gap-2 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
     <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
     <span>{children}</span>
   </div>
@@ -28,18 +28,20 @@ const OptionRow = ({
   <button
     type="button"
     onClick={onClick}
-    className={`w-full border px-4 py-3 text-left transition ${
+    className={`w-full rounded-lg border px-4 py-3 text-left transition-all ${
       selected
-        ? "border-primary bg-primary/5"
-        : "border-border hover:border-primary/40"
+        ? "border-primary bg-primary/5 shadow-sm"
+        : "border-border hover:border-primary/40 hover:bg-muted/30"
     }`}
   >
     <div className="flex items-start gap-3">
       <div
-        className={`mt-1 h-3 w-3 rounded-full border ${
-          selected ? "bg-primary border-primary" : "border-muted-foreground"
+        className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+          selected ? "border-primary bg-primary" : "border-muted-foreground/40"
         }`}
-      />
+      >
+        {selected && <div className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />}
+      </div>
       <div>
         <div className="text-sm font-medium text-foreground">{label}</div>
         <div className="text-xs text-muted-foreground">{desc}</div>
