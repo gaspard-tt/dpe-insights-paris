@@ -4,11 +4,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, BarChart3, Loader2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import WizardProgress from "@/components/WizardProgress";
+import FloatingHelp from "@/components/FloatingHelp";
 import StepGeneralInfo from "@/components/steps/StepGeneralInfo";
 import StepEnvelope from "@/components/steps/StepEnvelope";
 import StepHeating from "@/components/steps/StepHeating";
 import StepEnergy from "@/components/steps/StepEnergy";
 import StepVentilation from "@/components/steps/StepVentilation";
+import StepCurrentDPE from "@/components/steps/StepCurrentDPE";
 import StepOccupancy from "@/components/steps/StepOccupancy";
 import Header from "@/components/Header";
 import type { FormData } from "@/lib/types";
@@ -30,6 +32,7 @@ const Questionnaire = () => {
     t("step.heating"),
     t("step.energy"),
     t("step.ventilation"),
+    t("step.currentdpe"),
     t("step.usage"),
   ];
 
@@ -55,8 +58,6 @@ const Questionnaire = () => {
     }
   };
 
-  
-
   const handleSubmit = () => {
     setIsCalculating(true);
     setTimeout(() => {
@@ -75,7 +76,8 @@ const Questionnaire = () => {
       case 2: return <StepHeating {...props} />;
       case 3: return <StepEnergy {...props} />;
       case 4: return <StepVentilation {...props} />;
-      case 5: return <StepOccupancy {...props} />;
+      case 5: return <StepCurrentDPE {...props} />;
+      case 6: return <StepOccupancy {...props} />;
       default: return null;
     }
   };
@@ -101,12 +103,8 @@ const Questionnaire = () => {
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-foreground">
-              {t("loading.title")}
-            </h2>
-            <p className="max-w-md text-muted-foreground">
-              {t("loading.desc")}
-            </p>
+            <h2 className="text-2xl font-bold text-foreground">{t("loading.title")}</h2>
+            <p className="max-w-md text-muted-foreground">{t("loading.desc")}</p>
             <div className="mt-4 h-2 w-64 overflow-hidden rounded-full bg-muted">
               <motion.div
                 className="h-full rounded-full hero-gradient"
@@ -177,6 +175,8 @@ const Questionnaire = () => {
           </div>
         </div>
       </main>
+
+      <FloatingHelp currentStep={currentStep} />
     </div>
   );
 };

@@ -80,6 +80,7 @@ const translations: Record<Language, Record<string, string>> = {
     "step.heating": "Chauffage",
     "step.energy": "Énergie",
     "step.ventilation": "Ventilation",
+    "step.currentdpe": "Votre DPE",
     "step.usage": "Usages",
 
     // Loading
@@ -197,6 +198,12 @@ const translations: Record<Language, Record<string, string>> = {
     "ventilation.moderate": "Modérées — courants d'air notables",
     "ventilation.significant": "Importantes — infiltrations évidentes",
 
+    // StepCurrentDPE
+    "currentdpe.title": "Votre DPE actuel",
+    "currentdpe.help": "Si vous avez un DPE officiel pour votre logement, sélectionnez la classe correspondante. Cela nous permettra de comparer notre estimation avec votre diagnostic réel.",
+    "currentdpe.class": "Classe",
+    "currentdpe.idk": "Je ne sais pas",
+
     // StepOccupancy
     "occupancy.thermostat": "Réglage du thermostat en hiver",
     "occupancy.thermostat.help": "Chaque degré en plus augmente la consommation d'environ 7%. La température réglementaire est de 19°C.",
@@ -219,6 +226,16 @@ const translations: Record<Language, Record<string, string>> = {
     "occupancy.hw_low": "Faible — douches courtes, quelques fois par semaine",
     "occupancy.hw_average": "Moyen — douches quotidiennes",
     "occupancy.hw_high": "Élevé — bains fréquents, usage intensif",
+
+    // Floating help
+    "help.title": "À propos de cette étape",
+    "help.step.general": "Cette étape recueille les informations de base sur votre logement : type (appartement ou maison), surface, localisation et année de construction. Ces données permettent d'établir un profil de consommation initial.",
+    "help.step.envelope": "L'enveloppe du bâtiment (murs, toiture, plancher, fenêtres) détermine combien de chaleur votre logement perd. C'est le premier facteur du DPE et souvent le levier de rénovation le plus rentable.",
+    "help.step.heating": "Le système de chauffage représente 60 à 70% de la consommation d'énergie d'un logement. Son type, son âge et son mode de distribution influencent directement votre classe DPE.",
+    "help.step.energy": "Le type d'énergie utilisé (électricité, gaz, fioul…) affecte le calcul DPE via le facteur de conversion en énergie primaire. L'électricité est pénalisée (facteur 2.3) par rapport au gaz.",
+    "help.step.ventilation": "La ventilation assure le renouvellement de l'air mais représente aussi des pertes de chaleur. Une bonne VMC réduit ces pertes tout en maintenant un air sain.",
+    "help.step.currentdpe": "Si vous connaissez la classe DPE actuelle de votre logement, indiquez-la ici. Cela nous permettra de comparer notre estimation avec votre diagnostic officiel dans les résultats.",
+    "help.step.usage": "Vos habitudes de chauffage et d'eau chaude influencent votre consommation réelle. Le thermostat est le levier le plus immédiat : chaque degré en plus = 7% de consommation en plus.",
 
     // Results page
     "results.none.title": "Aucun résultat disponible",
@@ -261,6 +278,32 @@ const translations: Record<Language, Record<string, string>> = {
     "results.edu.3.title": "Le meilleur investissement n'est pas le plus gros",
     "results.edu.3.desc": "L'isolation des combles ou le traitement des fuites d'air sont souvent les travaux les moins chers mais parmi les plus efficaces.",
     "results.redo": "Refaire le diagnostic",
+
+    // Comparison
+    "results.comparison.title": "Comparaison avec votre DPE actuel",
+    "results.comparison.assigned": "Votre DPE officiel",
+    "results.comparison.estimated": "Notre estimation",
+    "results.comparison.worse": "Notre estimation indique une consommation plus élevée que votre DPE officiel. Cela peut s'expliquer par des habitudes de consommation ou des facteurs non captés par notre questionnaire simplifié.",
+    "results.comparison.better": "Notre estimation indique une consommation plus faible que votre DPE officiel. Vos efforts d'économie d'énergie portent peut-être leurs fruits !",
+    "results.comparison.same": "Notre estimation est cohérente avec votre DPE officiel. Les caractéristiques de votre logement correspondent bien à votre classe actuelle.",
+
+    // ROI
+    "results.roi.title": "Retour sur investissement",
+    "results.roi.subtitle": "Estimez combien de temps il faut pour rentabiliser chaque rénovation grâce aux économies sur vos factures.",
+    "results.roi.currentbill": "Facture annuelle estimée actuelle",
+    "results.roi.year": "an",
+    "results.roi.years_payback": "ans pour rentabiliser",
+    "results.roi.yr": "a",
+    "results.roi.disclaimer": "Estimations basées sur un prix moyen de l'énergie de 0,21 €/kWh. Les montants réels dépendent de votre contrat et de votre consommation.",
+
+    // Small wins
+    "smallwins.title": "Petites victoires 💡",
+    "smallwins.subtitle": "Des gestes simples, des économies immédiates",
+    "smallwins.month": "mois",
+    "smallwins.shower": "Réduisez vos douches de 5 min par jour",
+    "smallwins.thermostat": "Baissez le thermostat de 1°C",
+    "smallwins.standby": "Éteignez les appareils en veille",
+    "smallwins.offpeak": "Utilisez les heures creuses pour le lave-linge et le lave-vaisselle",
   },
   en: {
     // Header
@@ -325,6 +368,7 @@ const translations: Record<Language, Record<string, string>> = {
     "step.heating": "Heating",
     "step.energy": "Energy",
     "step.ventilation": "Ventilation",
+    "step.currentdpe": "Your DPE",
     "step.usage": "Usage",
 
     // Loading
@@ -442,6 +486,12 @@ const translations: Record<Language, Record<string, string>> = {
     "ventilation.moderate": "Moderate — noticeable draughts",
     "ventilation.significant": "Significant — obvious infiltrations",
 
+    // StepCurrentDPE
+    "currentdpe.title": "Your current DPE",
+    "currentdpe.help": "If you have an official DPE for your home, select the corresponding class. This will allow us to compare our estimate with your actual diagnostic in the results.",
+    "currentdpe.class": "Class",
+    "currentdpe.idk": "I don't know",
+
     // StepOccupancy
     "occupancy.thermostat": "Winter thermostat setting",
     "occupancy.thermostat.help": "Each additional degree increases consumption by about 7%. The regulatory temperature is 19°C.",
@@ -464,6 +514,16 @@ const translations: Record<Language, Record<string, string>> = {
     "occupancy.hw_low": "Low — short showers, a few times per week",
     "occupancy.hw_average": "Average — daily showers",
     "occupancy.hw_high": "High — frequent baths, heavy usage",
+
+    // Floating help
+    "help.title": "About this step",
+    "help.step.general": "This step collects basic information about your home: type (flat or house), area, location, and year of construction. This data establishes an initial consumption profile.",
+    "help.step.envelope": "The building envelope (walls, roof, floor, windows) determines how much heat your home loses. It's the main DPE factor and often the most cost-effective renovation lever.",
+    "help.step.heating": "The heating system accounts for 60–70% of a home's energy consumption. Its type, age, and distribution method directly influence your DPE class.",
+    "help.step.energy": "The type of energy used (electricity, gas, oil…) affects the DPE calculation via the primary energy conversion factor. Electricity is penalised (factor 2.3) compared to gas.",
+    "help.step.ventilation": "Ventilation ensures air renewal but also causes heat losses. Good mechanical ventilation reduces these losses while maintaining healthy air.",
+    "help.step.currentdpe": "If you know your home's current DPE class, enter it here. This will let us compare our estimate with your official diagnostic in the results.",
+    "help.step.usage": "Your heating and hot water habits influence actual consumption. The thermostat is the most immediate lever: each extra degree = 7% more consumption.",
 
     // Results page
     "results.none.title": "No results available",
@@ -506,6 +566,32 @@ const translations: Record<Language, Record<string, string>> = {
     "results.edu.3.title": "The best investment isn't the biggest",
     "results.edu.3.desc": "Loft insulation or air leak treatment are often the cheapest but most effective works.",
     "results.redo": "Redo the diagnostic",
+
+    // Comparison
+    "results.comparison.title": "Comparison with your current DPE",
+    "results.comparison.assigned": "Your official DPE",
+    "results.comparison.estimated": "Our estimate",
+    "results.comparison.worse": "Our estimate indicates higher consumption than your official DPE. This may be due to usage habits or factors not captured by our simplified questionnaire.",
+    "results.comparison.better": "Our estimate indicates lower consumption than your official DPE. Your energy-saving efforts may be paying off!",
+    "results.comparison.same": "Our estimate is consistent with your official DPE. Your home's characteristics match your current class well.",
+
+    // ROI
+    "results.roi.title": "Return on investment",
+    "results.roi.subtitle": "Estimate how long it takes for each renovation to pay for itself through lower energy bills.",
+    "results.roi.currentbill": "Estimated current annual bill",
+    "results.roi.year": "year",
+    "results.roi.years_payback": "years to pay back",
+    "results.roi.yr": "y",
+    "results.roi.disclaimer": "Estimates based on an average energy price of €0.21/kWh. Actual amounts depend on your contract and consumption.",
+
+    // Small wins
+    "smallwins.title": "Small wins 💡",
+    "smallwins.subtitle": "Simple actions, immediate savings",
+    "smallwins.month": "month",
+    "smallwins.shower": "Cut your showers by 5 min per day",
+    "smallwins.thermostat": "Lower the thermostat by 1°C",
+    "smallwins.standby": "Turn off devices on standby",
+    "smallwins.offpeak": "Use off-peak hours for washing machine and dishwasher",
   },
 };
 
