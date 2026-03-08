@@ -412,6 +412,8 @@ const translations: Record<Language, Record<string, string>> = {
     "results.potential.annual_saving": "Économie estimée",
     "results.potential.new_class": "Classe cible",
     "results.potential.value_gain": "Plus-value immobilière estimée",
+    "results.potential.monthly_saving": "Économie mensuelle",
+    "results.potential.property_value": "de la valeur du bien",
     "results.next_steps.title": "Prochaines étapes",
     "results.next_steps.1": "1. Consultez l'Agence Parisienne du Climat (gratuit)",
     "results.next_steps.2": "2. Demandez un devis à un artisan RGE",
