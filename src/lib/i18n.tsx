@@ -595,12 +595,20 @@ const translations: Record<Language, Record<string, string>> = {
 
     // ROI
     "results.roi.title": "Return on investment",
-    "results.roi.subtitle": "Estimate how long it takes for each renovation to pay for itself through lower energy bills.",
+    "results.roi.subtitle": "Estimate how long it takes for each renovation to pay for itself through lower energy bills. Click an item to see details.",
     "results.roi.currentbill": "Estimated current annual bill",
     "results.roi.year": "year",
-    "results.roi.years_payback": "years to pay back",
+    "results.roi.years_payback": "years",
     "results.roi.yr": "y",
+    "results.roi.cost": "Est. cost",
+    "results.roi.saving": "Saving/yr",
+    "results.roi.payback": "Pays back in",
+    "results.roi.userprovided": "your actual bill",
     "results.roi.disclaimer": "Estimates based on an average energy price of €0.21/kWh. Actual amounts depend on your contract and consumption.",
+
+    // Companies
+    "results.companies": "Recommended companies",
+    "results.companies.disclaimer": "Companies shown for illustration — real providers will be added soon.",
 
     // Small wins
     "smallwins.title": "Small wins 💡",
