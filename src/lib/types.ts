@@ -68,7 +68,10 @@ export interface FormData {
   ventilationType?: VentilationType;
   airLeakage?: AirLeakage;
 
-  // Step 6: Occupancy
+  // Step 6: Current DPE
+  currentDPE?: DPEClass;
+
+  // Step 7: Occupancy
   occupants?: number;
   heatingHabits?: UsageLevel;
   hotWaterUsage?: UsageLevel;
