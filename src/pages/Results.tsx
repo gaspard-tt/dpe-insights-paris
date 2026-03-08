@@ -1,11 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   AlertTriangle, ArrowRight, BarChart3, CheckCircle,
   Info, Lightbulb, Wrench, Flame, Droplets,
   Layers, Wind, RefreshCw, Target, PiggyBank, Euro, MapPin,
-  TrendingUp, Zap, ShowerHead, ThermometerSun, Tv, Timer,
+  TrendingUp, Zap, ShowerHead, ThermometerSun, Tv, Timer, Building2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -19,7 +19,6 @@ const fadeIn = {
   animate: { opacity: 1, y: 0 },
 };
 
-// DPE class thresholds for consumption comparison
 const DPE_THRESHOLDS: Record<DPEClass, { min: number; max: number }> = {
   A: { min: 0, max: 70 },
   B: { min: 71, max: 110 },
@@ -40,29 +39,83 @@ const DPE_COLORS: Record<DPEClass, string> = {
   G: "bg-[#e7221a]",
 };
 
+// Illustrative renovation companies (placeholder)
+const ILLUSTRATIVE_COMPANIES: Record<string, { name: string; specialty: string }[]> = {
+  insulate_roof: [
+    { name: "Iso Combles Paris", specialty: "Isolation toiture & combles" },
+    { name: "ThermoRénov' IDF", specialty: "Rénovation énergétique globale" },
+    { name: "EcoBat Solutions", specialty: "Isolation écologique" },
+  ],
+  insulate_walls: [
+    { name: "MurIsol Paris", specialty: "ITE & ITI spécialiste" },
+    { name: "ThermoRénov' IDF", specialty: "Rénovation énergétique globale" },
+    { name: "Façades & Isolation", specialty: "Ravalement & isolation" },
+  ],
+  replace_windows: [
+    { name: "Fenêtres de Paris", specialty: "Menuiseries sur mesure" },
+    { name: "VitroConfort", specialty: "Double & triple vitrage" },
+    { name: "Lapeyre Pro", specialty: "Fenêtres & portes" },
+  ],
+  upgrade_heating: [
+    { name: "ClimaConfort Paris", specialty: "PAC & climatisation" },
+    { name: "GreenHeat IDF", specialty: "Pompes à chaleur" },
+    { name: "ChaufExpert", specialty: "Chaudières & systèmes" },
+  ],
+  modernize_heating: [
+    { name: "ChaufExpert", specialty: "Chaudières modernes" },
+    { name: "ThermoService IDF", specialty: "Entretien & remplacement" },
+    { name: "ClimaConfort Paris", specialty: "Systèmes de chauffage" },
+  ],
+  install_vmc: [
+    { name: "AirPur Paris", specialty: "VMC simple & double flux" },
+    { name: "VentiConfort", specialty: "Ventilation résidentielle" },
+    { name: "ClimAir Solutions", specialty: "Qualité de l'air" },
+  ],
+  seal_air_leaks: [
+    { name: "ÉtanchéPro", specialty: "Étanchéité à l'air" },
+    { name: "JointExpert", specialty: "Calfeutrage & joints" },
+    { name: "ConfortMaison", specialty: "Rénovation intérieure" },
+  ],
+  insulate_floor: [
+    { name: "SolIsol Paris", specialty: "Isolation plancher bas" },
+    { name: "ThermoRénov' IDF", specialty: "Rénovation énergétique" },
+    { name: "EcoBat Solutions", specialty: "Isolation écologique" },
+  ],
+  quick_wins: [
+    { name: "Agence Parisienne du Climat", specialty: "Conseil gratuit" },
+    { name: "ADIL 75", specialty: "Information logement" },
+    { name: "EDF & moi", specialty: "Suivi consommation" },
+  ],
+};
+
 const Results = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t, lang } = useI18n();
   const state = location.state as { result: DPEResult; formData: FormData } | null;
+  const recRefs = useRef<Record<string, HTMLElement | null>>({});
 
   const recalculated = useMemo(() => {
     if (!state) return null;
     return calculateDPE(state.formData, lang);
   }, [state, lang]);
 
-  // --- ROI calculations (must be before early return) ---
   const formData = state?.formData;
   const surfaceArea = formData?.surfaceArea || 70;
   const avgEnergyPricePerKwh = 0.21;
   const consumption = recalculated?.consumption || 0;
-  const currentAnnualBill = consumption * surfaceArea * avgEnergyPricePerKwh;
+
+  // Use user-provided annual bill if available, otherwise estimate
+  const currentAnnualBill = formData?.annualBill
+    ? formData.annualBill
+    : consumption * surfaceArea * avgEnergyPricePerKwh;
+
   const recommendations = recalculated?.recommendations || [];
 
   const roiItems = useMemo(() => {
     return recommendations
       .filter((r) => r.estimatedSaving > 5 && r.id !== "quick_wins")
-      .slice(0, 4)
+      .slice(0, 5)
       .map((r) => {
         const annualSaving = currentAnnualBill * (r.estimatedSaving / 100);
         const costMatch = r.estimatedCost?.match(/[\d\s]+/g);
@@ -71,10 +124,13 @@ const Results = () => {
           : annualSaving * 12;
         const paybackYears = Math.round(estimatedTotalCost / annualSaving);
         return {
+          id: r.id,
           name: r.name,
           annualSaving: Math.round(annualSaving),
+          totalCost: Math.round(estimatedTotalCost),
           paybackYears: Math.min(paybackYears, 30),
           priority: r.priority,
+          estimatedCost: r.estimatedCost,
         };
       });
   }, [recommendations, currentAnnualBill, surfaceArea]);
@@ -123,6 +179,11 @@ const Results = () => {
 
   const { dpeClass, energyBreakdown, weaknesses } = recalculated;
 
+  const scrollToRec = (recId: string) => {
+    const el = recRefs.current[recId];
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
   const priorityStyles = {
     high: { badge: "bg-destructive/10 text-destructive border-destructive/20", bar: "bg-destructive" },
     medium: { badge: "bg-warning/10 text-warning border-warning/20", bar: "bg-warning" },
@@ -159,9 +220,8 @@ const Results = () => {
     { label: t("results.breakdown.envelope"), value: energyBreakdown.envelopeLosses, icon: Layers, color: "text-amber", bar: "bg-amber" },
   ];
 
-  // Comparison: current DPE user provided vs calculated
-  const hasCurrentDPE = !!formData.currentDPE;
-  const currentDPEClass = formData.currentDPE;
+  const hasCurrentDPE = !!formData?.currentDPE;
+  const currentDPEClass = formData?.currentDPE;
   const currentDPEThreshold = currentDPEClass ? DPE_THRESHOLDS[currentDPEClass] : null;
   const currentDPEMid = currentDPEThreshold
     ? Math.round((currentDPEThreshold.min + currentDPEThreshold.max) / 2)
@@ -203,7 +263,7 @@ const Results = () => {
           </div>
         </motion.section>
 
-        {/* ── DPE Comparison (if user provided their current DPE) ── */}
+        {/* ── DPE Comparison ── */}
         {hasCurrentDPE && currentDPEClass && currentDPEMid && (
           <motion.section {...fadeIn} transition={{ delay: 0.07 }}>
             <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-foreground">
@@ -212,7 +272,6 @@ const Results = () => {
             </h2>
             <div className="rounded-2xl border bg-card p-5">
               <div className="space-y-4">
-                {/* Assigned DPE bar */}
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-xs font-medium text-muted-foreground">{t("results.comparison.assigned")}</span>
@@ -229,7 +288,6 @@ const Results = () => {
                     </motion.div>
                   </div>
                 </div>
-                {/* Calculated consumption bar */}
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-xs font-medium text-muted-foreground">{t("results.comparison.estimated")}</span>
@@ -246,7 +304,6 @@ const Results = () => {
                     </motion.div>
                   </div>
                 </div>
-                {/* Interpretation */}
                 <div className="flex items-start gap-2 rounded-lg bg-primary/5 px-3 py-2.5">
                   <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
                   <p className="text-xs leading-relaxed text-muted-foreground">
@@ -343,37 +400,56 @@ const Results = () => {
                 <p className="mt-0.5 text-sm text-muted-foreground">{t("results.roi.subtitle")}</p>
               </div>
               <div className="p-5">
-                <div className="mb-4 rounded-lg bg-muted/30 px-4 py-3">
+                <div className="mb-5 rounded-lg bg-muted/30 px-4 py-3">
                   <p className="text-xs text-muted-foreground">{t("results.roi.currentbill")}</p>
-                  <p className="text-2xl font-bold text-foreground">~{Math.round(currentAnnualBill)} €<span className="text-sm font-normal text-muted-foreground">/{t("results.roi.year")}</span></p>
+                  <p className="text-2xl font-bold text-foreground">
+                    ~{Math.round(currentAnnualBill)} €<span className="text-sm font-normal text-muted-foreground">/{t("results.roi.year")}</span>
+                    {formData?.annualBill && (
+                      <span className="ml-2 text-xs font-normal text-primary">({t("results.roi.userprovided")})</span>
+                    )}
+                  </p>
                 </div>
+
+                {/* ROI table-like cards */}
                 <div className="space-y-3">
                   {roiItems.map((item, i) => (
-                    <motion.div
+                    <motion.button
                       key={i}
+                      type="button"
+                      onClick={() => scrollToRec(item.id)}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.3 + i * 0.08 }}
-                      className="rounded-xl border p-4"
+                      className="w-full text-left rounded-xl border p-4 hover:border-primary/40 hover:bg-primary/[0.02] transition-all cursor-pointer group"
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1">
-                          <h4 className="text-sm font-semibold text-foreground">{item.name}</h4>
-                          <div className="mt-1.5 flex flex-wrap gap-2">
-                            <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
-                              <PiggyBank className="h-3 w-3" />
-                              ~{item.annualSaving} €/{t("results.roi.year")}
-                            </span>
-                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${priorityStyles[item.priority].badge}`}>
-                              <Timer className="h-3 w-3" />
-                              {item.paybackYears} {t("results.roi.years_payback")}
-                            </span>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                            {item.name}
+                            <ArrowRight className="inline ml-1 h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </h4>
+
+                          {/* Cost + Savings + Payback row */}
+                          <div className="mt-2 grid grid-cols-3 gap-2">
+                            <div className="rounded-lg bg-muted/40 px-2.5 py-1.5">
+                              <span className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{t("results.roi.cost")}</span>
+                              <span className="block text-xs font-bold text-foreground">~{item.totalCost.toLocaleString()} €</span>
+                            </div>
+                            <div className="rounded-lg bg-success/10 px-2.5 py-1.5">
+                              <span className="block text-[10px] font-medium uppercase tracking-wider text-success">{t("results.roi.saving")}</span>
+                              <span className="block text-xs font-bold text-success">+{item.annualSaving} €/{t("results.roi.yr")}</span>
+                            </div>
+                            <div className="rounded-lg bg-primary/10 px-2.5 py-1.5">
+                              <span className="block text-[10px] font-medium uppercase tracking-wider text-primary">{t("results.roi.payback")}</span>
+                              <span className="block text-xs font-bold text-primary">{item.paybackYears} {t("results.roi.years_payback")}</span>
+                            </div>
                           </div>
                         </div>
-                        {/* Visual payback bar */}
-                        <div className="flex flex-col items-center">
-                          <div className="relative h-12 w-12">
-                            <svg viewBox="0 0 36 36" className="h-12 w-12 -rotate-90">
+
+                        {/* Payback circle */}
+                        <div className="flex flex-col items-center shrink-0">
+                          <div className="relative h-14 w-14">
+                            <svg viewBox="0 0 36 36" className="h-14 w-14 -rotate-90">
                               <circle cx="18" cy="18" r="14" fill="none" className="stroke-muted" strokeWidth="3" />
                               <circle
                                 cx="18" cy="18" r="14" fill="none"
@@ -383,16 +459,17 @@ const Results = () => {
                                 strokeLinecap="round"
                               />
                             </svg>
-                            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-foreground">
+                            <span className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-foreground">
                               {item.paybackYears}{t("results.roi.yr")}
                             </span>
                           </div>
                         </div>
                       </div>
-                    </motion.div>
+                    </motion.button>
                   ))}
                 </div>
-                <div className="mt-3 flex items-start gap-2 rounded-lg bg-primary/5 px-3 py-2">
+
+                <div className="mt-4 flex items-start gap-2 rounded-lg bg-primary/5 px-3 py-2">
                   <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
                   <p className="text-[11px] text-muted-foreground">{t("results.roi.disclaimer")}</p>
                 </div>
@@ -415,90 +492,111 @@ const Results = () => {
                 <p className="mt-0.5 text-sm text-muted-foreground">{t("results.recommendations.subtitle")}</p>
               </div>
               <div className="divide-y">
-                {recommendations.map((rec, index) => (
-                  <motion.article
-                    key={rec.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.35 + index * 0.08 }}
-                    className="p-5 sm:p-6"
-                  >
-                    <div className="flex flex-wrap items-start gap-2 mb-3">
-                      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${priorityStyles[rec.priority].badge}`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${priorityStyles[rec.priority].bar}`} />
-                        {priorityLabels[rec.priority]}
-                      </span>
-                      <span className="rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
-                        ~{rec.estimatedSaving}% {t("results.saving")}
-                      </span>
-                    </div>
-                    <h3 className="text-base font-bold text-foreground">{rec.name}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{rec.reason}</p>
-
-                    <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                      {[
-                        { icon: BarChart3, label: t("results.dpe_impact"), value: rec.dpeImpact, color: "text-primary", bg: "bg-primary/5" },
-                        { icon: Target, label: t("results.comfort"), value: rec.comfortImpact, color: "text-indigo", bg: "bg-indigo/5" },
-                        { icon: PiggyBank, label: t("results.bill"), value: rec.billImpact, color: "text-success", bg: "bg-success/5" },
-                      ].map((m) => (
-                        <div key={m.label} className={`rounded-lg ${m.bg} px-3 py-2`}>
-                          <span className={`flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider ${m.color}`}>
-                            <m.icon className="h-3 w-3" />
-                            {m.label}
-                          </span>
-                          <p className="mt-0.5 text-xs font-medium text-foreground">{m.value}</p>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="mt-3 rounded-lg border bg-muted/20 p-3">
-                      <div className="flex items-start gap-2">
-                        <Lightbulb className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber" />
-                        <p className="text-xs leading-relaxed text-muted-foreground whitespace-pre-line">{rec.explanation}</p>
-                      </div>
-                    </div>
-
-                    {(rec.estimatedCost || rec.parisAid) && (
-                      <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
-                        {rec.estimatedCost && (
-                          <div className="flex items-start gap-2 rounded-lg bg-muted/30 px-3 py-2">
-                            <Euro className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber" />
-                            <div>
-                              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{t("results.cost")}</span>
-                              <p className="text-xs text-foreground">{rec.estimatedCost}</p>
-                            </div>
-                          </div>
-                        )}
-                        {rec.parisAid && (
-                          <div className="flex items-start gap-2 rounded-lg border border-success/10 bg-success/5 px-3 py-2">
-                            <PiggyBank className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" />
-                            <div>
-                              <span className="text-[10px] font-semibold uppercase tracking-wider text-success">{t("results.aid")}</span>
-                              <p className="text-xs text-foreground">{rec.parisAid}</p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {rec.providers && rec.providers.length > 0 && (
-                      <div className="mt-2.5 rounded-lg bg-primary/[0.03] px-3 py-2">
-                        <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-primary mb-1">
-                          <MapPin className="h-3 w-3" />
-                          {t("results.providers")}
+                {recommendations.map((rec, index) => {
+                  const companies = ILLUSTRATIVE_COMPANIES[rec.id] || ILLUSTRATIVE_COMPANIES.quick_wins;
+                  return (
+                    <motion.article
+                      key={rec.id}
+                      ref={(el) => { recRefs.current[rec.id] = el; }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.35 + index * 0.08 }}
+                      className="p-5 sm:p-6"
+                    >
+                      <div className="flex flex-wrap items-start gap-2 mb-3">
+                        <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${priorityStyles[rec.priority].badge}`}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${priorityStyles[rec.priority].bar}`} />
+                          {priorityLabels[rec.priority]}
                         </span>
-                        <ul className="space-y-0.5">
-                          {rec.providers.map((p, i) => (
-                            <li key={i} className="flex items-center gap-1.5 text-xs text-foreground">
-                              <ArrowRight className="h-2.5 w-2.5 text-primary" />
-                              {p}
-                            </li>
-                          ))}
-                        </ul>
+                        <span className="rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
+                          ~{rec.estimatedSaving}% {t("results.saving")}
+                        </span>
                       </div>
-                    )}
-                  </motion.article>
-                ))}
+                      <h3 className="text-base font-bold text-foreground">{rec.name}</h3>
+                      <p className="mt-1 text-sm text-muted-foreground">{rec.reason}</p>
+
+                      <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                        {[
+                          { icon: BarChart3, label: t("results.dpe_impact"), value: rec.dpeImpact, color: "text-primary", bg: "bg-primary/5" },
+                          { icon: Target, label: t("results.comfort"), value: rec.comfortImpact, color: "text-indigo", bg: "bg-indigo/5" },
+                          { icon: PiggyBank, label: t("results.bill"), value: rec.billImpact, color: "text-success", bg: "bg-success/5" },
+                        ].map((m) => (
+                          <div key={m.label} className={`rounded-lg ${m.bg} px-3 py-2`}>
+                            <span className={`flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider ${m.color}`}>
+                              <m.icon className="h-3 w-3" />
+                              {m.label}
+                            </span>
+                            <p className="mt-0.5 text-xs font-medium text-foreground">{m.value}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="mt-3 rounded-lg border bg-muted/20 p-3">
+                        <div className="flex items-start gap-2">
+                          <Lightbulb className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber" />
+                          <p className="text-xs leading-relaxed text-muted-foreground whitespace-pre-line">{rec.explanation}</p>
+                        </div>
+                      </div>
+
+                      {(rec.estimatedCost || rec.parisAid) && (
+                        <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
+                          {rec.estimatedCost && (
+                            <div className="flex items-start gap-2 rounded-lg bg-muted/30 px-3 py-2">
+                              <Euro className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber" />
+                              <div>
+                                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{t("results.cost")}</span>
+                                <p className="text-xs text-foreground">{rec.estimatedCost}</p>
+                              </div>
+                            </div>
+                          )}
+                          {rec.parisAid && (
+                            <div className="flex items-start gap-2 rounded-lg border border-success/10 bg-success/5 px-3 py-2">
+                              <PiggyBank className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" />
+                              <div>
+                                <span className="text-[10px] font-semibold uppercase tracking-wider text-success">{t("results.aid")}</span>
+                                <p className="text-xs text-foreground">{rec.parisAid}</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {rec.providers && rec.providers.length > 0 && (
+                        <div className="mt-2.5 rounded-lg bg-primary/[0.03] px-3 py-2">
+                          <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-primary mb-1">
+                            <MapPin className="h-3 w-3" />
+                            {t("results.providers")}
+                          </span>
+                          <ul className="space-y-0.5">
+                            {rec.providers.map((p, i) => (
+                              <li key={i} className="flex items-center gap-1.5 text-xs text-foreground">
+                                <ArrowRight className="h-2.5 w-2.5 text-primary" />
+                                {p}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Illustrative companies */}
+                      <div className="mt-3 rounded-lg border border-primary/10 bg-primary/[0.02] p-3">
+                        <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-primary mb-2">
+                          <Building2 className="h-3 w-3" />
+                          {t("results.companies")}
+                        </span>
+                        <div className="grid gap-2 sm:grid-cols-3">
+                          {companies.map((c, ci) => (
+                            <div key={ci} className="rounded-lg bg-card border px-3 py-2">
+                              <p className="text-xs font-semibold text-foreground">{c.name}</p>
+                              <p className="text-[10px] text-muted-foreground">{c.specialty}</p>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="mt-2 text-[10px] text-muted-foreground italic">{t("results.companies.disclaimer")}</p>
+                      </div>
+                    </motion.article>
+                  );
+                })}
               </div>
             </div>
           </motion.section>
