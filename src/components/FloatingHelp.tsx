@@ -13,11 +13,11 @@ const FloatingHelp = ({ currentStep }: Props) => {
 
   const helpKeys = [
     "help.step.general",
+    "help.step.currentdpe",
     "help.step.envelope",
     "help.step.heating",
     "help.step.energy",
     "help.step.ventilation",
-    "help.step.currentdpe",
     "help.step.usage",
   ];
 

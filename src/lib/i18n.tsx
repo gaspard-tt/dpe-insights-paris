@@ -203,6 +203,11 @@ const translations: Record<Language, Record<string, string>> = {
     "currentdpe.help": "Si vous avez un DPE officiel pour votre logement, sélectionnez la classe correspondante. Cela nous permettra de comparer notre estimation avec votre diagnostic réel.",
     "currentdpe.class": "Classe",
     "currentdpe.idk": "Je ne sais pas",
+    "currentdpe.bill.title": "Votre facture d'énergie annuelle",
+    "currentdpe.bill.help": "Si vous connaissez votre facture annuelle d'électricité/gaz, indiquez-la. Cela nous permettra de calculer plus précisément votre retour sur investissement.",
+    "currentdpe.bill.avg": "Moyenne Paris : ~1 200 €/an",
+    "currentdpe.bill.idk": "Je ne sais pas",
+    "currentdpe.bill.idk.tap": "Appuyez pour renseigner votre facture",
 
     // StepOccupancy
     "occupancy.thermostat": "Réglage du thermostat en hiver",
@@ -289,12 +294,20 @@ const translations: Record<Language, Record<string, string>> = {
 
     // ROI
     "results.roi.title": "Retour sur investissement",
-    "results.roi.subtitle": "Estimez combien de temps il faut pour rentabiliser chaque rénovation grâce aux économies sur vos factures.",
+    "results.roi.subtitle": "Estimez combien de temps il faut pour rentabiliser chaque rénovation grâce aux économies sur vos factures. Cliquez sur un élément pour voir les détails.",
     "results.roi.currentbill": "Facture annuelle estimée actuelle",
     "results.roi.year": "an",
-    "results.roi.years_payback": "ans pour rentabiliser",
+    "results.roi.years_payback": "ans",
     "results.roi.yr": "a",
+    "results.roi.cost": "Coût estimé",
+    "results.roi.saving": "Économie/an",
+    "results.roi.payback": "Rentabilisé en",
+    "results.roi.userprovided": "votre facture réelle",
     "results.roi.disclaimer": "Estimations basées sur un prix moyen de l'énergie de 0,21 €/kWh. Les montants réels dépendent de votre contrat et de votre consommation.",
+
+    // Companies
+    "results.companies": "Entreprises recommandées",
+    "results.companies.disclaimer": "Entreprises à titre illustratif — les vrais prestataires seront ajoutés prochainement.",
 
     // Small wins
     "smallwins.title": "Petites victoires 💡",
@@ -491,6 +504,11 @@ const translations: Record<Language, Record<string, string>> = {
     "currentdpe.help": "If you have an official DPE for your home, select the corresponding class. This will allow us to compare our estimate with your actual diagnostic in the results.",
     "currentdpe.class": "Class",
     "currentdpe.idk": "I don't know",
+    "currentdpe.bill.title": "Your annual energy bill",
+    "currentdpe.bill.help": "If you know your annual electricity/gas bill, enter it here. This helps us calculate your return on investment more accurately.",
+    "currentdpe.bill.avg": "Paris average: ~€1,200/yr",
+    "currentdpe.bill.idk": "I don't know",
+    "currentdpe.bill.idk.tap": "Tap to enter your bill",
 
     // StepOccupancy
     "occupancy.thermostat": "Winter thermostat setting",
@@ -577,12 +595,20 @@ const translations: Record<Language, Record<string, string>> = {
 
     // ROI
     "results.roi.title": "Return on investment",
-    "results.roi.subtitle": "Estimate how long it takes for each renovation to pay for itself through lower energy bills.",
+    "results.roi.subtitle": "Estimate how long it takes for each renovation to pay for itself through lower energy bills. Click an item to see details.",
     "results.roi.currentbill": "Estimated current annual bill",
     "results.roi.year": "year",
-    "results.roi.years_payback": "years to pay back",
+    "results.roi.years_payback": "years",
     "results.roi.yr": "y",
+    "results.roi.cost": "Est. cost",
+    "results.roi.saving": "Saving/yr",
+    "results.roi.payback": "Pays back in",
+    "results.roi.userprovided": "your actual bill",
     "results.roi.disclaimer": "Estimates based on an average energy price of €0.21/kWh. Actual amounts depend on your contract and consumption.",
+
+    // Companies
+    "results.companies": "Recommended companies",
+    "results.companies.disclaimer": "Companies shown for illustration — real providers will be added soon.",
 
     // Small wins
     "smallwins.title": "Small wins 💡",

@@ -48,7 +48,11 @@ export interface FormData {
   postalCode?: string;
   arrondissement?: string;
 
-  // Step 2: Envelope
+  // Step 2: Current DPE & bill
+  currentDPE?: DPEClass;
+  annualBill?: number; // €/year electricity bill
+
+  // Step 3: Envelope
   wallInsulation?: InsulationQuality;
   roofInsulation?: InsulationQuality;
   floorInsulation?: InsulationQuality;
@@ -56,20 +60,17 @@ export interface FormData {
   windowSurface?: number;
   orientation?: Orientation;
 
-  // Step 3: Heating (multi-select)
+  // Step 4: Heating (multi-select)
   heatingTypes?: HeatingType[];
   heatingAge?: HeatingAge;
   distributionSystem?: DistributionSystem;
 
-  // Step 4: Energy
+  // Step 5: Energy
   energySource?: EnergySource;
 
-  // Step 5: Ventilation
+  // Step 6: Ventilation
   ventilationType?: VentilationType;
   airLeakage?: AirLeakage;
-
-  // Step 6: Current DPE
-  currentDPE?: DPEClass;
 
   // Step 7: Occupancy
   occupants?: number;
