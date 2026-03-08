@@ -9,6 +9,7 @@ import {
   Wrench,
   BarChart3,
   Thermometer,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -24,7 +25,7 @@ const fadeInUp = {
 
 const Index = () => {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
   return (
     <div className="min-h-screen bg-background">
@@ -119,7 +120,7 @@ const Index = () => {
                 key={i}
                 {...fadeInUp}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="card-elevated rounded-xl border bg-card p-6"
+                className="rounded-xl border bg-card p-6"
               >
                 <div className="flex h-11 w-11 items-center justify-center rounded-lg hero-gradient">
                   <item.icon className="h-5 w-5 text-primary-foreground" />
@@ -176,8 +177,29 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* About / Team */}
       <section className="py-20">
+        <div className="container mx-auto max-w-3xl px-4 text-center">
+          <motion.div {...fadeInUp} transition={{ duration: 0.5 }}>
+            <div className="flex justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+                <Users className="h-7 w-7 text-primary" />
+              </div>
+            </div>
+            <h2 className="mt-4 text-2xl font-bold text-foreground">
+              {lang === "fr" ? "👋 Qui sommes-nous ?" : "👋 About us"}
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
+              {lang === "fr"
+                ? "Nous sommes une petite équipe passionnée par la transition énergétique et convaincue que chacun mérite de comprendre la performance de son logement — sans jargon technique ni devis commercial. Cet outil est gratuit, éducatif et respectueux de vos données."
+                : "We're a small team passionate about the energy transition, convinced that everyone deserves to understand their home's performance — without technical jargon or sales pitches. This tool is free, educational, and respectful of your data."}
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="border-t bg-card py-20">
         <div className="container mx-auto max-w-3xl px-4 text-center">
           <motion.div {...fadeInUp} transition={{ duration: 0.5 }}>
             <h2 className="text-3xl font-bold text-foreground">
@@ -203,6 +225,7 @@ const Index = () => {
       <footer className="border-t bg-card py-8">
         <div className="container mx-auto px-4 text-center text-xs text-muted-foreground">
           <p>{t("footer.disclaimer")}</p>
+          <p className="mt-2">{t("footer.privacy")}</p>
           <p className="mt-2">
             © {new Date().getFullYear()} {t("footer.copy")}
           </p>

@@ -106,12 +106,12 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
         <HelperText>{t("general.surface.help")}</HelperText>
         <input
           type="number"
-          value={data.surfaceArea}
-          onChange={(e) => onChange({ surfaceArea: Number(e.target.value) || 0 })}
+          value={data.surfaceArea ?? ""}
+          onChange={(e) => onChange({ surfaceArea: e.target.value ? Number(e.target.value) : undefined })}
           min={10}
           max={500}
-          placeholder="e.g., 65"
-          className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-base font-medium text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          placeholder="ex: 65"
+          className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-base font-medium text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
       </div>
 

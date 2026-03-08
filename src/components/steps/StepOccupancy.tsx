@@ -58,18 +58,15 @@ const StepOccupancy = ({ data, onChange }: Props) => {
       <div className="space-y-3">
         <h3 className="text-lg font-semibold text-foreground">{t("occupancy.count")}</h3>
         <HelperText>{t("occupancy.count.help")}</HelperText>
-        <div className="space-y-2">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <OptionRow
-              key={n}
-              selected={data.occupants === n}
-              label={`${n} ${n > 1 ? t("occupancy.persons") : t("occupancy.person")}`}
-              onClick={() => onChange({ occupants: n })}
-            />
-          ))}
-          <OptionRow selected={data.occupants === 6} label={t("occupancy.6plus")} onClick={() => onChange({ occupants: 6 })} />
-          <OptionRow selected={!data.occupants} label={t("occupancy.idk")} desc={t("occupancy.idk.desc")} onClick={() => onChange({ occupants: undefined })} />
-        </div>
+        <input
+          type="number"
+          value={data.occupants ?? ""}
+          onChange={(e) => onChange({ occupants: e.target.value ? Number(e.target.value) : undefined })}
+          min={1}
+          max={10}
+          placeholder="ex: 2"
+          className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-base font-medium text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        />
       </div>
 
       <div className="space-y-3">

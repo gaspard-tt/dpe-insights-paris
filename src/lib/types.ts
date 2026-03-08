@@ -41,35 +41,35 @@ export type DPEClass = "A" | "B" | "C" | "D" | "E" | "F" | "G";
 
 export interface FormData {
   // Step 1: General
-  housingType: HousingType;
-  surfaceArea: number;
-  constructionPeriod: ConstructionPeriod;
-  climateZone: ClimateZone;
+  housingType?: HousingType;
+  surfaceArea?: number;
+  constructionPeriod?: ConstructionPeriod;
+  climateZone?: ClimateZone;
 
   // Step 2: Envelope
-  wallInsulation: InsulationQuality;
-  roofInsulation: InsulationQuality;
-  floorInsulation: InsulationQuality;
-  windowType: WindowType;
-  windowSurface: number;
-  orientation: Orientation;
+  wallInsulation?: InsulationQuality;
+  roofInsulation?: InsulationQuality;
+  floorInsulation?: InsulationQuality;
+  windowType?: WindowType;
+  windowSurface?: number;
+  orientation?: Orientation;
 
-  // Step 3: Heating
-  heatingType: HeatingType;
-  heatingAge: HeatingAge;
-  distributionSystem: DistributionSystem;
+  // Step 3: Heating (multi-select)
+  heatingTypes?: HeatingType[];
+  heatingAge?: HeatingAge;
+  distributionSystem?: DistributionSystem;
 
   // Step 4: Energy
-  energySource: EnergySource;
+  energySource?: EnergySource;
 
   // Step 5: Ventilation
-  ventilationType: VentilationType;
-  airLeakage: AirLeakage;
+  ventilationType?: VentilationType;
+  airLeakage?: AirLeakage;
 
   // Step 6: Occupancy
-  occupants: number;
-  heatingHabits: UsageLevel;
-  hotWaterUsage: UsageLevel;
+  occupants?: number;
+  heatingHabits?: UsageLevel;
+  hotWaterUsage?: UsageLevel;
 }
 
 export interface EnergyBreakdown {
@@ -108,24 +108,4 @@ export interface DPEResult {
   recommendations: Recommendation[];
 }
 
-export const DEFAULT_FORM_DATA: FormData = {
-  housingType: "apartment",
-  surfaceArea: 70,
-  constructionPeriod: "1975-1988",
-  climateZone: "H1",
-  wallInsulation: "average",
-  roofInsulation: "average",
-  floorInsulation: "average",
-  windowType: "double",
-  windowSurface: 15,
-  orientation: "south",
-  heatingType: "gas_boiler",
-  heatingAge: "5to15",
-  distributionSystem: "radiators",
-  energySource: "gas",
-  ventilationType: "vmc_simple",
-  airLeakage: "slight",
-  occupants: 2,
-  heatingHabits: "average",
-  hotWaterUsage: "average",
-};
+export const DEFAULT_FORM_DATA: FormData = {};

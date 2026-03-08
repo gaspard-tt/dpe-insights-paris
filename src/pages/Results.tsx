@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { AlertTriangle, ArrowLeft, CheckCircle, Info, Lightbulb, TrendingDown, Wrench } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CheckCircle, Info, Lightbulb, TrendingDown, Wrench, PartyPopper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import DPEScale from "@/components/DPEScale";
@@ -128,7 +128,6 @@ const Results = () => {
         {/* Energy Breakdown */}
         <motion.section {...fadeInUp} transition={{ delay: 0.1 }} className="mb-10">
           <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-foreground">
-            <TrendingDown className="h-5 w-5 text-primary" />
             {t("results.breakdown")}
           </h2>
           <div className="grid gap-4 sm:grid-cols-3">
@@ -139,7 +138,7 @@ const Results = () => {
             ].map((item) => {
               const pct = Math.round((item.value / energyBreakdown.total) * 100);
               return (
-                <div key={item.label} className="card-elevated rounded-xl border bg-card p-5">
+                <div key={item.label} className="rounded-xl border bg-card p-5">
                   <span className="text-sm font-medium text-muted-foreground">{item.label}</span>
                   <p className="mt-1 text-2xl font-bold text-foreground">{pct}%</p>
                   <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
@@ -158,12 +157,18 @@ const Results = () => {
         </motion.section>
 
         {/* Weaknesses */}
-        {weaknesses.length > 0 && (
-          <motion.section {...fadeInUp} transition={{ delay: 0.2 }} className="mb-10">
-            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-foreground">
-              <AlertTriangle className="h-5 w-5 text-destructive" />
-              {t("results.weaknesses")}
-            </h2>
+        <motion.section {...fadeInUp} transition={{ delay: 0.2 }} className="mb-10">
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-foreground">
+            {t("results.weaknesses")}
+          </h2>
+          {weaknesses.length === 0 ? (
+            <div className="rounded-xl border bg-accent/5 p-6 text-center">
+              <PartyPopper className="mx-auto mb-3 h-10 w-10 text-accent" />
+              <p className="text-sm font-medium text-foreground">
+                {t("results.weaknesses.empty")}
+              </p>
+            </div>
+          ) : (
             <div className="grid gap-3">
               {weaknesses.map((w, index) => (
                 <motion.div
@@ -196,13 +201,12 @@ const Results = () => {
                 </motion.div>
               ))}
             </div>
-          </motion.section>
-        )}
+          )}
+        </motion.section>
 
         {/* Recommendations */}
         <motion.section {...fadeInUp} transition={{ delay: 0.3 }} className="mb-10">
           <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-foreground">
-            <Wrench className="h-5 w-5 text-primary" />
             {t("results.recommendations")}
           </h2>
           <div className="grid gap-4">
@@ -212,7 +216,7 @@ const Results = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + index * 0.1 }}
-                className="card-elevated overflow-hidden rounded-xl border bg-card"
+                className="overflow-hidden rounded-xl border bg-card"
               >
                 <div className="p-5 sm:p-6">
                   <div className="flex items-start justify-between gap-3">
@@ -290,7 +294,6 @@ const Results = () => {
         {/* Back to questionnaire */}
         <div className="flex justify-center pb-12">
           <Button variant="outline" size="lg" onClick={() => navigate("/questionnaire")} className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
             {t("results.redo")}
           </Button>
         </div>
