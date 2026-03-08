@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, BarChart3, Loader2, Lock } from "lucide-react";
+import { ArrowLeft, ArrowRight, BarChart3, Loader2, Lock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import WizardProgress from "@/components/WizardProgress";
 import FloatingHelp from "@/components/FloatingHelp";
@@ -18,6 +18,47 @@ import { DEFAULT_FORM_DATA } from "@/lib/types";
 import { calculateDPE } from "@/lib/dpe-calculator";
 import { useI18n } from "@/lib/i18n";
 
+/** Returns an error message key if the step is incomplete, or null if valid */
+function validateStep(step: number, data: FormData, t: (k: string) => string): string | null {
+  switch (step) {
+    case 0: // General Info
+      if (!data.housingType) return t("validation.housing_type");
+      if (!data.surfaceArea) return t("validation.surface");
+      if (!data.arrondissement) return t("validation.arrondissement");
+      if (!data.constructionPeriod) return t("validation.construction");
+      return null;
+
+    case 1: // Current DPE — DPE class or "unknown" both fine, bill is optional
+      // No strict requirement — user can skip DPE class (defaults to unknown)
+      return null;
+
+    case 2: // Envelope
+      if (!data.windowType) return t("validation.window_type");
+      if (!data.orientation) return t("validation.orientation");
+      return null;
+
+    case 3: // Heating
+      if (!data.heatingTypes || data.heatingTypes.length === 0) return t("validation.heating_type");
+      return null;
+
+    case 4: // Energy
+      if (!data.energySources || data.energySources.length === 0) return t("validation.energy_source");
+      return null;
+
+    case 5: // Ventilation
+      if (!data.ventilationType) return t("validation.ventilation");
+      return null;
+
+    case 6: // Occupancy
+      if (!data.occupants) return t("validation.occupants");
+      if (!data.hotWaterUsage) return t("validation.hot_water");
+      return null;
+
+    default:
+      return null;
+  }
+}
+
 const Questionnaire = () => {
   const navigate = useNavigate();
   const { t, lang } = useI18n();
@@ -25,6 +66,7 @@ const Questionnaire = () => {
   const [formData, setFormData] = useState<FormData>(DEFAULT_FORM_DATA);
   const [direction, setDirection] = useState(1);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [showValidation, setShowValidation] = useState(false);
 
   const STEP_LABELS = [
     t("step.general"),
@@ -38,13 +80,25 @@ const Questionnaire = () => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowValidation(false);
   }, [currentStep]);
 
   const updateFormData = (updates: Partial<FormData>) => {
     setFormData((prev) => ({ ...prev, ...updates }));
+    // Clear validation error as user interacts
+    if (showValidation) setShowValidation(false);
   };
 
+  const validationError = useMemo(
+    () => validateStep(currentStep, formData, t),
+    [currentStep, formData, t]
+  );
+
   const nextStep = () => {
+    if (validationError) {
+      setShowValidation(true);
+      return;
+    }
     if (currentStep < STEP_LABELS.length - 1) {
       setDirection(1);
       setCurrentStep((s) => s + 1);
@@ -59,6 +113,10 @@ const Questionnaire = () => {
   };
 
   const handleSubmit = () => {
+    if (validationError) {
+      setShowValidation(true);
+      return;
+    }
     setIsCalculating(true);
     setTimeout(() => {
       const result = calculateDPE(formData, lang);
@@ -143,6 +201,18 @@ const Questionnaire = () => {
               {renderStep()}
             </motion.div>
           </AnimatePresence>
+
+          {/* Validation error */}
+          {showValidation && validationError && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+            >
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {validationError}
+            </motion.div>
+          )}
 
           {/* Privacy note */}
           <div className="mt-6 flex items-center justify-center gap-1.5 rounded-lg bg-muted/40 px-4 py-2.5 text-center text-xs text-muted-foreground">

@@ -1,5 +1,5 @@
 import type { FormData } from "@/lib/types";
-import { HelpCircle, Thermometer, Users, Droplets, Flame, Wind, Shirt, Lightbulb, Timer } from "lucide-react";
+import { HelpCircle, Thermometer, Users, Droplets, Flame, Wind, Shirt, Lightbulb } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { useI18n } from "@/lib/i18n";
 
@@ -119,47 +119,7 @@ const StepOccupancy = ({ data, onChange }: Props) => {
 
   return (
     <div className="space-y-8">
-      {/* Thermostat slider */}
-      <div className="space-y-3">
-        <h3 className="flex items-center gap-2 text-lg font-semibold text-foreground">
-          <Thermometer className="h-5 w-5 text-rose" />
-          {t("occupancy.thermostat")}
-        </h3>
-        <HelperText>{t("occupancy.thermostat.help")}</HelperText>
-        <div className="rounded-xl border bg-muted/20 p-5">
-          <div className="flex items-baseline justify-between mb-1">
-            <span className="text-sm text-muted-foreground">{t("occupancy.temperature")}</span>
-            <span className={`text-3xl font-bold ${thermostatColor}`}>
-              {data.thermostatTemp ? (
-                <>{data.thermostatTemp.toFixed(1)} <span className="text-base font-normal text-muted-foreground">°C</span></>
-              ) : (
-                <span className="text-xl font-normal text-muted-foreground/40">ex. 19.5°C</span>
-              )}
-            </span>
-          </div>
-          {thermostatHint && <p className={`text-xs font-medium mb-4 ${thermostatColor}`}>{thermostatHint}</p>}
-          <Slider
-            value={[data.thermostatTemp || 19.5]}
-            onValueChange={([v]) => {
-              onChange({
-                thermostatTemp: v,
-                heatingHabits: getThermostatLevel(v),
-              });
-            }}
-            min={15}
-            max={25}
-            step={0.5}
-            className="w-full"
-          />
-          <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-            <span>15°C</span>
-            <span className="text-primary font-medium">{t("occupancy.recommended")}</span>
-            <span>25°C</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Occupants slider */}
+      {/* Occupants slider — NO prefill */}
       <div className="space-y-3">
         <h3 className="flex items-center gap-2 text-lg font-semibold text-foreground">
           <Users className="h-5 w-5 text-indigo" />
@@ -204,6 +164,46 @@ const StepOccupancy = ({ data, onChange }: Props) => {
           <OptionRow selected={data.hotWaterUsage === "low"} label={t("occupancy.hw_low")} onClick={() => onChange({ hotWaterUsage: "low" })} />
           <OptionRow selected={data.hotWaterUsage === "average"} label={t("occupancy.hw_average")} onClick={() => onChange({ hotWaterUsage: "average" })} />
           <OptionRow selected={data.hotWaterUsage === "high"} label={t("occupancy.hw_high")} onClick={() => onChange({ hotWaterUsage: "high" })} />
+        </div>
+      </div>
+
+      {/* Thermostat slider — NO prefill */}
+      <div className="space-y-3">
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-foreground">
+          <Thermometer className="h-5 w-5 text-rose" />
+          {t("occupancy.thermostat")}
+        </h3>
+        <HelperText>{t("occupancy.thermostat.help")}</HelperText>
+        <div className="rounded-xl border bg-muted/20 p-5">
+          <div className="flex items-baseline justify-between mb-1">
+            <span className="text-sm text-muted-foreground">{t("occupancy.temperature")}</span>
+            <span className={`text-3xl font-bold ${thermostatColor}`}>
+              {data.thermostatTemp ? (
+                <>{data.thermostatTemp.toFixed(1)} <span className="text-base font-normal text-muted-foreground">°C</span></>
+              ) : (
+                <span className="text-xl font-normal text-muted-foreground/40">ex. 19.5°C</span>
+              )}
+            </span>
+          </div>
+          {thermostatHint && <p className={`text-xs font-medium mb-4 ${thermostatColor}`}>{thermostatHint}</p>}
+          <Slider
+            value={[data.thermostatTemp || 19.5]}
+            onValueChange={([v]) => {
+              onChange({
+                thermostatTemp: v,
+                heatingHabits: getThermostatLevel(v),
+              });
+            }}
+            min={15}
+            max={25}
+            step={0.5}
+            className="w-full"
+          />
+          <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+            <span>15°C</span>
+            <span className="text-primary font-medium">{t("occupancy.recommended")}</span>
+            <span>25°C</span>
+          </div>
         </div>
       </div>
 

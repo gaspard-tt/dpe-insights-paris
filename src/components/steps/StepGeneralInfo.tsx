@@ -2,6 +2,7 @@ import type { FormData, ConstructionPeriod } from "@/lib/types";
 import { HelpCircle, Home, Building2 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { useI18n } from "@/lib/i18n";
+import { useEffect } from "react";
 
 interface Props {
   data: FormData;
@@ -94,10 +95,12 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
     "after2012",
   ];
 
-  // Auto-set Paris on first render
-  if (!data.postalCode) {
-    onChange({ postalCode: "75", climateZone: "H1" });
-  }
+  // Auto-set Paris climate zone
+  useEffect(() => {
+    if (!data.climateZone) {
+      onChange({ postalCode: "75", climateZone: "H1" });
+    }
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -111,7 +114,7 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
         </div>
       </div>
 
-      {/* Surface with slider — no pre-fill, show placeholder */}
+      {/* Surface with slider — NO pre-fill */}
       <div className="space-y-3">
         <h3 className="text-lg font-semibold text-foreground">{t("general.surface")}</h3>
         <HelperText>{t("general.surface.help")}</HelperText>
@@ -172,7 +175,6 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
           {constructionPeriods.map((p) => (
             <OptionRow key={p} selected={data.constructionPeriod === p} label={p.replace("-", " – ")} onClick={() => onChange({ constructionPeriod: p })} />
           ))}
-          <OptionRow selected={!data.constructionPeriod} label={t("general.idk")} desc={t("general.idk.desc")} onClick={() => onChange({ constructionPeriod: undefined })} />
         </div>
       </div>
     </div>
