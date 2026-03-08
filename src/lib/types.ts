@@ -45,6 +45,8 @@ export interface FormData {
   surfaceArea?: number;
   constructionPeriod?: ConstructionPeriod;
   climateZone?: ClimateZone;
+  postalCode?: string;
+  arrondissement?: string;
 
   // Step 2: Envelope
   wallInsulation?: InsulationQuality;
@@ -70,6 +72,7 @@ export interface FormData {
   occupants?: number;
   heatingHabits?: UsageLevel;
   hotWaterUsage?: UsageLevel;
+  thermostatTemp?: number;
 }
 
 export interface EnergyBreakdown {
@@ -98,6 +101,9 @@ export interface Recommendation {
   billImpact: string;
   explanation: string;
   estimatedSaving: number;
+  estimatedCost?: string;
+  parisAid?: string;
+  providers?: string[];
 }
 
 export interface DPEResult {
