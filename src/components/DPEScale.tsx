@@ -1,6 +1,7 @@
 import { DPE_CLASSES } from "@/lib/dpe-calculator";
 import type { DPEClass } from "@/lib/types";
 import { motion } from "framer-motion";
+import { useI18n } from "@/lib/i18n";
 
 interface DPEScaleProps {
   activeClass?: DPEClass;
@@ -8,6 +9,7 @@ interface DPEScaleProps {
 }
 
 const DPEScale = ({ activeClass, size = "md" }: DPEScaleProps) => {
+  const { t } = useI18n();
   const sizeClasses = {
     sm: "text-xs py-1 px-2",
     md: "text-sm py-2 px-3",
@@ -45,7 +47,7 @@ const DPEScale = ({ activeClass, size = "md" }: DPEScaleProps) => {
             >
               <span>{dpe.class}</span>
               <span className="text-xs font-normal opacity-80">
-                {dpe.label} kWh/m²/an
+                {dpe.label} {t("dpe.unit")}
               </span>
             </div>
             {isActive && (

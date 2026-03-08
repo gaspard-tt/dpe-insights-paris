@@ -101,7 +101,7 @@ const Results = () => {
                 <div>
                   <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t("results.consumption")}</span>
                   <p className="text-2xl font-bold text-foreground">
-                    {consumption} <span className="text-sm font-normal text-muted-foreground">kWh/m²/an</span>
+                    {consumption} <span className="text-sm font-normal text-muted-foreground">{t("dpe.unit")}</span>
                   </p>
                 </div>
                 <div className="flex items-start gap-2 rounded-lg border border-primary/15 bg-primary/5 px-3 py-2.5">
@@ -137,7 +137,7 @@ const Results = () => {
                       transition={{ delay: 0.3, duration: 0.7, ease: "easeOut" }}
                     />
                   </div>
-                  <p className="mt-1.5 text-[11px] text-muted-foreground">~{item.value} kWh/m²/an</p>
+                  <p className="mt-1.5 text-[11px] text-muted-foreground">~{item.value} {t("dpe.unit")}</p>
                 </div>
               );
             })}

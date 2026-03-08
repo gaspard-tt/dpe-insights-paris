@@ -58,6 +58,18 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.copy": "Mon DPE Paris — Simulateur éducatif de performance énergétique",
     "footer.privacy": "Vos données restent sur votre appareil — rien n'est envoyé ni stocké.",
 
+    // About section
+    "about.title": "Qui sommes-nous ?",
+    "about.desc": "Nous sommes une petite équipe passionnée par la transition énergétique et convaincue que chacun mérite de comprendre la performance de son logement — sans jargon technique ni devis commercial. Cet outil est gratuit, éducatif et respectueux de vos données.",
+
+    // 404 page
+    "notfound.title": "Page introuvable",
+    "notfound.desc": "La page que vous cherchez n'existe pas ou a été déplacée.",
+    "notfound.cta": "Retour à l'accueil",
+
+    // DPE scale
+    "dpe.unit": "kWh/m²/an",
+
     // Questionnaire
     "wizard.step": "Étape",
     "wizard.prev": "Précédent",
@@ -290,6 +302,18 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.disclaimer": "This tool provides an indicative estimate. It does not replace an official DPE performed by a certified assessor.",
     "footer.copy": "My DPE Paris — Educational energy performance simulator",
     "footer.privacy": "Your data stays on your device — nothing is sent or stored.",
+
+    // About section
+    "about.title": "About us",
+    "about.desc": "We're a small team passionate about the energy transition, convinced that everyone deserves to understand their home's performance — without technical jargon or sales pitches. This tool is free, educational, and respectful of your data.",
+
+    // 404 page
+    "notfound.title": "Page not found",
+    "notfound.desc": "The page you're looking for doesn't exist or has been moved.",
+    "notfound.cta": "Back to home",
+
+    // DPE scale
+    "dpe.unit": "kWh/m²/yr",
 
     // Questionnaire
     "wizard.step": "Step",
