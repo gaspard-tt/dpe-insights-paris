@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import WizardProgress from "@/components/WizardProgress";
 import FloatingHelp from "@/components/FloatingHelp";
 import StepGeneralInfo from "@/components/steps/StepGeneralInfo";
+import StepCurrentDPE from "@/components/steps/StepCurrentDPE";
 import StepEnvelope from "@/components/steps/StepEnvelope";
 import StepHeating from "@/components/steps/StepHeating";
 import StepEnergy from "@/components/steps/StepEnergy";
 import StepVentilation from "@/components/steps/StepVentilation";
-import StepCurrentDPE from "@/components/steps/StepCurrentDPE";
 import StepOccupancy from "@/components/steps/StepOccupancy";
 import Header from "@/components/Header";
 import type { FormData } from "@/lib/types";
@@ -28,11 +28,11 @@ const Questionnaire = () => {
 
   const STEP_LABELS = [
     t("step.general"),
+    t("step.currentdpe"),
     t("step.envelope"),
     t("step.heating"),
     t("step.energy"),
     t("step.ventilation"),
-    t("step.currentdpe"),
     t("step.usage"),
   ];
 
@@ -72,11 +72,11 @@ const Questionnaire = () => {
     const props = { data: formData, onChange: updateFormData };
     switch (currentStep) {
       case 0: return <StepGeneralInfo {...props} />;
-      case 1: return <StepEnvelope {...props} />;
-      case 2: return <StepHeating {...props} />;
-      case 3: return <StepEnergy {...props} />;
-      case 4: return <StepVentilation {...props} />;
-      case 5: return <StepCurrentDPE {...props} />;
+      case 1: return <StepCurrentDPE {...props} />;
+      case 2: return <StepEnvelope {...props} />;
+      case 3: return <StepHeating {...props} />;
+      case 4: return <StepEnergy {...props} />;
+      case 5: return <StepVentilation {...props} />;
       case 6: return <StepOccupancy {...props} />;
       default: return null;
     }
