@@ -101,7 +101,7 @@ const Results = () => {
                 <div>
                   <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{t("results.consumption")}</span>
                   <p className="text-2xl font-bold text-foreground">
-                    {consumption} <span className="text-sm font-normal text-muted-foreground">kWh/m²/an</span>
+                    {consumption} <span className="text-sm font-normal text-muted-foreground">{t("dpe.unit")}</span>
                   </p>
                 </div>
                 <div className="flex items-start gap-2 rounded-lg border border-primary/15 bg-primary/5 px-3 py-2.5">
