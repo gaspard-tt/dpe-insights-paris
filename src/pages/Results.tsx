@@ -1,6 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import {
   AlertTriangle, ArrowRight, BarChart3, CheckCircle,
   Info, Lightbulb, Wrench, Flame, Droplets,
