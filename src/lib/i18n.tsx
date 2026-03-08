@@ -303,6 +303,18 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.copy": "My DPE Paris — Educational energy performance simulator",
     "footer.privacy": "Your data stays on your device — nothing is sent or stored.",
 
+    // About section
+    "about.title": "About us",
+    "about.desc": "We're a small team passionate about the energy transition, convinced that everyone deserves to understand their home's performance — without technical jargon or sales pitches. This tool is free, educational, and respectful of your data.",
+
+    // 404 page
+    "notfound.title": "Page not found",
+    "notfound.desc": "The page you're looking for doesn't exist or has been moved.",
+    "notfound.cta": "Back to home",
+
+    // DPE scale
+    "dpe.unit": "kWh/m²/yr",
+
     // Questionnaire
     "wizard.step": "Step",
     "wizard.prev": "Previous",

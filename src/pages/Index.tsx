@@ -196,12 +196,10 @@ const Index = () => {
               </div>
             </div>
             <h2 className="mt-4 text-2xl font-bold text-foreground">
-              {lang === "fr" ? "Qui sommes-nous ?" : "About us"}
+              {t("about.title")}
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-              {lang === "fr"
-                ? "Nous sommes une petite équipe passionnée par la transition énergétique et convaincue que chacun mérite de comprendre la performance de son logement — sans jargon technique ni devis commercial. Cet outil est gratuit, éducatif et respectueux de vos données."
-                : "We're a small team passionate about the energy transition, convinced that everyone deserves to understand their home's performance — without technical jargon or sales pitches. This tool is free, educational, and respectful of your data."}
+              {t("about.desc")}
             </p>
           </motion.div>
         </div>

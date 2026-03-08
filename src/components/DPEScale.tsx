@@ -47,7 +47,7 @@ const DPEScale = ({ activeClass, size = "md" }: DPEScaleProps) => {
             >
               <span>{dpe.class}</span>
               <span className="text-xs font-normal opacity-80">
-                {dpe.label} kWh/m²/an
+                {dpe.label} {t("dpe.unit")}
               </span>
             </div>
             {isActive && (
