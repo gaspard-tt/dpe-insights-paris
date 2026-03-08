@@ -585,6 +585,7 @@ const translations: Record<Language, Record<string, string>> = {
     "results.edu.3.title": "The best investment isn't the biggest",
     "results.edu.3.desc": "Loft insulation or air leak treatment are often the cheapest but most effective works.",
     "results.redo": "Redo the diagnostic",
+    "results.export": "Download as PDF",
 
     // Comparison
     "results.comparison.title": "Comparison with your current DPE",
