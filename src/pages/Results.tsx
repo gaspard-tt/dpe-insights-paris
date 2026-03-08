@@ -373,48 +373,44 @@ const Results = () => {
           </div>
         </motion.section>
 
-        {/* ── 2. CURRENT PERFORMANCE — Key financial numbers ── */}
+        {/* ── 2. FINANCIAL HERO — Big, bold, impossible to miss ── */}
         <motion.section {...fadeIn} transition={{ delay: 0.05 }}>
-          <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-foreground">
-            <Euro className="h-4.5 w-4.5 text-success" />
-            {t("results.performance.title")}
-          </h2>
-          <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl border bg-card p-4">
-              <p className="text-xs font-medium text-muted-foreground">{t("results.performance.annual_cost")}</p>
-              <p className="mt-1 text-2xl font-bold text-foreground">~{Math.round(currentAnnualBill).toLocaleString()} €<span className="text-sm font-normal text-muted-foreground">/{t("results.roi.year")}</span></p>
-              <p className="mt-1 text-xs text-muted-foreground">{t("results.performance.monthly")} ~{monthlyBill} {t("results.performance.monthly.unit")}</p>
+          <div className="rounded-2xl border-2 border-primary/20 overflow-hidden">
+            {/* Giant money headline */}
+            <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent px-6 py-8 text-center">
+              <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-2">{t("results.performance.title")}</p>
+              <div className="flex items-center justify-center gap-1">
+                <Euro className="h-8 w-8 text-primary" />
+                <span className="text-6xl sm:text-7xl font-black text-foreground tracking-tight">
+                  {Math.round(currentAnnualBill).toLocaleString()}
+                </span>
+                <span className="text-xl font-medium text-muted-foreground self-end mb-2">€/{t("results.roi.year")}</span>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {t("results.performance.monthly")} <span className="font-bold text-foreground text-lg">{monthlyBill} €</span> {t("results.performance.monthly.unit")}
+              </p>
               {formData?.annualBill && (
-                <p className="mt-1 text-[10px] text-primary">({t("results.roi.userprovided")})</p>
+                <span className="mt-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-[11px] font-medium text-primary">({t("results.roi.userprovided")})</span>
               )}
             </div>
-            <div className="rounded-xl border bg-card p-4">
-              <p className="text-xs font-medium text-muted-foreground">{t("results.performance.emissions")}</p>
-              <div className="mt-1 flex items-center gap-2">
-                <Leaf className="h-5 w-5 text-success" />
-                <p className="text-2xl font-bold text-foreground">{annualCO2.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">{t("results.performance.emissions.unit")}</span></p>
-              </div>
-              <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
-                <Car className="h-3 w-3" />
-                {t("results.performance.emissions.note")} ~{carKmEquiv.toLocaleString()} {t("results.performance.emissions.car_km")}
-              </p>
-            </div>
-            <div className="rounded-xl border bg-card p-4">
-              <p className="text-xs font-medium text-muted-foreground">{t("results.performance.annual_cost.note")}</p>
-              <div className="mt-2 space-y-1.5">
+
+            {/* Cost breakdown bars */}
+            <div className="px-6 py-5 border-t bg-card">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t("results.performance.annual_cost.note")}</p>
+              <div className="space-y-3">
                 {breakdownItems.map((item) => {
                   const pct = Math.round((item.value / energyBreakdown.total) * 100);
                   const cost = Math.round(currentAnnualBill * pct / 100);
                   return (
                     <div key={item.label}>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="flex items-center gap-1 text-muted-foreground">
-                          <item.icon className={`h-3 w-3 ${item.color}`} />
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+                          <item.icon className={`h-4 w-4 ${item.color}`} />
                           {item.label}
                         </span>
-                        <span className="font-semibold text-foreground">~{cost} €</span>
+                        <span className="text-lg font-bold text-foreground">~{cost} €</span>
                       </div>
-                      <div className="mt-0.5 h-1 overflow-hidden rounded-full bg-muted">
+                      <div className="h-3 overflow-hidden rounded-full bg-muted">
                         <motion.div
                           className={`h-full rounded-full ${item.bar}`}
                           initial={{ width: 0 }}
@@ -422,40 +418,65 @@ const Results = () => {
                           transition={{ delay: 0.3, duration: 0.7 }}
                         />
                       </div>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">{pct}% {t("results.performance.annual_cost.note")}</p>
                     </div>
                   );
                 })}
               </div>
             </div>
+
+            {/* Emissions row */}
+            <div className="px-6 py-4 border-t bg-muted/10 flex items-center justify-between flex-wrap gap-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/10">
+                  <Leaf className="h-5 w-5 text-success" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">{t("results.performance.emissions")}</p>
+                  <p className="text-xl font-bold text-foreground">{annualCO2.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">{t("results.performance.emissions.unit")}</span></p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Car className="h-3.5 w-3.5" />
+                {t("results.performance.emissions.note")} ~{carKmEquiv.toLocaleString()} {t("results.performance.emissions.car_km")}
+              </div>
+            </div>
           </div>
         </motion.section>
 
-        {/* ── 3. SAVINGS POTENTIAL SUMMARY ── */}
+        {/* ── 3. SAVINGS POTENTIAL — the big payoff ── */}
         {totalAnnualSaving > 50 && (
           <motion.section {...fadeIn} transition={{ delay: 0.08 }}>
-            <div className="rounded-2xl border-2 border-success/25 bg-success/[0.03] p-6">
-              <h2 className="flex items-center gap-2 text-lg font-bold text-foreground mb-4">
-                <Award className="h-5 w-5 text-success" />
-                {t("results.potential.title")}
-              </h2>
-              <p className="text-sm text-muted-foreground mb-4">{t("results.potential.if_renovated")}</p>
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-xl bg-card border p-4 text-center">
-                  <p className="text-xs font-medium text-muted-foreground">{t("results.potential.annual_saving")}</p>
-                  <p className="mt-1 text-3xl font-bold text-success">~{totalAnnualSaving.toLocaleString()} €<span className="text-sm font-normal text-muted-foreground">/{t("results.roi.year")}</span></p>
+            <div className="rounded-2xl overflow-hidden border-2 border-success/30 bg-gradient-to-br from-success/[0.06] to-transparent">
+              <div className="px-6 py-8 text-center">
+                <p className="text-xs font-bold uppercase tracking-widest text-success mb-3">{t("results.potential.title")}</p>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <PiggyBank className="h-8 w-8 text-success" />
+                  <span className="text-5xl sm:text-6xl font-black text-success tracking-tight">
+                    -{totalAnnualSaving.toLocaleString()} €
+                  </span>
+                  <span className="text-lg font-medium text-muted-foreground self-end mb-1">/{t("results.roi.year")}</span>
                 </div>
-                <div className="rounded-xl bg-card border p-4 text-center">
-                  <p className="text-xs font-medium text-muted-foreground">{t("results.potential.new_class")}</p>
-                  <div className="mt-1 flex items-center justify-center gap-2">
-                    <span className={`text-2xl font-bold ${DPE_TEXT_COLORS[dpeClass]}`}>{dpeClass}</span>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                    <span className={`text-3xl font-bold ${DPE_TEXT_COLORS[targetClass]}`}>{targetClass}</span>
+                <p className="text-sm text-muted-foreground">{t("results.potential.if_renovated")}</p>
+              </div>
+
+              <div className="grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-success/15 border-t border-success/15 bg-card">
+                <div className="p-5 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">{t("results.potential.monthly_saving")}</p>
+                  <p className="text-3xl font-black text-success">-{Math.round(totalAnnualSaving / 12)} €<span className="text-sm font-normal text-muted-foreground">/{t("smallwins.month")}</span></p>
+                </div>
+                <div className="p-5 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">{t("results.potential.new_class")}</p>
+                  <div className="flex items-center justify-center gap-3">
+                    <span className={`text-3xl font-black ${DPE_TEXT_COLORS[dpeClass]}`}>{dpeClass}</span>
+                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                    <span className={`text-4xl font-black ${DPE_TEXT_COLORS[targetClass]}`}>{targetClass}</span>
                   </div>
                 </div>
-                <div className="rounded-xl bg-card border p-4 text-center">
-                  <p className="text-xs font-medium text-muted-foreground">{t("results.potential.value_gain")}</p>
-                  <p className="mt-1 text-2xl font-bold text-foreground">+{valueGain.toLocaleString()} €</p>
-                  <p className="text-[10px] text-muted-foreground">~+{valueGainPct}%</p>
+                <div className="p-5 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">{t("results.potential.value_gain")}</p>
+                  <p className="text-3xl font-black text-foreground">+{valueGain.toLocaleString()} €</p>
+                  <p className="text-xs text-muted-foreground">~+{valueGainPct}% {t("results.potential.property_value")}</p>
                 </div>
               </div>
             </div>
