@@ -86,7 +86,7 @@ const StepCurrentDPE = ({ data, onChange }: Props) => {
                 <span className="text-sm text-muted-foreground ml-1">/ {t("results.roi.year")}</span>
               </div>
               <Slider
-                value={[data.annualBill || 1200]}
+                value={[data.annualBill || 200]}
                 onValueChange={([v]) => onChange({ annualBill: v })}
                 min={200}
                 max={6000}

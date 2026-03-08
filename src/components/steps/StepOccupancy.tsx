@@ -187,7 +187,7 @@ const StepOccupancy = ({ data, onChange }: Props) => {
           </div>
           {thermostatHint && <p className={`text-xs font-medium mb-4 ${thermostatColor}`}>{thermostatHint}</p>}
           <Slider
-            value={[data.thermostatTemp || 19.5]}
+            value={data.thermostatTemp ? [data.thermostatTemp] : [15]}
             onValueChange={([v]) => {
               onChange({
                 thermostatTemp: v,
@@ -197,7 +197,7 @@ const StepOccupancy = ({ data, onChange }: Props) => {
             min={15}
             max={25}
             step={0.5}
-            className="w-full"
+            className={`w-full ${!data.thermostatTemp ? "opacity-40" : ""}`}
           />
           <div className="mt-2 flex justify-between text-xs text-muted-foreground">
             <span>15°C</span>

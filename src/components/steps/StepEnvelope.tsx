@@ -98,12 +98,12 @@ const InsulationSlider = ({
           <p className="text-xs text-muted-foreground mb-4">{t(`envelope.insulation.${current}.desc`)}</p>
         )}
         <Slider
-          value={[hasValue ? currentIndex : 2]}
+          value={[hasValue ? currentIndex : 0]}
           onValueChange={([v]) => onChangeVal(INSULATION_LEVELS[v])}
           min={0}
           max={4}
           step={1}
-          className="w-full"
+          className={`w-full ${!hasValue ? "opacity-40" : ""}`}
         />
         <div className="mt-2 flex justify-between text-xs text-muted-foreground">
           <span>{t("envelope.insulation.none")}</span>
