@@ -18,7 +18,7 @@ import { useI18n } from "@/lib/i18n";
 
 const Questionnaire = () => {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>(DEFAULT_FORM_DATA);
   const [direction, setDirection] = useState(1);
