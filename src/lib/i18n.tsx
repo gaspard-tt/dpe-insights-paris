@@ -754,7 +754,7 @@ const translations: Record<Language, Record<string, string>> = {
   },
 };
 
-export const I18nProvider = ({ children }: { children: React.ReactNode }) => {
+export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [lang, setLang] = useState<Language>("fr");
 
   const toggleLang = useCallback(() => {
@@ -762,7 +762,7 @@ export const I18nProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const t = useCallback(
-    (key: string) => translations[lang][key] || key,
+    (key: string) => translations[lang]?.[key] || key,
     [lang]
   );
 
