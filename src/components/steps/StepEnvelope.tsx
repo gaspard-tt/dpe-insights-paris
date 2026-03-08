@@ -1,9 +1,6 @@
-import type {
-  FormData,
-  InsulationQuality,
-  Orientation,
-} from "@/lib/types";
-import { HelpCircle } from "lucide-react";
+import type { FormData, InsulationQuality, Orientation } from "@/lib/types";
+import { HelpCircle, Compass } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 import { useI18n } from "@/lib/i18n";
 
 interface Props {
@@ -54,71 +51,89 @@ const OptionRow = ({
   </button>
 );
 
-const StepEnvelope = ({ data, onChange }: Props) => {
-  const { t } = useI18n();
+const INSULATION_LEVELS: InsulationQuality[] = ["none", "poor", "average", "good", "excellent"];
 
-  const insulationOptions: {
-    value: InsulationQuality | "unknown";
-    labelKey: string;
-    descKey: string;
-  }[] = [
-    { value: "none", labelKey: "envelope.insulation.none", descKey: "envelope.insulation.none.desc" },
-    { value: "poor", labelKey: "envelope.insulation.poor", descKey: "envelope.insulation.poor.desc" },
-    { value: "average", labelKey: "envelope.insulation.average", descKey: "envelope.insulation.average.desc" },
-    { value: "good", labelKey: "envelope.insulation.good", descKey: "envelope.insulation.good.desc" },
-    { value: "excellent", labelKey: "envelope.insulation.excellent", descKey: "envelope.insulation.excellent.desc" },
-    { value: "unknown", labelKey: "envelope.insulation.idk", descKey: "envelope.insulation.idk.desc" },
-  ];
+const InsulationSlider = ({
+  title,
+  helper,
+  value,
+  onChangeVal,
+  t,
+}: {
+  title: string;
+  helper: string;
+  value?: InsulationQuality;
+  onChangeVal: (v: InsulationQuality) => void;
+  t: (key: string) => string;
+}) => {
+  const currentIndex = value ? INSULATION_LEVELS.indexOf(value) : 2;
+  const current = INSULATION_LEVELS[currentIndex];
 
-  const QualityBlock = ({
-    title,
-    value,
-    onChangeVal,
-    helper,
-  }: {
-    title: string;
-    value: InsulationQuality;
-    onChangeVal: (v: InsulationQuality | undefined) => void;
-    helper: string;
-  }) => (
+  const colorMap: Record<InsulationQuality, string> = {
+    none: "text-destructive",
+    poor: "text-rose",
+    average: "text-amber",
+    good: "text-teal",
+    excellent: "text-success",
+  };
+
+  return (
     <div className="space-y-3">
       <h3 className="text-lg font-semibold text-foreground">{title}</h3>
       <HelperText>{helper}</HelperText>
-      <div className="space-y-2">
-        {insulationOptions.map((o) => (
-          <OptionRow
-            key={o.value}
-            selected={value === o.value}
-            label={t(o.labelKey)}
-            desc={t(o.descKey)}
-            onClick={() => onChangeVal(o.value === "unknown" ? undefined : (o.value as InsulationQuality))}
-          />
-        ))}
+      <div className="rounded-xl border bg-muted/20 p-5">
+        <div className="flex items-baseline justify-between mb-1">
+          <span className="text-sm text-muted-foreground">{t("envelope.quality")}</span>
+          <span className={`text-lg font-bold ${colorMap[current]}`}>
+            {t(`envelope.insulation.${current}`)}
+          </span>
+        </div>
+        <p className="text-xs text-muted-foreground mb-4">{t(`envelope.insulation.${current}.desc`)}</p>
+        <Slider
+          value={[currentIndex]}
+          onValueChange={([v]) => onChangeVal(INSULATION_LEVELS[v])}
+          min={0}
+          max={4}
+          step={1}
+          className="w-full"
+        />
+        <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+          <span>{t("envelope.insulation.none")}</span>
+          <span>{t("envelope.insulation.excellent")}</span>
+        </div>
       </div>
     </div>
   );
+};
+
+const StepEnvelope = ({ data, onChange }: Props) => {
+  const { t } = useI18n();
 
   return (
     <div className="space-y-8">
-      <QualityBlock
+      <InsulationSlider
         title={t("envelope.wall")}
+        helper={t("envelope.wall.help")}
         value={data.wallInsulation}
         onChangeVal={(v) => onChange({ wallInsulation: v })}
-        helper={t("envelope.wall.help")}
+        t={t}
       />
-      <QualityBlock
+      <InsulationSlider
         title={t("envelope.roof")}
+        helper={t("envelope.roof.help")}
         value={data.roofInsulation}
         onChangeVal={(v) => onChange({ roofInsulation: v })}
-        helper={t("envelope.roof.help")}
+        t={t}
       />
-      <QualityBlock
+      <InsulationSlider
         title={t("envelope.floor")}
+        helper={t("envelope.floor.help")}
         value={data.floorInsulation}
         onChangeVal={(v) => onChange({ floorInsulation: v })}
-        helper={t("envelope.floor.help")}
+        t={t}
       />
 
+      {/* Window type */}
       <div className="space-y-3">
         <h3 className="text-lg font-semibold text-foreground">{t("envelope.window_type")}</h3>
         <HelperText>{t("envelope.window_type.help")}</HelperText>
@@ -130,21 +145,40 @@ const StepEnvelope = ({ data, onChange }: Props) => {
         </div>
       </div>
 
+      {/* Orientation - visual compass */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-foreground">{t("envelope.orientation")}</h3>
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-foreground">
+          <Compass className="h-5 w-5 text-teal" />
+          {t("envelope.orientation")}
+        </h3>
         <HelperText>{t("envelope.orientation.help")}</HelperText>
-        <div className="space-y-2">
+        <div className="grid grid-cols-2 gap-2">
           {(["north", "south", "east", "west"] as Orientation[]).map((o) => (
-            <OptionRow
+            <button
               key={o}
-              selected={data.orientation === o}
-              label={o.toUpperCase()}
-              desc={t("envelope.orientation.desc")}
+              type="button"
               onClick={() => onChange({ orientation: o })}
-            />
+              className={`flex items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-medium transition-all ${
+                data.orientation === o
+                  ? "border-teal bg-teal/5 text-teal shadow-sm"
+                  : "border-border text-foreground hover:border-teal/40 hover:bg-muted/30"
+              }`}
+            >
+              {t(`envelope.dir.${o}`)}
+            </button>
           ))}
-          <OptionRow selected={!data.orientation} label={t("envelope.orientation.idk")} desc={t("envelope.orientation.idk.desc")} onClick={() => onChange({ orientation: undefined })} />
         </div>
+        <button
+          type="button"
+          onClick={() => onChange({ orientation: undefined })}
+          className={`w-full rounded-lg border px-4 py-2.5 text-sm text-left transition-all ${
+            !data.orientation
+              ? "border-primary bg-primary/5"
+              : "border-border hover:border-primary/40"
+          }`}
+        >
+          <span className="text-muted-foreground">{t("envelope.orientation.idk")}</span>
+        </button>
       </div>
     </div>
   );
