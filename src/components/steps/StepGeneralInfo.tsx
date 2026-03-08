@@ -141,7 +141,7 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
         </div>
       </div>
 
-      {/* Location - Paris specific */}
+      {/* Location - Paris arrondissements */}
       <div className="space-y-3">
         <h3 className="flex items-center gap-2 text-lg font-semibold text-foreground">
           <MapPin className="h-5 w-5 text-rose" />
@@ -149,57 +149,29 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
         </h3>
         <HelperText>{t("general.location.help")}</HelperText>
 
-        {/* Search / Filter */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            value={postalSearch}
-            onChange={(e) => setPostalSearch(e.target.value)}
-            placeholder={t("general.location.search")}
-            className="w-full rounded-lg border border-border bg-background pl-10 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          />
+        <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5 text-sm font-medium text-primary">
+          {PARIS_DEPT.label}
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          {filteredDepts.map((dept) => (
-            <button
-              key={dept.code}
-              type="button"
-              onClick={() => handlePostalSelect(dept.code)}
-              className={`rounded-lg border px-3 py-2.5 text-left text-sm font-medium transition-all ${
-                data.postalCode === dept.code
-                  ? "border-primary bg-primary/5 text-primary shadow-sm"
-                  : "border-border text-foreground hover:border-primary/40 hover:bg-muted/30"
-              }`}
-            >
-              {dept.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Arrondissement picker if Paris */}
-        {isParis && (
-          <div className="space-y-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
-            <h4 className="text-sm font-semibold text-primary">{t("general.arrondissement")}</h4>
-            <div className="grid grid-cols-4 gap-2">
-              {ARRONDISSEMENTS.map((arr) => (
-                <button
-                  key={arr.value}
-                  type="button"
-                  onClick={() => onChange({ arrondissement: arr.value })}
-                  className={`rounded-lg border px-2 py-2 text-center text-xs font-medium transition-all ${
-                    data.arrondissement === arr.value
-                      ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                      : "border-border bg-card text-foreground hover:border-primary/40"
-                  }`}
-                >
-                  {arr.value}{arr.value === "1" ? "er" : "e"}
-                </button>
-              ))}
-            </div>
+        <div className="space-y-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
+          <h4 className="text-sm font-semibold text-primary">{t("general.arrondissement")}</h4>
+          <div className="grid grid-cols-4 gap-2">
+            {ARRONDISSEMENTS.map((arr) => (
+              <button
+                key={arr.value}
+                type="button"
+                onClick={() => onChange({ arrondissement: arr.value })}
+                className={`rounded-lg border px-2 py-2 text-center text-xs font-medium transition-all ${
+                  data.arrondissement === arr.value
+                    ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                    : "border-border bg-card text-foreground hover:border-primary/40"
+                }`}
+              >
+                {arr.value}{arr.value === "1" ? "er" : "e"}
+              </button>
+            ))}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Construction period */}
