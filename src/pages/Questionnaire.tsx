@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, BarChart3, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, BarChart3, Loader2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import WizardProgress from "@/components/WizardProgress";
 import StepGeneralInfo from "@/components/steps/StepGeneralInfo";
@@ -33,7 +33,6 @@ const Questionnaire = () => {
     t("step.usage"),
   ];
 
-  // Auto-scroll to top on step change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentStep]);
@@ -58,7 +57,6 @@ const Questionnaire = () => {
 
   const handleSubmit = () => {
     setIsCalculating(true);
-    // Simulate calculation time for a nice loading effect
     setTimeout(() => {
       const result = calculateDPE(formData);
       navigate("/resultats", { state: { result, formData } });
@@ -147,8 +145,9 @@ const Questionnaire = () => {
           </AnimatePresence>
 
           {/* Privacy note */}
-          <div className="mt-6 rounded-lg bg-muted/40 px-4 py-2.5 text-center text-xs text-muted-foreground">
-            🔒 {t("footer.privacy")}
+          <div className="mt-6 flex items-center justify-center gap-1.5 rounded-lg bg-muted/40 px-4 py-2.5 text-center text-xs text-muted-foreground">
+            <Lock className="h-3 w-3" />
+            {t("footer.privacy")}
           </div>
 
           <div className="mt-6 flex items-center justify-between border-t pt-6">
@@ -158,6 +157,7 @@ const Questionnaire = () => {
               disabled={currentStep === 0}
               className="gap-2"
             >
+              <ArrowLeft className="h-4 w-4" />
               {t("wizard.prev")}
             </Button>
 
@@ -169,6 +169,7 @@ const Questionnaire = () => {
             ) : (
               <Button onClick={nextStep} className="gap-2">
                 {t("wizard.next")}
+                <ArrowRight className="h-4 w-4" />
               </Button>
             )}
           </div>
@@ -179,4 +180,3 @@ const Questionnaire = () => {
 };
 
 export default Questionnaire;
-

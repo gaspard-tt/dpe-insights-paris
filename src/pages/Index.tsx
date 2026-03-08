@@ -10,6 +10,9 @@ import {
   BarChart3,
   Thermometer,
   Users,
+  Lock,
+  Scale,
+  PiggyBank,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -27,6 +30,20 @@ const Index = () => {
   const navigate = useNavigate();
   const { t, lang } = useI18n();
 
+  // Each card gets a unique colour from the design system
+  const whyCards = [
+    { icon: PiggyBank, title: t("why.bills.title"), desc: t("why.bills.desc"), iconBg: "bg-warning/10", iconColor: "text-warning" },
+    { icon: Scale, title: t("why.regulation.title"), desc: t("why.regulation.desc"), iconBg: "bg-rose/10", iconColor: "text-rose" },
+    { icon: Building2, title: t("why.value.title"), desc: t("why.value.desc"), iconBg: "bg-success/10", iconColor: "text-success" },
+  ];
+
+  const toolCards = [
+    { icon: BarChart3, title: t("tool.estimate.title"), desc: t("tool.estimate.desc"), iconBg: "bg-primary/10", iconColor: "text-primary" },
+    { icon: TrendingDown, title: t("tool.losses.title"), desc: t("tool.losses.desc"), iconBg: "bg-rose/10", iconColor: "text-rose" },
+    { icon: Wrench, title: t("tool.reco.title"), desc: t("tool.reco.desc"), iconBg: "bg-teal/10", iconColor: "text-teal" },
+    { icon: Lightbulb, title: t("tool.edu.title"), desc: t("tool.edu.desc"), iconBg: "bg-amber/10", iconColor: "text-amber" },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -37,7 +54,7 @@ const Index = () => {
           <img
             src={heroImage}
             alt="Illustration d'une maison et sa performance énergétique"
-            className="h-full w-full object-cover opacity-15"
+            className="h-full w-full object-cover opacity-10"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
         </div>
@@ -74,7 +91,8 @@ const Index = () => {
                   {t("hero.cta")}
                   <ArrowRight className="h-5 w-5" />
                 </Button>
-                <span className="text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Lock className="h-3 w-3" />
                   {t("hero.sub")}
                 </span>
               </div>
@@ -111,19 +129,15 @@ const Index = () => {
           </motion.div>
 
           <div className="grid gap-6 sm:grid-cols-3">
-            {[
-              { icon: TrendingDown, title: t("why.bills.title"), desc: t("why.bills.desc") },
-              { icon: Shield, title: t("why.regulation.title"), desc: t("why.regulation.desc") },
-              { icon: Building2, title: t("why.value.title"), desc: t("why.value.desc") },
-            ].map((item, i) => (
+            {whyCards.map((item, i) => (
               <motion.div
                 key={i}
                 {...fadeInUp}
                 transition={{ duration: 0.4, delay: i * 0.1 }}
                 className="rounded-xl border bg-card p-6"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg hero-gradient">
-                  <item.icon className="h-5 w-5 text-primary-foreground" />
+                <div className={`flex h-11 w-11 items-center justify-center rounded-lg ${item.iconBg}`}>
+                  <item.icon className={`h-5 w-5 ${item.iconColor}`} />
                 </div>
                 <h3 className="mt-4 text-lg font-semibold text-foreground">
                   {item.title}
@@ -150,20 +164,15 @@ const Index = () => {
           </motion.div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {[
-              { icon: BarChart3, title: t("tool.estimate.title"), desc: t("tool.estimate.desc") },
-              { icon: TrendingDown, title: t("tool.losses.title"), desc: t("tool.losses.desc") },
-              { icon: Wrench, title: t("tool.reco.title"), desc: t("tool.reco.desc") },
-              { icon: Lightbulb, title: t("tool.edu.title"), desc: t("tool.edu.desc") },
-            ].map((item, i) => (
+            {toolCards.map((item, i) => (
               <motion.div
                 key={i}
                 {...fadeInUp}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
                 className="flex items-start gap-4 rounded-xl border bg-background p-5"
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                  <item.icon className="h-5 w-5 text-primary" />
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${item.iconBg}`}>
+                  <item.icon className={`h-5 w-5 ${item.iconColor}`} />
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-foreground">
@@ -182,12 +191,12 @@ const Index = () => {
         <div className="container mx-auto max-w-3xl px-4 text-center">
           <motion.div {...fadeInUp} transition={{ duration: 0.5 }}>
             <div className="flex justify-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                <Users className="h-7 w-7 text-primary" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo/10">
+                <Users className="h-7 w-7 text-indigo" />
               </div>
             </div>
             <h2 className="mt-4 text-2xl font-bold text-foreground">
-              {lang === "fr" ? "👋 Qui sommes-nous ?" : "👋 About us"}
+              {lang === "fr" ? "Qui sommes-nous ?" : "About us"}
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
               {lang === "fr"
@@ -225,7 +234,10 @@ const Index = () => {
       <footer className="border-t bg-card py-8">
         <div className="container mx-auto px-4 text-center text-xs text-muted-foreground">
           <p>{t("footer.disclaimer")}</p>
-          <p className="mt-2">{t("footer.privacy")}</p>
+          <p className="mt-2 flex items-center justify-center gap-1.5">
+            <Lock className="h-3 w-3" />
+            {t("footer.privacy")}
+          </p>
           <p className="mt-2">
             © {new Date().getFullYear()} {t("footer.copy")}
           </p>
