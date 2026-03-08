@@ -55,7 +55,7 @@ const Questionnaire = () => {
     }
   };
 
-  const { lang } = useI18n();
+  
 
   const handleSubmit = () => {
     setIsCalculating(true);
