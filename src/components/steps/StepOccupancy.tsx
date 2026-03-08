@@ -138,12 +138,12 @@ const StepOccupancy = ({ data, onChange }: Props) => {
             </span>
           </div>
           <Slider
-            value={[data.occupants || 2]}
+            value={data.occupants ? [data.occupants] : [1]}
             onValueChange={([v]) => onChange({ occupants: v })}
             min={1}
             max={8}
             step={1}
-            className="w-full"
+            className={`w-full ${!data.occupants ? "opacity-40" : ""}`}
           />
           <div className="mt-2 flex justify-between text-xs text-muted-foreground">
             <span>1</span>
