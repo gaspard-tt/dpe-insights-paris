@@ -1,11 +1,13 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import {
   AlertTriangle, ArrowRight, BarChart3, CheckCircle,
   Info, Lightbulb, Wrench, Flame, Droplets,
   Layers, Wind, RefreshCw, Target, PiggyBank, Euro, MapPin,
-  TrendingUp, Zap, ShowerHead, ThermometerSun, Tv, Timer, Building2,
+  TrendingUp, Zap, ShowerHead, ThermometerSun, Tv, Timer, Building2, Download, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -94,11 +96,50 @@ const Results = () => {
   const { t, lang } = useI18n();
   const state = location.state as { result: DPEResult; formData: FormData } | null;
   const recRefs = useRef<Record<string, HTMLElement | null>>({});
+  const pdfRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const recalculated = useMemo(() => {
     if (!state) return null;
     return calculateDPE(state.formData, lang);
   }, [state, lang]);
+
+  const handleExportPDF = useCallback(async () => {
+    if (!pdfRef.current) return;
+    setIsExporting(true);
+    try {
+      const canvas = await html2canvas(pdfRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pdfWidth - 20;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 10;
+
+      pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight - 20;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight + 10;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight - 20;
+      }
+
+      pdf.save(`diagnostic-dpe-${recalculated?.dpeClass || "resultat"}.pdf`);
+    } catch (err) {
+      console.error("PDF export failed:", err);
+    } finally {
+      setIsExporting(false);
+    }
+  }, [recalculated?.dpeClass]);
 
   const formData = state?.formData;
   const surfaceArea = formData?.surfaceArea || 70;
@@ -230,7 +271,7 @@ const Results = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto max-w-4xl px-4 py-8 space-y-8">
+      <main ref={pdfRef} className="container mx-auto max-w-4xl px-4 py-8 space-y-8">
 
         {/* ── DPE Result Card ── */}
         <motion.section {...fadeIn}>
@@ -663,8 +704,12 @@ const Results = () => {
           </div>
         </motion.section>
 
-        {/* ── Redo button ── */}
-        <div className="flex justify-center pb-10">
+        {/* ── Action buttons ── */}
+        <div className="flex flex-wrap justify-center gap-3 pb-10">
+          <Button onClick={handleExportPDF} disabled={isExporting} size="lg" className="gap-2">
+            {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            {t("results.export")}
+          </Button>
           <Button variant="outline" size="lg" onClick={() => navigate("/questionnaire")} className="gap-2">
             <RefreshCw className="h-4 w-4" />
             {t("results.redo")}

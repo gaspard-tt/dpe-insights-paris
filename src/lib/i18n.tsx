@@ -283,6 +283,7 @@ const translations: Record<Language, Record<string, string>> = {
     "results.edu.3.title": "Le meilleur investissement n'est pas le plus gros",
     "results.edu.3.desc": "L'isolation des combles ou le traitement des fuites d'air sont souvent les travaux les moins chers mais parmi les plus efficaces.",
     "results.redo": "Refaire le diagnostic",
+    "results.export": "Télécharger en PDF",
 
     // Comparison
     "results.comparison.title": "Comparaison avec votre DPE actuel",
@@ -584,6 +585,7 @@ const translations: Record<Language, Record<string, string>> = {
     "results.edu.3.title": "The best investment isn't the biggest",
     "results.edu.3.desc": "Loft insulation or air leak treatment are often the cheapest but most effective works.",
     "results.redo": "Redo the diagnostic",
+    "results.export": "Download as PDF",
 
     // Comparison
     "results.comparison.title": "Comparison with your current DPE",
