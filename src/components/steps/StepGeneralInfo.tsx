@@ -130,12 +130,12 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
             </span>
           </div>
           <Slider
-            value={[data.surfaceArea || 49]}
+            value={data.surfaceArea ? [data.surfaceArea] : [10]}
             onValueChange={([v]) => onChange({ surfaceArea: v })}
             min={10}
             max={300}
             step={5}
-            className="w-full"
+            className={`w-full ${!data.surfaceArea ? "opacity-40" : ""}`}
           />
           <div className="mt-2 flex justify-between text-xs text-muted-foreground">
             <span>10 m²</span>
