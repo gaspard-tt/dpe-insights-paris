@@ -1,6 +1,7 @@
 import { DPE_CLASSES } from "@/lib/dpe-calculator";
 import type { DPEClass } from "@/lib/types";
 import { motion } from "framer-motion";
+import { useI18n } from "@/lib/i18n";
 
 interface DPEScaleProps {
   activeClass?: DPEClass;
