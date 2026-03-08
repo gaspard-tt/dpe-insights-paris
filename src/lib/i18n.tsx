@@ -294,12 +294,20 @@ const translations: Record<Language, Record<string, string>> = {
 
     // ROI
     "results.roi.title": "Retour sur investissement",
-    "results.roi.subtitle": "Estimez combien de temps il faut pour rentabiliser chaque rénovation grâce aux économies sur vos factures.",
+    "results.roi.subtitle": "Estimez combien de temps il faut pour rentabiliser chaque rénovation grâce aux économies sur vos factures. Cliquez sur un élément pour voir les détails.",
     "results.roi.currentbill": "Facture annuelle estimée actuelle",
     "results.roi.year": "an",
-    "results.roi.years_payback": "ans pour rentabiliser",
+    "results.roi.years_payback": "ans",
     "results.roi.yr": "a",
+    "results.roi.cost": "Coût estimé",
+    "results.roi.saving": "Économie/an",
+    "results.roi.payback": "Rentabilisé en",
+    "results.roi.userprovided": "votre facture réelle",
     "results.roi.disclaimer": "Estimations basées sur un prix moyen de l'énergie de 0,21 €/kWh. Les montants réels dépendent de votre contrat et de votre consommation.",
+
+    // Companies
+    "results.companies": "Entreprises recommandées",
+    "results.companies.disclaimer": "Entreprises à titre illustratif — les vrais prestataires seront ajoutés prochainement.",
 
     // Small wins
     "smallwins.title": "Petites victoires 💡",
