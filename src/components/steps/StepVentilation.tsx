@@ -8,7 +8,7 @@ interface Props {
 }
 
 const HelperText = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-start gap-2 rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
+  <div className="flex items-start gap-2 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
     <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
     <span>{children}</span>
   </div>
@@ -28,18 +28,20 @@ const OptionRow = ({
   <button
     type="button"
     onClick={onClick}
-    className={`w-full border px-4 py-3 text-left transition ${
+    className={`w-full rounded-lg border px-4 py-3 text-left transition-all ${
       selected
-        ? "border-primary bg-primary/5"
-        : "border-border hover:border-primary/40"
+        ? "border-primary bg-primary/5 shadow-sm"
+        : "border-border hover:border-primary/40 hover:bg-muted/30"
     }`}
   >
     <div className="flex items-start gap-3">
       <div
-        className={`mt-1 h-3 w-3 rounded-full border ${
-          selected ? "bg-primary border-primary" : "border-muted-foreground"
+        className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+          selected ? "border-primary bg-primary" : "border-muted-foreground/40"
         }`}
-      />
+      >
+        {selected && <div className="h-1.5 w-1.5 rounded-full bg-primary-foreground" />}
+      </div>
       <div>
         <div className="text-sm font-medium text-foreground">{label}</div>
         {desc && <div className="text-xs text-muted-foreground">{desc}</div>}
@@ -56,20 +58,24 @@ const StepVentilation = ({ data, onChange }: Props) => {
       <div className="space-y-3">
         <h3 className="text-lg font-semibold text-foreground">{t("ventilation.type")}</h3>
         <HelperText>{t("ventilation.type.help")}</HelperText>
-        <OptionRow selected={data.ventilationType === "natural"} label={t("ventilation.natural")} desc={t("ventilation.natural.desc")} onClick={() => onChange({ ventilationType: "natural" })} />
-        <OptionRow selected={data.ventilationType === "vmc_simple"} label={t("ventilation.vmc_simple")} desc={t("ventilation.vmc_simple.desc")} onClick={() => onChange({ ventilationType: "vmc_simple" })} />
-        <OptionRow selected={data.ventilationType === "vmc_double"} label={t("ventilation.vmc_double")} desc={t("ventilation.vmc_double.desc")} onClick={() => onChange({ ventilationType: "vmc_double" })} />
-        <OptionRow selected={!data.ventilationType} label={t("ventilation.idk")} desc={t("ventilation.idk.desc")} onClick={() => onChange({ ventilationType: undefined })} />
+        <div className="space-y-2">
+          <OptionRow selected={data.ventilationType === "natural"} label={t("ventilation.natural")} desc={t("ventilation.natural.desc")} onClick={() => onChange({ ventilationType: "natural" })} />
+          <OptionRow selected={data.ventilationType === "vmc_simple"} label={t("ventilation.vmc_simple")} desc={t("ventilation.vmc_simple.desc")} onClick={() => onChange({ ventilationType: "vmc_simple" })} />
+          <OptionRow selected={data.ventilationType === "vmc_double"} label={t("ventilation.vmc_double")} desc={t("ventilation.vmc_double.desc")} onClick={() => onChange({ ventilationType: "vmc_double" })} />
+          <OptionRow selected={!data.ventilationType} label={t("ventilation.idk")} desc={t("ventilation.idk.desc")} onClick={() => onChange({ ventilationType: undefined })} />
+        </div>
       </div>
 
       <div className="space-y-3">
         <h3 className="text-lg font-semibold text-foreground">{t("ventilation.leakage")}</h3>
         <HelperText>{t("ventilation.leakage.help")}</HelperText>
-        <OptionRow selected={data.airLeakage === "none"} label={t("ventilation.none")} onClick={() => onChange({ airLeakage: "none" })} />
-        <OptionRow selected={data.airLeakage === "slight"} label={t("ventilation.slight")} onClick={() => onChange({ airLeakage: "slight" })} />
-        <OptionRow selected={data.airLeakage === "moderate"} label={t("ventilation.moderate")} onClick={() => onChange({ airLeakage: "moderate" })} />
-        <OptionRow selected={data.airLeakage === "significant"} label={t("ventilation.significant")} onClick={() => onChange({ airLeakage: "significant" })} />
-        <OptionRow selected={!data.airLeakage} label={t("ventilation.idk")} desc={t("ventilation.idk.desc")} onClick={() => onChange({ airLeakage: undefined })} />
+        <div className="space-y-2">
+          <OptionRow selected={data.airLeakage === "none"} label={t("ventilation.none")} onClick={() => onChange({ airLeakage: "none" })} />
+          <OptionRow selected={data.airLeakage === "slight"} label={t("ventilation.slight")} onClick={() => onChange({ airLeakage: "slight" })} />
+          <OptionRow selected={data.airLeakage === "moderate"} label={t("ventilation.moderate")} onClick={() => onChange({ airLeakage: "moderate" })} />
+          <OptionRow selected={data.airLeakage === "significant"} label={t("ventilation.significant")} onClick={() => onChange({ airLeakage: "significant" })} />
+          <OptionRow selected={!data.airLeakage} label={t("ventilation.idk")} desc={t("ventilation.idk.desc")} onClick={() => onChange({ airLeakage: undefined })} />
+        </div>
       </div>
     </div>
   );
