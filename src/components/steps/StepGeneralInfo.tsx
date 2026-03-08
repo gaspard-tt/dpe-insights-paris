@@ -1,5 +1,5 @@
 import type { FormData, ConstructionPeriod } from "@/lib/types";
-import { HelpCircle, Home, Building2, MapPin, Search } from "lucide-react";
+import { HelpCircle, Home, Building2, MapPin } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { useI18n } from "@/lib/i18n";
 
