@@ -51,6 +51,60 @@ const Results = () => {
     return calculateDPE(state.formData, lang);
   }, [state, lang]);
 
+  // --- ROI calculations (must be before early return) ---
+  const formData = state?.formData;
+  const surfaceArea = formData?.surfaceArea || 70;
+  const avgEnergyPricePerKwh = 0.21;
+  const consumption = recalculated?.consumption || 0;
+  const currentAnnualBill = consumption * surfaceArea * avgEnergyPricePerKwh;
+  const recommendations = recalculated?.recommendations || [];
+
+  const roiItems = useMemo(() => {
+    return recommendations
+      .filter((r) => r.estimatedSaving > 5 && r.id !== "quick_wins")
+      .slice(0, 4)
+      .map((r) => {
+        const annualSaving = currentAnnualBill * (r.estimatedSaving / 100);
+        const costMatch = r.estimatedCost?.match(/[\d\s]+/g);
+        const estimatedTotalCost = costMatch
+          ? parseInt(costMatch[0].replace(/\s/g, "")) * (r.id.includes("window") ? 5 : surfaceArea * 0.3)
+          : annualSaving * 12;
+        const paybackYears = Math.round(estimatedTotalCost / annualSaving);
+        return {
+          name: r.name,
+          annualSaving: Math.round(annualSaving),
+          paybackYears: Math.min(paybackYears, 30),
+          priority: r.priority,
+        };
+      });
+  }, [recommendations, currentAnnualBill, surfaceArea]);
+
+  const smallWins = useMemo(() => {
+    const occupants = formData?.occupants || 2;
+    return [
+      {
+        icon: ShowerHead,
+        text: t("smallwins.shower"),
+        saving: `~${Math.round(occupants * 15)} €/${t("smallwins.month")}`,
+      },
+      {
+        icon: ThermometerSun,
+        text: t("smallwins.thermostat"),
+        saving: `~${Math.round(currentAnnualBill * 0.07 / 12)} €/${t("smallwins.month")}`,
+      },
+      {
+        icon: Tv,
+        text: t("smallwins.standby"),
+        saving: `~${Math.round(occupants * 5)} €/${t("smallwins.month")}`,
+      },
+      {
+        icon: Timer,
+        text: t("smallwins.offpeak"),
+        saving: `~${Math.round(currentAnnualBill * 0.05 / 12)} €/${t("smallwins.month")}`,
+      },
+    ];
+  }, [formData, currentAnnualBill, t]);
+
   if (!state || !recalculated) {
     return (
       <div className="min-h-screen bg-background">
@@ -67,47 +121,7 @@ const Results = () => {
     );
   }
 
-  const formData = state.formData;
-  const { dpeClass, consumption, energyBreakdown, weaknesses, recommendations } = recalculated;
-
-  // --- ROI calculations ---
-  const surfaceArea = formData.surfaceArea || 70;
-  const avgEnergyPricePerKwh = 0.21; // €/kWh average
-  const currentAnnualBill = consumption * surfaceArea * avgEnergyPricePerKwh;
-
-  const roiItems = useMemo(() => {
-    return recommendations
-      .filter((r) => r.estimatedSaving > 5 && r.id !== "quick_wins")
-      .slice(0, 4)
-      .map((r) => {
-        const annualSaving = currentAnnualBill * (r.estimatedSaving / 100);
-        // Parse cost range from estimatedCost
-        const costMatch = r.estimatedCost?.match(/[\d\s]+/g);
-        const estimatedTotalCost = costMatch
-          ? parseInt(costMatch[0].replace(/\s/g, "")) * (r.id.includes("window") ? 5 : surfaceArea * 0.3)
-          : annualSaving * 12;
-        const paybackYears = Math.round(estimatedTotalCost / annualSaving);
-        return {
-          name: r.name,
-          annualSaving: Math.round(annualSaving),
-          paybackYears: Math.min(paybackYears, 30),
-          priority: r.priority,
-        };
-      });
-  }, [recommendations, currentAnnualBill, surfaceArea]);
-
-  // --- Small wins ---
-  const smallWins = useMemo(() => {
-    const occupants = formData.occupants || 2;
-    return [
-      {
-        icon: ShowerHead,
-        text: t("smallwins.shower"),
-        saving: `~${Math.round(occupants * 15)} €/${t("smallwins.month")}`,
-      },
-      {
-        icon: ThermometerSun,
-        text: t("smallwins.thermostat"),
+  const { dpeClass, energyBreakdown, weaknesses } = recalculated;
         saving: `~${Math.round(currentAnnualBill * 0.07 / 12)} €/${t("smallwins.month")}`,
       },
       {
