@@ -8,6 +8,7 @@ import {
   Info, Lightbulb, Wrench, Flame, Droplets,
   Layers, Wind, RefreshCw, Target, PiggyBank, Euro, MapPin,
   TrendingUp, Zap, ShowerHead, ThermometerSun, Tv, Timer, Building2, Download, Loader2,
+  Leaf, Car, Shirt,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -41,7 +42,10 @@ const DPE_COLORS: Record<DPEClass, string> = {
   G: "bg-[#e7221a]",
 };
 
-// Illustrative renovation companies (placeholder)
+// CO2 emission factors per kWh (approximate)
+const CO2_PER_KWH = 0.06; // kg CO2/kWh average France
+const CAR_KM_PER_KG_CO2 = 6.25; // ~160g CO2/km
+
 const ILLUSTRATIVE_COMPANIES: Record<string, { name: string; specialty: string }[]> = {
   insulate_roof: [
     { name: "Iso Combles Paris", specialty: "Isolation toiture & combles" },
@@ -146,16 +150,21 @@ const Results = () => {
   const avgEnergyPricePerKwh = 0.21;
   const consumption = recalculated?.consumption || 0;
 
-  // Use user-provided annual bill if available, otherwise estimate
   const currentAnnualBill = formData?.annualBill
     ? formData.annualBill
     : consumption * surfaceArea * avgEnergyPricePerKwh;
 
+  const annualCO2 = Math.round(consumption * surfaceArea * CO2_PER_KWH);
+  const carKmEquiv = Math.round(annualCO2 * CAR_KM_PER_KG_CO2);
+  const monthlyBill = Math.round(currentAnnualBill / 12);
+
   const recommendations = recalculated?.recommendations || [];
+  const renoRecs = recommendations.filter(r => r.id !== "quick_wins");
+  const quickWinRec = recommendations.find(r => r.id === "quick_wins");
 
   const roiItems = useMemo(() => {
-    return recommendations
-      .filter((r) => r.estimatedSaving > 5 && r.id !== "quick_wins")
+    return renoRecs
+      .filter((r) => r.estimatedSaving > 5)
       .slice(0, 5)
       .map((r) => {
         const annualSaving = currentAnnualBill * (r.estimatedSaving / 100);
@@ -174,32 +183,75 @@ const Results = () => {
           estimatedCost: r.estimatedCost,
         };
       });
-  }, [recommendations, currentAnnualBill, surfaceArea]);
+  }, [renoRecs, currentAnnualBill, surfaceArea]);
 
-  const smallWins = useMemo(() => {
+  // Personalised quick wins based on habits
+  const personalizedQuickWins = useMemo(() => {
     const occupants = formData?.occupants || 2;
-    return [
-      {
-        icon: ShowerHead,
-        text: t("smallwins.shower"),
-        saving: `~${Math.round(occupants * 15)} €/${t("smallwins.month")}`,
-      },
-      {
+    const wins: { icon: React.ElementType; text: string; saving: string }[] = [];
+
+    // Thermostat — only if heating is warm
+    if (!formData?.thermostatTemp || formData.thermostatTemp > 19.5) {
+      wins.push({
         icon: ThermometerSun,
         text: t("smallwins.thermostat"),
         saving: `~${Math.round(currentAnnualBill * 0.07 / 12)} €/${t("smallwins.month")}`,
-      },
-      {
+      });
+    }
+
+    // Standby — only if they leave lights on
+    if (formData?.leavesLightsOn !== false) {
+      wins.push({
         icon: Tv,
         text: t("smallwins.standby"),
         saving: `~${Math.round(occupants * 5)} €/${t("smallwins.month")}`,
-      },
-      {
+      });
+    }
+
+    // Lights
+    if (formData?.leavesLightsOn === true) {
+      wins.push({
+        icon: Lightbulb,
+        text: t("smallwins.lights"),
+        saving: `~${Math.round(currentAnnualBill * 0.03 / 12)} €/${t("smallwins.month")}`,
+      });
+    }
+
+    // Shower
+    if (formData?.hotWaterUsage !== "low") {
+      wins.push({
+        icon: ShowerHead,
+        text: t("smallwins.shower"),
+        saving: `~${Math.round(occupants * 15)} €/${t("smallwins.month")}`,
+      });
+    }
+
+    // Off-peak
+    wins.push({
+      icon: Timer,
+      text: t("smallwins.offpeak"),
+      saving: `~${Math.round(currentAnnualBill * 0.05 / 12)} €/${t("smallwins.month")}`,
+    });
+
+    // Dryer
+    if (formData?.usesDryer === true) {
+      wins.push({
+        icon: Shirt,
+        text: t("smallwins.dryer"),
+        saving: `~${Math.round(occupants * 8)} €/${t("smallwins.month")}`,
+      });
+    }
+
+    // Programmable thermostat
+    if (formData?.programmableHeating !== true) {
+      wins.push({
         icon: Timer,
-        text: t("smallwins.offpeak"),
-        saving: `~${Math.round(currentAnnualBill * 0.05 / 12)} €/${t("smallwins.month")}`,
-      },
-    ];
+        text: t("smallwins.programmable"),
+        saving: `~${Math.round(currentAnnualBill * 0.10 / 12)} €/${t("smallwins.month")}`,
+      });
+    }
+
+    return wins;
   }, [formData, currentAnnualBill, t]);
 
   if (!state || !recalculated) {
@@ -304,6 +356,53 @@ const Results = () => {
           </div>
         </motion.section>
 
+        {/* ── Current Performance (NEW) ── */}
+        <motion.section {...fadeIn} transition={{ delay: 0.05 }}>
+          <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-foreground">
+            <Euro className="h-4.5 w-4.5 text-success" />
+            {t("results.performance.title")}
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border bg-card p-4">
+              <p className="text-xs font-medium text-muted-foreground">{t("results.performance.annual_cost")}</p>
+              <p className="mt-1 text-2xl font-bold text-foreground">~{Math.round(currentAnnualBill).toLocaleString()} €<span className="text-sm font-normal text-muted-foreground">/{t("results.roi.year")}</span></p>
+              <p className="mt-1 text-xs text-muted-foreground">{t("results.performance.monthly")} ~{monthlyBill} {t("results.performance.monthly.unit")}</p>
+              {formData?.annualBill && (
+                <p className="mt-1 text-[10px] text-primary">({t("results.roi.userprovided")})</p>
+              )}
+            </div>
+            <div className="rounded-xl border bg-card p-4">
+              <p className="text-xs font-medium text-muted-foreground">{t("results.performance.emissions")}</p>
+              <div className="mt-1 flex items-center gap-2">
+                <Leaf className="h-5 w-5 text-success" />
+                <p className="text-2xl font-bold text-foreground">{annualCO2.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">{t("results.performance.emissions.unit")}</span></p>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
+                <Car className="h-3 w-3" />
+                {t("results.performance.emissions.note")} ~{carKmEquiv.toLocaleString()} {t("results.performance.emissions.car_km")}
+              </p>
+            </div>
+            <div className="rounded-xl border bg-card p-4">
+              <p className="text-xs font-medium text-muted-foreground">{t("results.performance.annual_cost.note")}</p>
+              <div className="mt-2 space-y-1">
+                {breakdownItems.map((item) => {
+                  const pct = Math.round((item.value / energyBreakdown.total) * 100);
+                  const cost = Math.round(currentAnnualBill * pct / 100);
+                  return (
+                    <div key={item.label} className="flex items-center justify-between text-xs">
+                      <span className="flex items-center gap-1 text-muted-foreground">
+                        <item.icon className={`h-3 w-3 ${item.color}`} />
+                        {item.label}
+                      </span>
+                      <span className="font-semibold text-foreground">~{cost} €</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </motion.section>
+
         {/* ── DPE Comparison ── */}
         {hasCurrentDPE && currentDPEClass && currentDPEMid && (
           <motion.section {...fadeIn} transition={{ delay: 0.07 }}>
@@ -364,11 +463,12 @@ const Results = () => {
         <motion.section {...fadeIn} transition={{ delay: 0.1 }}>
           <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-foreground">
             <BarChart3 className="h-4.5 w-4.5 text-primary" />
-            {t("results.breakdown")}
+            {t("results.costs.title")}
           </h2>
           <div className="grid gap-3 sm:grid-cols-3">
             {breakdownItems.map((item) => {
               const pct = Math.round((item.value / energyBreakdown.total) * 100);
+              const cost = Math.round(currentAnnualBill * pct / 100);
               return (
                 <div key={item.label} className="rounded-xl border bg-card p-4">
                   <div className="flex items-center gap-2">
@@ -376,6 +476,7 @@ const Results = () => {
                     <span className="text-xs font-medium text-muted-foreground">{item.label}</span>
                   </div>
                   <p className="mt-1 text-xl font-bold text-foreground">{pct}%</p>
+                  <p className="text-sm font-semibold text-foreground">~{cost} €/{t("results.roi.year")}</p>
                   <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
                     <motion.div
                       className={`h-full rounded-full ${item.bar}`}
@@ -429,6 +530,47 @@ const Results = () => {
           )}
         </motion.section>
 
+        {/* ── Quick Wins (personalised) ── */}
+        <motion.section {...fadeIn} transition={{ delay: 0.18 }}>
+          <div className="rounded-2xl border-2 border-amber/20 bg-card overflow-hidden">
+            <div className="bg-amber/10 px-6 py-4 border-b">
+              <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
+                <Zap className="h-5 w-5 text-amber" />
+                {t("results.quickwins.title")}
+              </h2>
+              <p className="text-sm text-muted-foreground mt-0.5">{t("results.quickwins.subtitle")}</p>
+            </div>
+            <div className="p-5">
+              {personalizedQuickWins.length === 0 ? (
+                <div className="text-center py-4">
+                  <CheckCircle className="mx-auto mb-2 h-8 w-8 text-success" />
+                  <p className="text-sm font-medium text-foreground">{t("results.quickwins.already_good")}</p>
+                </div>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {personalizedQuickWins.map((win, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.25 + i * 0.06 }}
+                      className="flex items-start gap-2.5 rounded-lg border bg-muted/20 p-3"
+                    >
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber/10">
+                        <win.icon className="h-3.5 w-3.5 text-amber" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-foreground leading-snug">{win.text}</p>
+                        <p className="text-[11px] font-semibold text-success mt-0.5">{win.saving}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.section>
+
         {/* ── ROI Section ── */}
         {roiItems.length > 0 && (
           <motion.section {...fadeIn} transition={{ delay: 0.2 }}>
@@ -451,7 +593,6 @@ const Results = () => {
                   </p>
                 </div>
 
-                {/* ROI table-like cards */}
                 <div className="space-y-3">
                   {roiItems.map((item, i) => (
                     <motion.button
@@ -469,8 +610,6 @@ const Results = () => {
                             {item.name}
                             <ArrowRight className="inline ml-1 h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </h4>
-
-                          {/* Cost + Savings + Payback row */}
                           <div className="mt-2 grid grid-cols-3 gap-2">
                             <div className="rounded-lg bg-muted/40 px-2.5 py-1.5">
                               <span className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{t("results.roi.cost")}</span>
@@ -486,8 +625,6 @@ const Results = () => {
                             </div>
                           </div>
                         </div>
-
-                        {/* Payback circle */}
                         <div className="flex flex-col items-center shrink-0">
                           <div className="relative h-14 w-14">
                             <svg viewBox="0 0 36 36" className="h-14 w-14 -rotate-90">
@@ -519,21 +656,24 @@ const Results = () => {
           </motion.section>
         )}
 
-        {/* ── Main content with recommendations + Small Wins sidebar ── */}
-        <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
-
-          {/* ══ RECOMMENDATIONS ══ */}
-          <motion.section {...fadeIn} transition={{ delay: 0.25 }}>
-            <div className="overflow-hidden rounded-2xl border-2 border-primary/15 bg-card">
-              <div className="border-b bg-primary/[0.03] px-6 py-4">
-                <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
-                  <Wrench className="h-5 w-5 text-primary" />
-                  {t("results.recommendations")}
-                </h2>
-                <p className="mt-0.5 text-sm text-muted-foreground">{t("results.recommendations.subtitle")}</p>
+        {/* ── Renovation Recommendations ── */}
+        <motion.section {...fadeIn} transition={{ delay: 0.25 }}>
+          <div className="overflow-hidden rounded-2xl border-2 border-primary/15 bg-card">
+            <div className="border-b bg-primary/[0.03] px-6 py-4">
+              <h2 className="flex items-center gap-2 text-lg font-bold text-foreground">
+                <Wrench className="h-5 w-5 text-primary" />
+                {t("results.reno.title")}
+              </h2>
+              <p className="mt-0.5 text-sm text-muted-foreground">{t("results.reno.subtitle")}</p>
+            </div>
+            {renoRecs.length === 0 ? (
+              <div className="p-6 text-center">
+                <CheckCircle className="mx-auto mb-2 h-8 w-8 text-success" />
+                <p className="text-sm font-medium text-foreground">{t("results.reno.empty")}</p>
               </div>
+            ) : (
               <div className="divide-y">
-                {recommendations.map((rec, index) => {
+                {renoRecs.map((rec, index) => {
                   const companies = ILLUSTRATIVE_COMPANIES[rec.id] || ILLUSTRATIVE_COMPANIES.quick_wins;
                   return (
                     <motion.article
@@ -619,7 +759,6 @@ const Results = () => {
                         </div>
                       )}
 
-                      {/* Illustrative companies */}
                       <div className="mt-3 rounded-lg border border-primary/10 bg-primary/[0.02] p-3">
                         <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-primary mb-2">
                           <Building2 className="h-3 w-3" />
@@ -639,41 +778,9 @@ const Results = () => {
                   );
                 })}
               </div>
-            </div>
-          </motion.section>
-
-          {/* ══ SMALL WINS SIDEBAR ══ */}
-          <motion.aside {...fadeIn} transition={{ delay: 0.3 }}>
-            <div className="sticky top-24 rounded-2xl border bg-card overflow-hidden">
-              <div className="bg-amber/10 px-4 py-3 border-b">
-                <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
-                  <Zap className="h-4 w-4 text-amber" />
-                  {t("smallwins.title")}
-                </h3>
-                <p className="text-[11px] text-muted-foreground mt-0.5">{t("smallwins.subtitle")}</p>
-              </div>
-              <div className="p-4 space-y-3">
-                {smallWins.map((win, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 + i * 0.1 }}
-                    className="flex items-start gap-2.5"
-                  >
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber/10">
-                      <win.icon className="h-3.5 w-3.5 text-amber" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-foreground leading-snug">{win.text}</p>
-                      <p className="text-[11px] font-semibold text-success mt-0.5">{win.saving}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.aside>
-        </div>
+            )}
+          </div>
+        </motion.section>
 
         {/* ── Educational tips ── */}
         <motion.section {...fadeIn} transition={{ delay: 0.35 }}>

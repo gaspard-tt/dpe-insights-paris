@@ -74,7 +74,7 @@ const StepVentilation = ({ data, onChange }: Props) => {
           <OptionRow selected={data.airLeakage === "slight"} label={t("ventilation.slight")} onClick={() => onChange({ airLeakage: "slight" })} />
           <OptionRow selected={data.airLeakage === "moderate"} label={t("ventilation.moderate")} onClick={() => onChange({ airLeakage: "moderate" })} />
           <OptionRow selected={data.airLeakage === "significant"} label={t("ventilation.significant")} onClick={() => onChange({ airLeakage: "significant" })} />
-          <OptionRow selected={!data.airLeakage} label={t("ventilation.idk")} desc={t("ventilation.idk.desc")} onClick={() => onChange({ airLeakage: undefined })} />
+          <OptionRow selected={!data.airLeakage} label={t("ventilation.leakage.idk")} onClick={() => onChange({ airLeakage: undefined })} />
         </div>
       </div>
     </div>

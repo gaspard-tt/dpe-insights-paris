@@ -19,14 +19,12 @@ const BASE_CONSUMPTION: Record<string, number> = {
   after2012: 70,
 };
 
-// --- Climate zone multiplier (Paris = H1a) ---
 const CLIMATE_MULTIPLIER: Record<string, number> = {
   H1: 1.15,
   H2: 1.0,
   H3: 0.8,
 };
 
-// --- Insulation coefficients (lower = better) ---
 const INSULATION_COEFF: Record<string, number> = {
   none: 1.4,
   poor: 1.2,
@@ -35,14 +33,12 @@ const INSULATION_COEFF: Record<string, number> = {
   excellent: 0.55,
 };
 
-// --- Window type coefficient ---
 const WINDOW_COEFF: Record<string, number> = {
   single: 1.35,
   double: 1.0,
   triple: 0.8,
 };
 
-// --- Heating system efficiency ---
 const HEATING_EFFICIENCY: Record<string, number> = {
   electric_convector: 1.3,
   electric_radiant: 1.1,
@@ -53,7 +49,6 @@ const HEATING_EFFICIENCY: Record<string, number> = {
   wood: 0.9,
 };
 
-// --- Heating age multiplier ---
 const HEATING_AGE_MULT: Record<string, number> = {
   less5: 0.9,
   "5to15": 1.0,
@@ -61,20 +56,17 @@ const HEATING_AGE_MULT: Record<string, number> = {
   more25: 1.35,
 };
 
-// --- Distribution system ---
 const DISTRIBUTION_COEFF: Record<string, number> = {
   radiators: 1.0,
   floor_heating: 0.88,
 };
 
-// --- Ventilation impact ---
 const VENTILATION_COEFF: Record<string, number> = {
   natural: 1.2,
   vmc_simple: 1.0,
   vmc_double: 0.78,
 };
 
-// --- Air leakage ---
 const LEAKAGE_COEFF: Record<string, number> = {
   none: 0.95,
   slight: 1.0,
@@ -82,14 +74,12 @@ const LEAKAGE_COEFF: Record<string, number> = {
   significant: 1.3,
 };
 
-// --- Usage behavior ---
 const USAGE_COEFF: Record<string, number> = {
   low: 0.85,
   average: 1.0,
   high: 1.2,
 };
 
-// --- Orientation bonus ---
 const ORIENTATION_COEFF: Record<string, number> = {
   south: 0.92,
   east: 0.97,
@@ -97,7 +87,6 @@ const ORIENTATION_COEFF: Record<string, number> = {
   north: 1.05,
 };
 
-// --- DPE class thresholds ---
 function getDPEClass(consumption: number): DPEClass {
   if (consumption <= 70) return "A";
   if (consumption <= 110) return "B";
@@ -115,12 +104,10 @@ function getPrimaryHeatingType(data: FormData): HeatingType {
   return "gas_boiler";
 }
 
-// --- Bilingual text helper ---
 function txt(lang: Language, fr: string, en: string): string {
   return lang === "fr" ? fr : en;
 }
 
-// --- Calculate consumption ---
 function calculateConsumption(data: FormData): number {
   const base = BASE_CONSUMPTION[data.constructionPeriod || "1975-1988"];
   const climate = CLIMATE_MULTIPLIER[data.climateZone || "H1"];
@@ -166,6 +153,15 @@ function calculateConsumption(data: FormData): number {
       USAGE_COEFF[data.hotWaterUsage || "average"] * 0.4;
   }
 
+  // Habits adjustments
+  if (data.heatingFrequency === "always") usageFactor *= 1.1;
+  else if (data.heatingFrequency === "rarely") usageFactor *= 0.85;
+  else if (data.heatingFrequency === "sometimes") usageFactor *= 0.92;
+
+  if (data.airingHabit === "multiple") usageFactor *= 1.08;
+  if (data.usesDryer) usageFactor *= 1.03;
+  if (data.laundryFrequency === "5_plus") usageFactor *= 1.02;
+
   const orientationFactor = ORIENTATION_COEFF[data.orientation || "south"];
 
   const consumption =
@@ -175,7 +171,6 @@ function calculateConsumption(data: FormData): number {
   return Math.round(consumption);
 }
 
-// --- Break down energy by category ---
 function calculateBreakdown(total: number, data: FormData): EnergyBreakdown {
   const envelopeShare =
     (INSULATION_COEFF[data.wallInsulation || "average"] +
@@ -196,19 +191,18 @@ function calculateBreakdown(total: number, data: FormData): EnergyBreakdown {
   };
 }
 
-// --- Identify weaknesses ---
 function identifyWeaknesses(data: FormData, lang: Language): Weakness[] {
   const weaknesses: Weakness[] = [];
 
   if (data.wallInsulation === "none" || data.wallInsulation === "poor") {
     weaknesses.push({
       id: "wall_insulation",
-      label: txt(lang, "Isolation des murs insuffisante", "Insufficient wall insulation"),
+      label: txt(lang, "Murs mal isolés — chaleur et argent s'échappent", "Poorly insulated walls — heat and money escaping"),
       category: "envelope",
       severity: data.wallInsulation === "none" ? "high" : "medium",
       description: txt(lang,
-        "Les murs sont responsables de 20 à 25% des pertes thermiques. Dans les immeubles haussmanniens parisiens, les murs en pierre de 50 cm n'isolent que faiblement.",
-        "Walls account for 20–25% of heat losses. In Haussmann-era Parisian buildings, 50 cm stone walls provide very limited insulation."
+        "Les murs sont responsables de 20 à 25% des pertes de chaleur. Ça peut représenter plusieurs centaines d'euros par an en chauffage gaspillé.",
+        "Walls account for 20–25% of heat loss. That can mean hundreds of euros per year in wasted heating."
       ),
       impactScore: data.wallInsulation === "none" ? 90 : 70,
     });
@@ -217,12 +211,12 @@ function identifyWeaknesses(data: FormData, lang: Language): Weakness[] {
   if (data.roofInsulation === "none" || data.roofInsulation === "poor") {
     weaknesses.push({
       id: "roof_insulation",
-      label: txt(lang, "Isolation de la toiture insuffisante", "Insufficient roof insulation"),
+      label: txt(lang, "Toiture mal isolée — jusqu'à 30% de chaleur perdue", "Poorly insulated roof — up to 30% of heat lost"),
       category: "envelope",
       severity: "high",
       description: txt(lang,
-        "La toiture représente jusqu'à 30% des pertes de chaleur — critique pour les derniers étages parisiens et les chambres de bonne.",
-        "The roof accounts for up to 30% of heat losses — critical for top-floor Parisian flats and chambres de bonne."
+        "La chaleur monte. Sans isolation au toit, elle s'échappe directement dehors. C'est souvent le poste le plus rentable à traiter.",
+        "Heat rises. Without roof insulation, it escapes straight outside. This is often the most cost-effective fix."
       ),
       impactScore: data.roofInsulation === "none" ? 95 : 80,
     });
@@ -231,12 +225,12 @@ function identifyWeaknesses(data: FormData, lang: Language): Weakness[] {
   if (data.floorInsulation === "none" || data.floorInsulation === "poor") {
     weaknesses.push({
       id: "floor_insulation",
-      label: txt(lang, "Isolation du plancher insuffisante", "Insufficient floor insulation"),
+      label: txt(lang, "Plancher non isolé — froid qui remonte", "Uninsulated floor — cold rising from below"),
       category: "envelope",
       severity: "medium",
       description: txt(lang,
-        "Le plancher bas contribue à environ 7 à 10% des pertes thermiques, surtout au rez-de-chaussée sur cave.",
-        "The ground floor contributes about 7–10% of heat losses, especially above cellars."
+        "Le plancher représente 7 à 10% des pertes, surtout au rez-de-chaussée au-dessus d'une cave.",
+        "The floor accounts for 7–10% of losses, especially at ground level above a cellar."
       ),
       impactScore: data.floorInsulation === "none" ? 50 : 35,
     });
@@ -245,12 +239,12 @@ function identifyWeaknesses(data: FormData, lang: Language): Weakness[] {
   if (data.windowType === "single") {
     weaknesses.push({
       id: "windows",
-      label: txt(lang, "Simple vitrage — pertes thermiques élevées", "Single glazing — high heat losses"),
+      label: txt(lang, "Simple vitrage — 3 à 4 fois plus de pertes", "Single glazing — 3–4x more heat loss"),
       category: "envelope",
       severity: "high",
       description: txt(lang,
-        "Courant dans le parc ancien parisien. Le simple vitrage laisse passer 3 à 4 fois plus de chaleur que le double vitrage.",
-        "Common in older Parisian buildings. Single glazing lets through 3–4 times more heat than double glazing."
+        "Le simple vitrage laisse passer 3 à 4 fois plus de chaleur que le double vitrage. Remplacer vos fenêtres peut réduire votre facture de 10 à 15%.",
+        "Single glazing lets through 3–4x more heat than double glazing. Replacing windows can cut your bill by 10–15%."
       ),
       impactScore: 85,
     });
@@ -260,12 +254,12 @@ function identifyWeaknesses(data: FormData, lang: Language): Weakness[] {
   if (heatingTypes.includes("electric_convector")) {
     weaknesses.push({
       id: "heating_type",
-      label: txt(lang, "Chauffage par convecteurs électriques", "Electric convector heating"),
+      label: txt(lang, "Convecteurs électriques — le chauffage le plus cher", "Electric convectors — the most expensive heating"),
       category: "heating",
       severity: "high",
       description: txt(lang,
-        "Les convecteurs sont fréquents dans les studios parisiens mais représentent le mode de chauffage le moins efficace.",
-        "Convectors are common in Parisian studios but are the least efficient heating method."
+        "Les convecteurs consomment bien plus que les alternatives modernes. Passer à une pompe à chaleur peut diviser votre facture chauffage par 3.",
+        "Convectors consume far more than modern alternatives. Switching to a heat pump can cut your heating bill by 3x."
       ),
       impactScore: 80,
     });
@@ -274,12 +268,12 @@ function identifyWeaknesses(data: FormData, lang: Language): Weakness[] {
   if (heatingTypes.includes("fuel_boiler")) {
     weaknesses.push({
       id: "heating_fuel",
-      label: txt(lang, "Chaudière fioul — énergie carbonée et coûteuse", "Oil boiler — carbon-heavy and expensive"),
+      label: txt(lang, "Chaudière fioul — énergie la plus polluante et la plus chère", "Oil boiler — most polluting and expensive energy"),
       category: "heating",
       severity: "high",
       description: txt(lang,
-        "Le fioul est l'une des énergies les plus polluantes. Son remplacement sera obligatoire à terme.",
-        "Fuel oil is one of the most polluting energy sources. Its replacement will become mandatory."
+        "Le fioul est l'énergie la plus carbonée et son prix ne cesse d'augmenter. Son remplacement sera obligatoire à terme.",
+        "Fuel oil is the most carbon-heavy energy and its price keeps rising. Replacement will become mandatory."
       ),
       impactScore: 85,
     });
@@ -288,12 +282,12 @@ function identifyWeaknesses(data: FormData, lang: Language): Weakness[] {
   if (data.heatingAge === "more25" || data.heatingAge === "15to25") {
     weaknesses.push({
       id: "heating_age",
-      label: txt(lang, "Système de chauffage vieillissant", "Ageing heating system"),
+      label: txt(lang, "Système de chauffage ancien — perd en efficacité", "Ageing heating system — losing efficiency"),
       category: "heating",
       severity: data.heatingAge === "more25" ? "high" : "medium",
       description: txt(lang,
-        "Un système ancien perd en efficacité avec le temps, surtout les chaudières collectives fréquentes dans les copropriétés parisiennes.",
-        "An old system loses efficiency over time, especially collective boilers common in Parisian co-ownerships."
+        "Un système vieillissant perd 20 à 40% de son efficacité. Le remplacer peut réduire significativement votre facture.",
+        "An ageing system loses 20–40% of its efficiency. Replacing it can significantly cut your bill."
       ),
       impactScore: data.heatingAge === "more25" ? 75 : 50,
     });
@@ -302,12 +296,12 @@ function identifyWeaknesses(data: FormData, lang: Language): Weakness[] {
   if (data.ventilationType === "natural") {
     weaknesses.push({
       id: "ventilation",
-      label: txt(lang, "Ventilation naturelle — incontrôlée", "Natural ventilation — uncontrolled"),
+      label: txt(lang, "Ventilation naturelle — pertes de chaleur incontrôlées", "Natural ventilation — uncontrolled heat loss"),
       category: "ventilation",
       severity: "medium",
       description: txt(lang,
-        "Sans ventilation mécanique, le renouvellement d'air est incontrôlé — problème fréquent dans les immeubles anciens.",
-        "Without mechanical ventilation, air renewal is uncontrolled — a common issue in older buildings."
+        "Sans VMC, le renouvellement d'air est incontrôlé. Vous chauffez l'air qui s'échappe sans rien récupérer.",
+        "Without mechanical ventilation, air renewal is uncontrolled. You're heating air that escapes without recovering anything."
       ),
       impactScore: 60,
     });
@@ -316,12 +310,12 @@ function identifyWeaknesses(data: FormData, lang: Language): Weakness[] {
   if (data.airLeakage === "significant" || data.airLeakage === "moderate") {
     weaknesses.push({
       id: "air_leakage",
-      label: txt(lang, "Fuites d'air importantes", "Significant air leaks"),
+      label: txt(lang, "Courants d'air — chauffage gaspillé", "Draughts — wasted heating"),
       category: "ventilation",
       severity: data.airLeakage === "significant" ? "high" : "medium",
       description: txt(lang,
-        "Les infiltrations d'air parasites augmentent les besoins de chauffage. Les fenêtres anciennes et les cheminées sont les premiers responsables.",
-        "Parasitic air infiltrations increase heating needs. Old windows and chimneys are the main culprits."
+        "Les infiltrations d'air augmentent votre facture de chauffage de 10 à 25%. Souvent réparable pour moins de 100 €.",
+        "Air infiltrations increase your heating bill by 10–25%. Often fixable for under €100."
       ),
       impactScore: data.airLeakage === "significant" ? 70 : 45,
     });
@@ -331,7 +325,6 @@ function identifyWeaknesses(data: FormData, lang: Language): Weakness[] {
   return weaknesses;
 }
 
-// --- Generate recommendations with Paris-specific info ---
 function generateRecommendations(data: FormData, weaknesses: Weakness[], lang: Language): Recommendation[] {
   const recommendations: Recommendation[] = [];
   const weaknessIds = new Set(weaknesses.map((w) => w.id));
@@ -343,26 +336,26 @@ function generateRecommendations(data: FormData, weaknesses: Weakness[], lang: L
       name: txt(lang, "Isoler la toiture ou les combles", "Insulate the roof or loft"),
       priority: "high",
       reason: txt(lang,
-        "La toiture est le premier poste de déperdition. L'isoler est le geste le plus rentable.",
-        "The roof is the main source of heat loss. Insulating it is the most cost-effective measure."
+        "La toiture est votre premier poste de déperdition. L'isoler est le geste le plus rentable.",
+        "The roof is your biggest source of heat loss. Insulating it is the most cost-effective measure."
       ),
       dpeImpact: txt(lang, "Gain potentiel de 1 à 2 classes", "Potential gain of 1–2 classes"),
-      comfortImpact: txt(lang, "Forte amélioration du confort en hiver et en été", "Major improvement in winter and summer comfort"),
-      billImpact: txt(lang, "Réduction estimée de 20 à 30% sur la facture de chauffage", "Estimated 20–30% reduction on heating bills"),
+      comfortImpact: txt(lang, "Nette amélioration du confort été comme hiver", "Major improvement in comfort summer and winter"),
+      billImpact: txt(lang, "Économie estimée de 20 à 30% sur votre facture de chauffage", "Estimated 20–30% saving on your heating bill"),
       explanation: txt(lang,
-        "L'air chaud monte naturellement. Sans isolation en toiture, la chaleur s'échappe. Pour les derniers étages parisiens, c'est souvent le travail le plus impactant.",
-        "Hot air rises naturally. Without roof insulation, heat escapes. For top-floor Parisian flats, this is often the most impactful work."
+        "L'air chaud monte. Sans isolation, la chaleur s'échappe par le toit. Pour les derniers étages parisiens, c'est souvent le travail le plus rentable.",
+        "Hot air rises. Without insulation, heat escapes through the roof. For top-floor Parisian flats, this is often the highest-ROI work."
       ),
       estimatedSaving: 25,
-      estimatedCost: txt(lang, "30–60 €/m² (combles perdus) à 100–200 €/m² (toiture par l'extérieur)", "€30–60/m² (loft) to €100–200/m² (external roof)"),
+      estimatedCost: txt(lang, "30–60 €/m² (combles perdus) à 100–200 €/m² (toiture extérieure)", "€30–60/m² (loft) to €100–200/m² (external roof)"),
       parisAid: isParis
         ? txt(lang,
-          "Éco-rénovons Paris+ : subvention de la Ville de Paris jusqu'à 30% du montant des travaux. MaPrimeRénov' : jusqu'à 25 €/m² pour les ménages modestes.",
-          "Éco-rénovons Paris+: City of Paris grant up to 30% of works. MaPrimeRénov': up to €25/m² for low-income households."
+          "Éco-rénovons Paris+ : subvention jusqu'à 30%. MaPrimeRénov' : jusqu'à 25 €/m² pour les ménages modestes.",
+          "Éco-rénovons Paris+: grant up to 30%. MaPrimeRénov': up to €25/m² for low-income households."
         )
         : txt(lang,
-          "MaPrimeRénov' : jusqu'à 25 €/m² selon revenus. CEE (Certificats d'économies d'énergie) cumulables.",
-          "MaPrimeRénov': up to €25/m² depending on income. CEE (energy savings certificates) can be combined."
+          "MaPrimeRénov' : jusqu'à 25 €/m². CEE cumulables.",
+          "MaPrimeRénov': up to €25/m². CEE combinable."
         ),
       providers: isParis
         ? ["CAUE de Paris", "Agence Parisienne du Climat", "Espace Conseil France Rénov' Paris"]
@@ -373,35 +366,32 @@ function generateRecommendations(data: FormData, weaknesses: Weakness[], lang: L
   if (weaknessIds.has("wall_insulation")) {
     recommendations.push({
       id: "insulate_walls",
-      name: txt(lang, "Améliorer l'isolation des murs", "Improve wall insulation"),
+      name: txt(lang, "Isoler les murs", "Insulate the walls"),
       priority: "high",
       reason: txt(lang,
-        "Les murs sont la deuxième source de pertes. L'isolation transforme le confort.",
-        "Walls are the second biggest source of heat loss. Insulation transforms comfort."
+        "Les murs sont la deuxième source de pertes. Les isoler transforme le confort et la facture.",
+        "Walls are the second biggest source of heat loss. Insulating them transforms comfort and bills."
       ),
       dpeImpact: txt(lang, "Gain potentiel de 1 classe", "Potential gain of 1 class"),
-      comfortImpact: txt(lang, "Suppression de l'effet paroi froide", "Elimination of cold wall effect"),
-      billImpact: txt(lang, "Réduction estimée de 15 à 25%", "Estimated 15–25% reduction"),
+      comfortImpact: txt(lang, "Fini l'effet « mur froid »", "No more 'cold wall' effect"),
+      billImpact: txt(lang, "Économie estimée de 15 à 25% sur la facture", "Estimated 15–25% saving on bills"),
       explanation: isParis
         ? txt(lang,
-          "Dans les immeubles haussmanniens, l'ITE (Isolation Thermique par l'Extérieur) est souvent soumise à l'accord de l'ABF. L'ITI (par l'intérieur) est plus simple mais réduit la surface habitable.",
-          "In Haussmann buildings, external insulation (ITE) often requires ABF approval. Internal insulation (ITI) is simpler but reduces living space."
+          "Dans les immeubles haussmanniens, l'ITE (par l'extérieur) nécessite l'accord de l'ABF. L'ITI (par l'intérieur) est plus simple mais réduit un peu la surface.",
+          "In Haussmann buildings, external insulation needs ABF approval. Internal insulation is simpler but slightly reduces living space."
         )
         : txt(lang,
-          "L'ITE est la solution la plus performante, l'ITI est une alternative moins coûteuse.",
-          "External insulation is the most effective solution, internal insulation is a cheaper alternative."
+          "L'ITE est la plus performante, l'ITI est moins coûteuse.",
+          "External insulation is most effective, internal is cheaper."
         ),
       estimatedSaving: 20,
-      estimatedCost: txt(lang, "100–180 €/m² (ITI) à 150–250 €/m² (ITE)", "€100–180/m² (ITI) to €150–250/m² (ITE)"),
+      estimatedCost: txt(lang, "100–180 €/m² (intérieur) à 150–250 €/m² (extérieur)", "€100–180/m² (internal) to €150–250/m² (external)"),
       parisAid: isParis
         ? txt(lang,
-          "Éco-rénovons Paris+ : aide majorée en copropriété. MaPrimeRénov' Copropriétés : jusqu'à 25% du montant des travaux.",
-          "Éco-rénovons Paris+: increased aid for co-ownerships. MaPrimeRénov' Copropriétés: up to 25% of works."
+          "Éco-rénovons Paris+ : aide majorée en copropriété. MaPrimeRénov' Copropriétés : jusqu'à 25%.",
+          "Éco-rénovons Paris+: increased aid for co-ownerships. MaPrimeRénov' Copropriétés: up to 25%."
         )
-        : txt(lang,
-          "MaPrimeRénov' : selon revenus et gain énergétique. Prime CEE cumulable.",
-          "MaPrimeRénov': based on income and energy gain. CEE bonus combinable."
-        ),
+        : txt(lang, "MaPrimeRénov' + CEE cumulables.", "MaPrimeRénov' + CEE combinable."),
       providers: isParis
         ? ["Agence Parisienne du Climat", "CAUE de Paris", "Mon Accompagnateur Rénov'"]
         : ["Espace Conseil France Rénov'", "Mon Accompagnateur Rénov'"],
@@ -411,32 +401,26 @@ function generateRecommendations(data: FormData, weaknesses: Weakness[], lang: L
   if (weaknessIds.has("windows")) {
     recommendations.push({
       id: "replace_windows",
-      name: txt(lang, "Remplacer le simple vitrage", "Replace single glazing"),
+      name: txt(lang, "Passer au double vitrage", "Switch to double glazing"),
       priority: "high",
       reason: txt(lang,
-        "Le simple vitrage multiplie par 3-4 les pertes par les fenêtres.",
-        "Single glazing multiplies window heat losses by 3–4."
+        "Vos fenêtres en simple vitrage laissent passer 3 à 4 fois plus de chaleur.",
+        "Your single-glazed windows let through 3–4x more heat."
       ),
-      dpeImpact: txt(lang, "Gain modéré (0.5 à 1 classe)", "Moderate gain (0.5–1 class)"),
-      comfortImpact: txt(lang, "Fin des courants d'air froid, moins de condensation", "No more cold draughts, less condensation"),
-      billImpact: txt(lang, "Réduction estimée de 10 à 15%", "Estimated 10–15% reduction"),
+      dpeImpact: txt(lang, "Gain de 0.5 à 1 classe", "Gain of 0.5–1 class"),
+      comfortImpact: txt(lang, "Fini les courants d'air froid et la condensation", "No more cold draughts and condensation"),
+      billImpact: txt(lang, "Économie estimée de 10 à 15% sur la facture", "Estimated 10–15% saving on bills"),
       explanation: isParis
         ? txt(lang,
-          "À Paris, le remplacement de fenêtres est soumis à l'accord de la copropriété et parfois de l'ABF (Architecte des Bâtiments de France) en secteur protégé. Privilégiez le double vitrage à isolation renforcée (VIR) avec un aspect proche de l'existant.",
-          "In Paris, window replacement requires co-ownership approval and sometimes ABF (heritage architect) approval in protected areas. Choose reinforced double glazing (VIR) matching existing appearance."
+          "À Paris, le remplacement de fenêtres nécessite l'accord de la copro et parfois de l'ABF en secteur protégé. Privilégiez le double vitrage renforcé (VIR).",
+          "In Paris, window replacement needs co-ownership and sometimes ABF approval in protected areas. Choose reinforced double glazing (VIR)."
         )
-        : txt(lang,
-          "Le double vitrage divise par 3 les pertes thermiques par les fenêtres.",
-          "Double glazing reduces window heat losses by a factor of 3."
-        ),
+        : txt(lang, "Le double vitrage divise par 3 les pertes par les fenêtres.", "Double glazing reduces window heat loss by 3x."),
       estimatedSaving: 12,
-      estimatedCost: txt(lang, "500–1 200 € par fenêtre standard", "€500–1,200 per standard window"),
+      estimatedCost: txt(lang, "500–1 200 € par fenêtre", "€500–1,200 per window"),
       parisAid: isParis
-        ? txt(lang,
-          "MaPrimeRénov' : 40–100 € par équipement. Éco-rénovons Paris+ : aide complémentaire possible.",
-          "MaPrimeRénov': €40–100 per unit. Éco-rénovons Paris+: additional aid possible."
-        )
-        : txt(lang, "MaPrimeRénov' : 40–100 € par équipement.", "MaPrimeRénov': €40–100 per unit."),
+        ? txt(lang, "MaPrimeRénov' : 40–100 € par fenêtre. Éco-rénovons Paris+ : aide complémentaire possible.", "MaPrimeRénov': €40–100 per window. Éco-rénovons Paris+: additional aid possible.")
+        : txt(lang, "MaPrimeRénov' : 40–100 €.", "MaPrimeRénov': €40–100."),
       providers: isParis
         ? ["Agence Parisienne du Climat", txt(lang, "Votre syndic de copropriété", "Your co-ownership manager")]
         : ["Espace Conseil France Rénov'"],
@@ -446,63 +430,54 @@ function generateRecommendations(data: FormData, weaknesses: Weakness[], lang: L
   if (weaknessIds.has("heating_type") || weaknessIds.has("heating_fuel")) {
     recommendations.push({
       id: "upgrade_heating",
-      name: txt(lang, "Remplacer le système de chauffage", "Replace the heating system"),
+      name: txt(lang, "Passer à une pompe à chaleur", "Switch to a heat pump"),
       priority: "high",
       reason: txt(lang,
-        "Votre système actuel consomme bien plus que les alternatives modernes.",
-        "Your current system consumes far more than modern alternatives."
+        "Une pompe à chaleur consomme 3 à 4 fois moins que vos convecteurs ou votre chaudière fioul.",
+        "A heat pump uses 3–4x less energy than your convectors or oil boiler."
       ),
-      dpeImpact: txt(lang, "Gain de 1 à 2 classes possible", "Possible gain of 1–2 classes"),
-      comfortImpact: txt(lang, "Chaleur plus homogène, meilleure régulation", "More even heat, better regulation"),
-      billImpact: txt(lang, "Réduction estimée de 30 à 50% sur le poste chauffage", "Estimated 30–50% reduction on heating costs"),
+      dpeImpact: txt(lang, "Gain de 1 à 2 classes", "Gain of 1–2 classes"),
+      comfortImpact: txt(lang, "Chaleur homogène, meilleure régulation", "Even heat, better regulation"),
+      billImpact: txt(lang, "Économie estimée de 30 à 50% sur le chauffage", "Estimated 30–50% saving on heating"),
       explanation: isParis
         ? txt(lang,
-          "En appartement parisien, les pompes à chaleur air/air (climatisation réversible) sont les plus simples à installer. En maison ou rez-de-chaussée, une PAC air/eau est idéale. Pour le chauffage collectif fioul, la conversion en gaz condensation ou réseau de chaleur urbain (CPCU) est prioritaire.",
-          "In a Parisian flat, air/air heat pumps (reversible AC) are easiest to install. For houses or ground floors, air/water heat pumps are ideal. For collective oil heating, converting to condensing gas or the urban heat network (CPCU) is the priority."
+          "En appartement, les PAC air/air (clim réversible) sont les plus simples. En maison, une PAC air/eau est idéale. Pour le chauffage collectif fioul, la conversion au réseau de chaleur (CPCU) est prioritaire.",
+          "In flats, air/air heat pumps (reversible AC) are simplest. For houses, air/water heat pumps are ideal. For collective oil heating, switching to the heat network (CPCU) is the priority."
         )
-        : txt(lang,
-          "Une pompe à chaleur air/eau offre un rendement 3 à 4 fois supérieur à un convecteur électrique.",
-          "An air/water heat pump offers 3–4 times better efficiency than an electric convector."
-        ),
+        : txt(lang, "Une PAC air/eau offre un rendement 3 à 4 fois supérieur.", "An air/water heat pump is 3–4x more efficient."),
       estimatedSaving: 35,
-      estimatedCost: txt(lang, "2 000–5 000 € (PAC air/air) à 10 000–18 000 € (PAC air/eau)", "€2,000–5,000 (air/air HP) to €10,000–18,000 (air/water HP)"),
+      estimatedCost: txt(lang, "2 000–5 000 € (air/air) à 10 000–18 000 € (air/eau)", "€2,000–5,000 (air/air) to €10,000–18,000 (air/water)"),
       parisAid: isParis
         ? txt(lang,
-          "MaPrimeRénov' : 2 000–4 000 € pour une PAC. Coup de pouce chauffage : prime CEE bonifiée. Éco-rénovons Paris+ : aide complémentaire pour les copropriétés.",
-          "MaPrimeRénov': €2,000–4,000 for a heat pump. 'Coup de pouce chauffage': enhanced CEE bonus. Éco-rénovons Paris+: additional aid for co-ownerships."
+          "MaPrimeRénov' : 2 000–4 000 €. Coup de pouce chauffage + Éco-rénovons Paris+ en copro.",
+          "MaPrimeRénov': €2,000–4,000. 'Coup de pouce chauffage' + Éco-rénovons Paris+ for co-ownerships."
         )
-        : txt(lang,
-          "MaPrimeRénov' : 2 000–4 000 € selon revenus. Prime CEE cumulable.",
-          "MaPrimeRénov': €2,000–4,000 depending on income. CEE bonus combinable."
-        ),
+        : txt(lang, "MaPrimeRénov' : 2 000–4 000 €. CEE cumulable.", "MaPrimeRénov': €2,000–4,000. CEE combinable."),
       providers: isParis
-        ? ["Agence Parisienne du Climat", "CPCU (réseau de chaleur urbain Paris)", "Espace Conseil France Rénov' Paris"]
+        ? ["Agence Parisienne du Climat", "CPCU (réseau de chaleur Paris)", "Espace Conseil France Rénov' Paris"]
         : ["Espace Conseil France Rénov'"],
     });
   } else if (weaknessIds.has("heating_age")) {
     recommendations.push({
       id: "modernize_heating",
-      name: txt(lang, "Moderniser le système de chauffage", "Modernise the heating system"),
+      name: txt(lang, "Remplacer votre chaudière vieillissante", "Replace your ageing boiler"),
       priority: "medium",
       reason: txt(lang,
-        "Votre système vieillit et perd en efficacité.",
-        "Your system is ageing and losing efficiency."
+        "Votre système perd en efficacité avec l'âge. Un équipement récent consomme 20 à 40% de moins.",
+        "Your system loses efficiency with age. A newer unit uses 20–40% less."
       ),
       dpeImpact: txt(lang, "Gain de 0.5 à 1 classe", "Gain of 0.5–1 class"),
-      comfortImpact: txt(lang, "Meilleure régulation et fiabilité", "Better regulation and reliability"),
-      billImpact: txt(lang, "Réduction estimée de 10 à 20%", "Estimated 10–20% reduction"),
+      comfortImpact: txt(lang, "Meilleure régulation, plus de fiabilité", "Better regulation, more reliability"),
+      billImpact: txt(lang, "Économie estimée de 10 à 20%", "Estimated 10–20% saving"),
       explanation: txt(lang,
-        "Même sans changer de technologie, un équipement récent offre un meilleur rendement. Un thermostat connecté peut aussi faire gagner 10 à 15% immédiatement.",
-        "Even without changing technology, newer equipment offers better efficiency. A smart thermostat can also save 10–15% immediately."
+        "Même sans changer de technologie, un équipement récent offre un meilleur rendement. Un thermostat programmable peut aussi faire gagner 10 à 15% immédiatement.",
+        "Even without changing technology, newer equipment is more efficient. A programmable thermostat can save 10–15% immediately."
       ),
       estimatedSaving: 15,
       estimatedCost: txt(lang, "3 000–8 000 € (chaudière gaz condensation)", "€3,000–8,000 (condensing gas boiler)"),
-      parisAid: txt(lang,
-        "MaPrimeRénov' : jusqu'à 1 200 € pour une chaudière gaz à très haute performance.",
-        "MaPrimeRénov': up to €1,200 for a very high-performance gas boiler."
-      ),
+      parisAid: txt(lang, "MaPrimeRénov' : jusqu'à 1 200 €.", "MaPrimeRénov': up to €1,200."),
       providers: isParis
-        ? ["Agence Parisienne du Climat", txt(lang, "Votre syndic de copropriété", "Your co-ownership manager")]
+        ? ["Agence Parisienne du Climat", txt(lang, "Votre syndic", "Your building manager")]
         : ["Espace Conseil France Rénov'"],
     });
   }
@@ -510,32 +485,26 @@ function generateRecommendations(data: FormData, weaknesses: Weakness[], lang: L
   if (weaknessIds.has("ventilation")) {
     recommendations.push({
       id: "install_vmc",
-      name: txt(lang, "Installer une ventilation mécanique", "Install mechanical ventilation"),
+      name: txt(lang, "Installer une VMC", "Install mechanical ventilation"),
       priority: "medium",
       reason: txt(lang,
-        "La ventilation naturelle ne permet pas de contrôler les pertes d'air.",
-        "Natural ventilation does not allow control over air losses."
+        "La ventilation naturelle ne permet pas de contrôler les pertes d'air — vous chauffez l'air qui s'échappe.",
+        "Natural ventilation doesn't control air losses — you're heating air that escapes."
       ),
       dpeImpact: txt(lang, "Impact modéré sur le DPE", "Moderate DPE impact"),
       comfortImpact: txt(lang, "Meilleure qualité de l'air, moins d'humidité", "Better air quality, less humidity"),
-      billImpact: txt(lang, "Réduction de 5 à 10%", "5–10% reduction"),
+      billImpact: txt(lang, "Économie de 5 à 10%", "5–10% saving"),
       explanation: isParis
         ? txt(lang,
-          "En copropriété parisienne, l'installation d'une VMC double flux est complexe (gaines dans les parties communes). Une VMC simple flux hygroréglable est souvent le meilleur compromis. Consultez votre syndic.",
-          "In a Parisian co-ownership, installing dual-flow ventilation is complex (ducts in common areas). A humidity-controlled single-flow system is often the best compromise. Consult your co-ownership manager."
+          "En copropriété, une VMC simple flux hygroréglable est souvent le meilleur compromis. Consultez votre syndic.",
+          "In co-ownerships, a humidity-controlled single-flow system is often the best compromise. Ask your building manager."
         )
-        : txt(lang,
-          "Une VMC double flux récupère la chaleur de l'air sortant pour préchauffer l'air entrant.",
-          "A dual-flow system recovers heat from outgoing air to pre-heat incoming air."
-        ),
+        : txt(lang, "Une VMC double flux récupère la chaleur de l'air sortant.", "Dual-flow ventilation recovers heat from outgoing air."),
       estimatedSaving: 8,
-      estimatedCost: txt(lang, "1 500–4 000 € (VMC simple flux) à 5 000–10 000 € (double flux)", "€1,500–4,000 (single-flow) to €5,000–10,000 (dual-flow)"),
-      parisAid: txt(lang,
-        "MaPrimeRénov' : 2 500–4 000 € pour une VMC double flux selon revenus.",
-        "MaPrimeRénov': €2,500–4,000 for dual-flow ventilation depending on income."
-      ),
+      estimatedCost: txt(lang, "1 500–4 000 € (simple flux) à 5 000–10 000 € (double flux)", "€1,500–4,000 (single-flow) to €5,000–10,000 (dual-flow)"),
+      parisAid: txt(lang, "MaPrimeRénov' : 2 500–4 000 € (double flux).", "MaPrimeRénov': €2,500–4,000 (dual-flow)."),
       providers: isParis
-        ? ["Agence Parisienne du Climat", txt(lang, "Votre syndic de copropriété", "Your co-ownership manager")]
+        ? ["Agence Parisienne du Climat", txt(lang, "Votre syndic", "Your building manager")]
         : ["Espace Conseil France Rénov'"],
     });
   }
@@ -543,79 +512,73 @@ function generateRecommendations(data: FormData, weaknesses: Weakness[], lang: L
   if (weaknessIds.has("air_leakage")) {
     recommendations.push({
       id: "seal_air_leaks",
-      name: txt(lang, "Traiter les fuites d'air", "Seal air leaks"),
+      name: txt(lang, "Colmater les fuites d'air", "Seal air leaks"),
       priority: "medium",
       reason: txt(lang,
-        "Les infiltrations augmentent les besoins de chauffage de façon invisible.",
-        "Air infiltrations invisibly increase heating needs."
+        "Les infiltrations augmentent votre facture de chauffage de façon invisible.",
+        "Air infiltrations invisibly increase your heating bill."
       ),
-      dpeImpact: txt(lang, "Impact modéré mais effet immédiat", "Moderate impact but immediate effect"),
-      comfortImpact: txt(lang, "Suppression des courants d'air", "Elimination of draughts"),
-      billImpact: txt(lang, "Réduction estimée de 5 à 10%", "Estimated 5–10% reduction"),
+      dpeImpact: txt(lang, "Impact modéré mais effet immédiat", "Moderate but immediate effect"),
+      comfortImpact: txt(lang, "Plus de courants d'air froid", "No more cold draughts"),
+      billImpact: txt(lang, "Économie estimée de 5 à 10%", "Estimated 5–10% saving"),
       explanation: txt(lang,
-        "Jointez les fenêtres, calfeutrez les coffres de volets roulants, installez des boudins de porte et des trappes de cheminée. Souvent réalisable soi-même pour moins de 100 €.",
-        "Seal window joints, draught-proof roller shutter boxes, install door draught excluders and chimney caps. Often DIY for under €100."
+        "Jointez les fenêtres, calfeutrez les coffres de volets, installez des boudins de porte. Souvent faisable soi-même pour moins de 100 €.",
+        "Seal window joints, draught-proof shutter boxes, install door draught excluders. Often DIY for under €100."
       ),
       estimatedSaving: 7,
-      estimatedCost: txt(lang, "50–200 € (joints, boudins, calfeutrage) — réalisable soi-même", "€50–200 (seals, draught excluders) — DIY possible"),
+      estimatedCost: txt(lang, "50–200 € — faisable soi-même", "€50–200 — DIY possible"),
     });
   }
 
   if (weaknessIds.has("floor_insulation")) {
     recommendations.push({
       id: "insulate_floor",
-      name: txt(lang, "Isoler le plancher bas", "Insulate the ground floor"),
+      name: txt(lang, "Isoler le plancher", "Insulate the floor"),
       priority: "low",
       reason: txt(lang,
-        "Le plancher contribue modérément aux pertes mais améliore le confort.",
-        "The floor contributes moderately to losses but improves comfort."
+        "Le plancher contribue modérément aux pertes mais le confort s'améliore nettement.",
+        "The floor contributes moderately to losses but comfort improves noticeably."
       ),
       dpeImpact: txt(lang, "Gain faible à modéré", "Low to moderate gain"),
-      comfortImpact: txt(lang, "Sol moins froid, confort amélioré", "Warmer floors, improved comfort"),
-      billImpact: txt(lang, "Réduction estimée de 5 à 7%", "Estimated 5–7% reduction"),
+      comfortImpact: txt(lang, "Sol moins froid, meilleur confort", "Warmer floors, better comfort"),
+      billImpact: txt(lang, "Économie estimée de 5 à 7%", "Estimated 5–7% saving"),
       explanation: isParis
         ? txt(lang,
-          "Simple si vous êtes au-dessus d'une cave ou d'un parking souterrain. L'isolation par le dessous du plancher est la méthode la moins invasive.",
-          "Simple if you're above a cellar or underground parking. Insulating from below is the least invasive method."
+          "Simple si vous êtes au-dessus d'une cave ou d'un parking. L'isolation par le dessous est la méthode la moins invasive.",
+          "Simple if above a cellar or parking. Insulating from below is least invasive."
         )
-        : txt(lang,
-          "L'isolation du plancher bas est souvent simple si vous avez un vide sanitaire ou une cave.",
-          "Ground floor insulation is often simple if you have a crawl space or cellar."
-        ),
+        : txt(lang, "L'isolation du plancher est simple avec un vide sanitaire ou une cave.", "Floor insulation is simple with a crawl space or cellar."),
       estimatedSaving: 6,
-      estimatedCost: txt(lang, "25–50 €/m² (isolation par le dessous)", "€25–50/m² (insulation from below)"),
-      parisAid: txt(lang, "Prime CEE : aide pour l'isolation du plancher bas.", "CEE bonus: aid for ground floor insulation."),
+      estimatedCost: txt(lang, "25–50 €/m²", "€25–50/m²"),
+      parisAid: txt(lang, "Prime CEE disponible.", "CEE bonus available."),
     });
   }
 
-  // Always add quick wins
+  // Quick wins
   recommendations.push({
     id: "quick_wins",
-    name: txt(lang, "Gestes immédiats sans travaux", "Immediate actions without works"),
+    name: txt(lang, "Gestes immédiats — 0 € de travaux", "Immediate actions — €0 in works"),
     priority: recommendations.length === 0 ? "high" : "low",
     reason: txt(lang,
-      "Des actions simples et gratuites qui réduisent votre facture dès aujourd'hui.",
-      "Simple, free actions that reduce your bills starting today."
+      "Des actions gratuites qui réduisent votre facture dès aujourd'hui.",
+      "Free actions that cut your bills starting today."
     ),
     dpeImpact: txt(lang, "Pas d'impact direct sur le DPE", "No direct DPE impact"),
-    comfortImpact: txt(lang, "Maintien du confort avec une consommation réduite", "Maintain comfort with lower consumption"),
-    billImpact: txt(lang, "Réduction de 5 à 15% par les comportements", "5–15% reduction through behaviour changes"),
+    comfortImpact: txt(lang, "Même confort, moins cher", "Same comfort, lower cost"),
+    billImpact: txt(lang, "Économie de 5 à 15% par les habitudes", "5–15% saving through habits"),
     explanation: isParis
       ? txt(lang,
-        "• Réglez le thermostat à 19°C (obligation réglementaire dans les logements)\n• Purgez vos radiateurs avant l'hiver\n• Installez des rideaux épais devant les fenêtres\n• Fermez les volets la nuit (gain de 1 à 2°C)\n• Utilisez des multiprises à interrupteur\n• Demandez un bilan gratuit à l'Agence Parisienne du Climat",
-        "• Set thermostat to 19°C (regulatory requirement)\n• Bleed radiators before winter\n• Install thick curtains over windows\n• Close shutters at night (1–2°C gain)\n• Use power strips with switches\n• Request a free assessment from Agence Parisienne du Climat"
+        "• Réglez le thermostat à 19°C\n• Purgez vos radiateurs avant l'hiver\n• Fermez les volets la nuit (+1 à 2°C)\n• Éteignez les veilles (multiprises à interrupteur)\n• Lancez le lave-linge en heures creuses\n• Rendez-vous gratuit : Agence Parisienne du Climat",
+        "• Set thermostat to 19°C\n• Bleed radiators before winter\n• Close shutters at night (+1–2°C)\n• Turn off standby (use power strips)\n• Run washing machine off-peak\n• Free advice: Agence Parisienne du Climat"
       )
       : txt(lang,
-        "• Réglez le thermostat à 19°C en journée et 16°C la nuit\n• Purgez vos radiateurs\n• Installez des rideaux épais\n• Fermez les volets la nuit\n• Utilisez des multiprises à interrupteur",
-        "• Set thermostat to 19°C during the day and 16°C at night\n• Bleed radiators\n• Install thick curtains\n• Close shutters at night\n• Use power strips with switches"
+        "• Thermostat à 19°C jour / 16°C nuit\n• Purgez vos radiateurs\n• Fermez les volets la nuit\n• Éteignez les veilles\n• Heures creuses pour le lave-linge",
+        "• Thermostat 19°C day / 16°C night\n• Bleed radiators\n• Close shutters at night\n• Turn off standby\n• Off-peak for washing machine"
       ),
     estimatedSaving: 10,
     estimatedCost: txt(lang, "0 € — gratuit", "€0 — free"),
     parisAid: isParis
-      ? txt(lang,
-        "Rendez-vous gratuit avec un conseiller de l'Agence Parisienne du Climat : agenceparisienneclimat.fr",
-        "Free appointment with an advisor at Agence Parisienne du Climat: agenceparisienneclimat.fr"
-      )
+      ? txt(lang, "Conseil gratuit : agenceparisienneclimat.fr", "Free advice: agenceparisienneclimat.fr")
       : undefined,
     providers: isParis
       ? ["Agence Parisienne du Climat", "ADIL 75", txt(lang, "Mairie de votre arrondissement", "Your arrondissement town hall")]
@@ -625,7 +588,6 @@ function generateRecommendations(data: FormData, weaknesses: Weakness[], lang: L
   return recommendations;
 }
 
-// --- Main calculation function ---
 export function calculateDPE(data: FormData, lang: Language = "fr"): DPEResult {
   const consumption = calculateConsumption(data);
   const dpeClass = getDPEClass(consumption);
@@ -642,7 +604,6 @@ export function calculateDPE(data: FormData, lang: Language = "fr"): DPEResult {
   };
 }
 
-// --- DPE class metadata ---
 export const DPE_CLASSES: { class: DPEClass; label: string; max: number; color: string }[] = [
   { class: "A", label: "≤ 70", max: 70, color: "dpe-a" },
   { class: "B", label: "71–110", max: 110, color: "dpe-b" },
