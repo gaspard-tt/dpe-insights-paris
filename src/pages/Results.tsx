@@ -7,7 +7,7 @@ import {
   AlertTriangle, ArrowRight, BarChart3, CheckCircle,
   Info, Lightbulb, Wrench, Flame, Droplets,
   Layers, Wind, RefreshCw, Target, PiggyBank, Euro, MapPin,
-  TrendingUp, Zap, ShowerHead, ThermometerSun, Tv, Timer, Building2,
+  TrendingUp, Zap, ShowerHead, ThermometerSun, Tv, Timer, Building2, Download, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
