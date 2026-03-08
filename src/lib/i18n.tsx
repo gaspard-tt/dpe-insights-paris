@@ -203,6 +203,11 @@ const translations: Record<Language, Record<string, string>> = {
     "currentdpe.help": "Si vous avez un DPE officiel pour votre logement, sélectionnez la classe correspondante. Cela nous permettra de comparer notre estimation avec votre diagnostic réel.",
     "currentdpe.class": "Classe",
     "currentdpe.idk": "Je ne sais pas",
+    "currentdpe.bill.title": "Votre facture d'énergie annuelle",
+    "currentdpe.bill.help": "Si vous connaissez votre facture annuelle d'électricité/gaz, indiquez-la. Cela nous permettra de calculer plus précisément votre retour sur investissement.",
+    "currentdpe.bill.avg": "Moyenne Paris : ~1 200 €/an",
+    "currentdpe.bill.idk": "Je ne sais pas",
+    "currentdpe.bill.idk.tap": "Appuyez pour renseigner votre facture",
 
     // StepOccupancy
     "occupancy.thermostat": "Réglage du thermostat en hiver",
