@@ -9,6 +9,7 @@ interface DPEScaleProps {
 }
 
 const DPEScale = ({ activeClass, size = "md" }: DPEScaleProps) => {
+  const { t } = useI18n();
   const sizeClasses = {
     sm: "text-xs py-1 px-2",
     md: "text-sm py-2 px-3",
