@@ -39,6 +39,10 @@ export type UsageLevel = "low" | "average" | "high";
 
 export type DPEClass = "A" | "B" | "C" | "D" | "E" | "F" | "G";
 
+export type HeatingFrequency = "rarely" | "sometimes" | "often" | "always";
+export type AiringHabit = "never" | "sometimes" | "daily" | "multiple";
+export type LaundryFrequency = "1_2" | "3_4" | "5_plus";
+
 export interface FormData {
   // Step 1: General
   housingType?: HousingType;
@@ -50,7 +54,7 @@ export interface FormData {
 
   // Step 2: Current DPE & bill
   currentDPE?: DPEClass;
-  annualBill?: number; // €/year electricity bill
+  annualBill?: number;
 
   // Step 3: Envelope
   wallInsulation?: InsulationQuality;
@@ -65,18 +69,29 @@ export interface FormData {
   heatingAge?: HeatingAge;
   distributionSystem?: DistributionSystem;
 
-  // Step 5: Energy
+  // Step 5: Energy (multi-select now)
+  energySources?: EnergySource[];
+  /** @deprecated use energySources */
   energySource?: EnergySource;
 
   // Step 6: Ventilation
   ventilationType?: VentilationType;
   airLeakage?: AirLeakage;
 
-  // Step 7: Occupancy
+  // Step 7: Occupancy & Habits
   occupants?: number;
   heatingHabits?: UsageLevel;
   hotWaterUsage?: UsageLevel;
   thermostatTemp?: number;
+
+  // Expanded habits
+  heatingFrequency?: HeatingFrequency;
+  airingHabit?: AiringHabit;
+  laundryFrequency?: LaundryFrequency;
+  usesDishwasher?: boolean;
+  usesDryer?: boolean;
+  leavesLightsOn?: boolean;
+  programmableHeating?: boolean;
 }
 
 export interface EnergyBreakdown {
@@ -112,7 +127,7 @@ export interface Recommendation {
 
 export interface DPEResult {
   dpeClass: DPEClass;
-  consumption: number; // kWh/m²/an
+  consumption: number;
   energyBreakdown: EnergyBreakdown;
   weaknesses: Weakness[];
   recommendations: Recommendation[];

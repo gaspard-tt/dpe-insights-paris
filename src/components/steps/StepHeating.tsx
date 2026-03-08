@@ -108,9 +108,8 @@ const StepHeating = ({ data, onChange }: Props) => {
     <div className="space-y-8">
       <div className="space-y-3">
         <h3 className="text-lg font-semibold text-foreground">{t("heating.type")}</h3>
-        <HelperText>
-          {t("heating.type.help")} {t("heating.multi")}
-        </HelperText>
+        <HelperText>{t("heating.type.help")}</HelperText>
+        <p className="text-xs text-muted-foreground">{t("heating.multi")}</p>
         <div className="space-y-2">
           {heatingOptions.map((opt) => (
             <CheckboxRow
@@ -137,7 +136,7 @@ const StepHeating = ({ data, onChange }: Props) => {
           <OptionRow selected={data.heatingAge === "5to15"} label={t("heating.age.5to15")} onClick={() => onChange({ heatingAge: "5to15" })} />
           <OptionRow selected={data.heatingAge === "15to25"} label={t("heating.age.15to25")} onClick={() => onChange({ heatingAge: "15to25" })} />
           <OptionRow selected={data.heatingAge === "more25"} label={t("heating.age.more25")} onClick={() => onChange({ heatingAge: "more25" })} />
-          <OptionRow selected={!data.heatingAge} label={t("heating.idk")} desc={t("heating.idk.desc")} onClick={() => onChange({ heatingAge: undefined })} />
+          <OptionRow selected={!data.heatingAge} label={t("heating.age.idk")} onClick={() => onChange({ heatingAge: undefined })} />
         </div>
       </div>
 
@@ -147,7 +146,7 @@ const StepHeating = ({ data, onChange }: Props) => {
         <div className="space-y-2">
           <OptionRow selected={data.distributionSystem === "radiators"} label={t("heating.radiators")} onClick={() => onChange({ distributionSystem: "radiators" })} />
           <OptionRow selected={data.distributionSystem === "floor_heating"} label={t("heating.floor_heating")} onClick={() => onChange({ distributionSystem: "floor_heating" })} />
-          <OptionRow selected={!data.distributionSystem} label={t("heating.idk")} desc={t("heating.idk.desc")} onClick={() => onChange({ distributionSystem: undefined })} />
+          <OptionRow selected={!data.distributionSystem} label={t("heating.distribution.idk")} onClick={() => onChange({ distributionSystem: undefined })} />
         </div>
       </div>
     </div>

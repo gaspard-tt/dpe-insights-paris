@@ -1,5 +1,5 @@
 import type { FormData, ConstructionPeriod } from "@/lib/types";
-import { HelpCircle, Home, Building2, MapPin } from "lucide-react";
+import { HelpCircle, Home, Building2 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { useI18n } from "@/lib/i18n";
 
@@ -76,9 +76,6 @@ const CardOption = ({
   </button>
 );
 
-// Paris only
-const PARIS_DEPT = { code: "75", label: "Paris (75)" };
-
 const ARRONDISSEMENTS = Array.from({ length: 20 }, (_, i) => {
   const num = i + 1;
   const suffix = num === 1 ? "er" : "ème";
@@ -97,8 +94,6 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
     "after2012",
   ];
 
-  const surfaceValue = data.surfaceArea || 40;
-
   // Auto-set Paris on first render
   if (!data.postalCode) {
     onChange({ postalCode: "75", climateZone: "H1" });
@@ -116,17 +111,23 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
         </div>
       </div>
 
-      {/* Surface with slider */}
+      {/* Surface with slider — no pre-fill, show placeholder */}
       <div className="space-y-3">
         <h3 className="text-lg font-semibold text-foreground">{t("general.surface")}</h3>
         <HelperText>{t("general.surface.help")}</HelperText>
         <div className="rounded-xl border bg-muted/20 p-5">
           <div className="flex items-baseline justify-between mb-4">
             <span className="text-sm text-muted-foreground">{t("general.surface")}</span>
-            <span className="text-3xl font-bold text-primary">{surfaceValue} <span className="text-base font-normal text-muted-foreground">m²</span></span>
+            <span className="text-3xl font-bold text-primary">
+              {data.surfaceArea ? (
+                <>{data.surfaceArea} <span className="text-base font-normal text-muted-foreground">m²</span></>
+              ) : (
+                <span className="text-muted-foreground/40 font-normal text-xl">ex. 49 m²</span>
+              )}
+            </span>
           </div>
           <Slider
-            value={[surfaceValue]}
+            value={[data.surfaceArea || 49]}
             onValueChange={([v]) => onChange({ surfaceArea: v })}
             min={10}
             max={300}
@@ -141,36 +142,25 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
         </div>
       </div>
 
-      {/* Location - Paris arrondissements */}
+      {/* Arrondissement selector only */}
       <div className="space-y-3">
-        <h3 className="flex items-center gap-2 text-lg font-semibold text-foreground">
-          <MapPin className="h-5 w-5 text-rose" />
-          {t("general.location")}
-        </h3>
-        <HelperText>{t("general.location.help")}</HelperText>
-
-        <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5 text-sm font-medium text-primary">
-          {PARIS_DEPT.label}
-        </div>
-
-        <div className="space-y-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
-          <h4 className="text-sm font-semibold text-primary">{t("general.arrondissement")}</h4>
-          <div className="grid grid-cols-4 gap-2">
-            {ARRONDISSEMENTS.map((arr) => (
-              <button
-                key={arr.value}
-                type="button"
-                onClick={() => onChange({ arrondissement: arr.value })}
-                className={`rounded-lg border px-2 py-2 text-center text-xs font-medium transition-all ${
-                  data.arrondissement === arr.value
-                    ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                    : "border-border bg-card text-foreground hover:border-primary/40"
-                }`}
-              >
-                {arr.value}{arr.value === "1" ? "er" : "e"}
-              </button>
-            ))}
-          </div>
+        <h3 className="text-lg font-semibold text-foreground">{t("general.arrondissement")}</h3>
+        <HelperText>{t("general.arrondissement.help")}</HelperText>
+        <div className="grid grid-cols-4 gap-2">
+          {ARRONDISSEMENTS.map((arr) => (
+            <button
+              key={arr.value}
+              type="button"
+              onClick={() => onChange({ arrondissement: arr.value })}
+              className={`rounded-lg border px-2 py-2 text-center text-xs font-medium transition-all ${
+                data.arrondissement === arr.value
+                  ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                  : "border-border bg-card text-foreground hover:border-primary/40"
+              }`}
+            >
+              {arr.value}{arr.value === "1" ? "er" : "e"}
+            </button>
+          ))}
         </div>
       </div>
 

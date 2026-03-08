@@ -14,6 +14,42 @@ const HelperText = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
+const CheckboxRow = ({
+  checked,
+  label,
+  desc,
+  onClick,
+}: {
+  checked: boolean;
+  label: string;
+  desc: string;
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`w-full rounded-lg border px-4 py-3 text-left transition-all ${
+      checked
+        ? "border-primary bg-primary/5 shadow-sm"
+        : "border-border hover:border-primary/40 hover:bg-muted/30"
+    }`}
+  >
+    <div className="flex items-start gap-3">
+      <div
+        className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 transition-colors ${
+          checked ? "border-primary bg-primary" : "border-muted-foreground/40"
+        }`}
+      >
+        {checked && <span className="text-[10px] leading-none text-primary-foreground">✓</span>}
+      </div>
+      <div>
+        <div className="text-sm font-medium text-foreground">{label}</div>
+        <div className="text-xs text-muted-foreground">{desc}</div>
+      </div>
+    </div>
+  </button>
+);
+
 const OptionRow = ({
   selected,
   label,
@@ -54,7 +90,7 @@ const StepEnergy = ({ data, onChange }: Props) => {
   const { t } = useI18n();
 
   const energySources: {
-    value: EnergySource | "unknown";
+    value: EnergySource;
     labelKey: string;
     descKey: string;
   }[] = [
@@ -62,9 +98,17 @@ const StepEnergy = ({ data, onChange }: Props) => {
     { value: "gas", labelKey: "energy.gas", descKey: "energy.gas.desc" },
     { value: "fuel", labelKey: "energy.fuel", descKey: "energy.fuel.desc" },
     { value: "renewable", labelKey: "energy.renewable", descKey: "energy.renewable.desc" },
-    { value: "hybrid", labelKey: "energy.hybrid", descKey: "energy.hybrid.desc" },
-    { value: "unknown", labelKey: "energy.unknown", descKey: "energy.unknown.desc" },
   ];
+
+  const currentSources = data.energySources || [];
+
+  const toggleSource = (src: EnergySource) => {
+    if (currentSources.includes(src)) {
+      onChange({ energySources: currentSources.filter((s) => s !== src) });
+    } else {
+      onChange({ energySources: [...currentSources, src] });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -77,19 +121,20 @@ const StepEnergy = ({ data, onChange }: Props) => {
 
       <div className="space-y-2">
         {energySources.map((e) => (
-          <OptionRow
+          <CheckboxRow
             key={e.value}
-            selected={data.energySource === e.value}
+            checked={currentSources.includes(e.value)}
             label={t(e.labelKey)}
             desc={t(e.descKey)}
-            onClick={() =>
-              onChange({
-                energySource:
-                  e.value === "unknown" ? undefined : (e.value as EnergySource),
-              })
-            }
+            onClick={() => toggleSource(e.value)}
           />
         ))}
+        <OptionRow
+          selected={currentSources.length === 0}
+          label={t("energy.unknown")}
+          desc={t("energy.unknown.desc")}
+          onClick={() => onChange({ energySources: [] })}
+        />
       </div>
     </div>
   );

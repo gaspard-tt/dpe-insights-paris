@@ -70,7 +70,7 @@ const StepCurrentDPE = ({ data, onChange }: Props) => {
         </div>
       </div>
 
-      {/* Annual electricity bill */}
+      {/* Annual energy bill — no pre-fill */}
       <div>
         <h3 className="text-lg font-semibold text-foreground">{t("currentdpe.bill.title")}</h3>
         <div className="mt-2 flex items-start gap-2 rounded-lg bg-primary/5 p-3 text-xs text-muted-foreground">

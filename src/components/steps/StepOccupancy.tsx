@@ -1,5 +1,5 @@
 import type { FormData } from "@/lib/types";
-import { HelpCircle, Thermometer, Users, Droplets } from "lucide-react";
+import { HelpCircle, Thermometer, Users, Droplets, Flame, Wind, Shirt, Lightbulb, Timer } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { useI18n } from "@/lib/i18n";
 
@@ -51,31 +51,69 @@ const OptionRow = ({
   </button>
 );
 
+const ToggleRow = ({
+  checked,
+  label,
+  onClick,
+}: {
+  checked: boolean | undefined;
+  label: string;
+  onClick: (val: boolean) => void;
+}) => {
+  const { t } = useI18n();
+  return (
+    <div className="flex items-center justify-between rounded-lg border px-4 py-3">
+      <span className="text-sm font-medium text-foreground">{label}</span>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => onClick(true)}
+          className={`rounded-md px-3 py-1 text-xs font-medium transition-all ${
+            checked === true ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"
+          }`}
+        >
+          {t("habits.yes")}
+        </button>
+        <button
+          type="button"
+          onClick={() => onClick(false)}
+          className={`rounded-md px-3 py-1 text-xs font-medium transition-all ${
+            checked === false ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"
+          }`}
+        >
+          {t("habits.no")}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const StepOccupancy = ({ data, onChange }: Props) => {
   const { t } = useI18n();
-  const occupants = data.occupants || 2;
-  const thermostat = data.thermostatTemp || 19.5;
 
-  // Map thermostat to usage level
   const getThermostatLevel = (temp: number) => {
     if (temp <= 18.5) return "low";
     if (temp <= 20) return "average";
     return "high";
   };
 
-  const thermostatColor = thermostat <= 18.5
+  const thermostatColor = !data.thermostatTemp
+    ? "text-muted-foreground/40"
+    : data.thermostatTemp <= 18.5
     ? "text-teal"
-    : thermostat <= 20
+    : data.thermostatTemp <= 20
     ? "text-primary"
-    : thermostat <= 21.5
+    : data.thermostatTemp <= 21.5
     ? "text-amber"
     : "text-rose";
 
-  const thermostatHint = thermostat <= 18.5
+  const thermostatHint = !data.thermostatTemp
+    ? ""
+    : data.thermostatTemp <= 18.5
     ? t("occupancy.thermo.eco")
-    : thermostat <= 20
+    : data.thermostatTemp <= 20
     ? t("occupancy.thermo.comfort")
-    : thermostat <= 21.5
+    : data.thermostatTemp <= 21.5
     ? t("occupancy.thermo.warm")
     : t("occupancy.thermo.hot");
 
@@ -92,12 +130,16 @@ const StepOccupancy = ({ data, onChange }: Props) => {
           <div className="flex items-baseline justify-between mb-1">
             <span className="text-sm text-muted-foreground">{t("occupancy.temperature")}</span>
             <span className={`text-3xl font-bold ${thermostatColor}`}>
-              {thermostat.toFixed(1)} <span className="text-base font-normal text-muted-foreground">°C</span>
+              {data.thermostatTemp ? (
+                <>{data.thermostatTemp.toFixed(1)} <span className="text-base font-normal text-muted-foreground">°C</span></>
+              ) : (
+                <span className="text-xl font-normal text-muted-foreground/40">ex. 19.5°C</span>
+              )}
             </span>
           </div>
-          <p className={`text-xs font-medium mb-4 ${thermostatColor}`}>{thermostatHint}</p>
+          {thermostatHint && <p className={`text-xs font-medium mb-4 ${thermostatColor}`}>{thermostatHint}</p>}
           <Slider
-            value={[thermostat]}
+            value={[data.thermostatTemp || 19.5]}
             onValueChange={([v]) => {
               onChange({
                 thermostatTemp: v,
@@ -128,11 +170,15 @@ const StepOccupancy = ({ data, onChange }: Props) => {
           <div className="flex items-baseline justify-between mb-4">
             <span className="text-sm text-muted-foreground">{t("occupancy.people")}</span>
             <span className="text-3xl font-bold text-indigo">
-              {occupants} <span className="text-base font-normal text-muted-foreground">{occupants > 1 ? t("occupancy.persons") : t("occupancy.person")}</span>
+              {data.occupants ? (
+                <>{data.occupants} <span className="text-base font-normal text-muted-foreground">{data.occupants > 1 ? t("occupancy.persons") : t("occupancy.person")}</span></>
+              ) : (
+                <span className="text-xl font-normal text-muted-foreground/40">ex. 2</span>
+              )}
             </span>
           </div>
           <Slider
-            value={[occupants]}
+            value={[data.occupants || 2]}
             onValueChange={([v]) => onChange({ occupants: v })}
             min={1}
             max={8}
@@ -158,7 +204,72 @@ const StepOccupancy = ({ data, onChange }: Props) => {
           <OptionRow selected={data.hotWaterUsage === "low"} label={t("occupancy.hw_low")} onClick={() => onChange({ hotWaterUsage: "low" })} />
           <OptionRow selected={data.hotWaterUsage === "average"} label={t("occupancy.hw_average")} onClick={() => onChange({ hotWaterUsage: "average" })} />
           <OptionRow selected={data.hotWaterUsage === "high"} label={t("occupancy.hw_high")} onClick={() => onChange({ hotWaterUsage: "high" })} />
-          <OptionRow selected={!data.hotWaterUsage} label={t("occupancy.idk")} desc={t("occupancy.idk.desc")} onClick={() => onChange({ hotWaterUsage: undefined })} />
+        </div>
+      </div>
+
+      {/* ── Expanded Habits Section ── */}
+      <div className="space-y-4 rounded-xl border bg-muted/10 p-5">
+        <div>
+          <h3 className="text-lg font-semibold text-foreground">{t("habits.title")}</h3>
+          <p className="text-xs text-muted-foreground mt-1">{t("habits.subtitle")}</p>
+        </div>
+
+        {/* Heating frequency */}
+        <div className="space-y-2">
+          <h4 className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <Flame className="h-4 w-4 text-rose" />
+            {t("habits.heating_freq")}
+          </h4>
+          <HelperText>{t("habits.heating_freq.help")}</HelperText>
+          <div className="space-y-1.5">
+            <OptionRow selected={data.heatingFrequency === "rarely"} label={t("habits.heating_freq.rarely")} onClick={() => onChange({ heatingFrequency: "rarely" })} />
+            <OptionRow selected={data.heatingFrequency === "sometimes"} label={t("habits.heating_freq.sometimes")} onClick={() => onChange({ heatingFrequency: "sometimes" })} />
+            <OptionRow selected={data.heatingFrequency === "often"} label={t("habits.heating_freq.often")} onClick={() => onChange({ heatingFrequency: "often" })} />
+            <OptionRow selected={data.heatingFrequency === "always"} label={t("habits.heating_freq.always")} onClick={() => onChange({ heatingFrequency: "always" })} />
+          </div>
+        </div>
+
+        {/* Airing */}
+        <div className="space-y-2">
+          <h4 className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <Wind className="h-4 w-4 text-teal" />
+            {t("habits.airing")}
+          </h4>
+          <HelperText>{t("habits.airing.help")}</HelperText>
+          <div className="space-y-1.5">
+            <OptionRow selected={data.airingHabit === "never"} label={t("habits.airing.never")} onClick={() => onChange({ airingHabit: "never" })} />
+            <OptionRow selected={data.airingHabit === "sometimes"} label={t("habits.airing.sometimes")} onClick={() => onChange({ airingHabit: "sometimes" })} />
+            <OptionRow selected={data.airingHabit === "daily"} label={t("habits.airing.daily")} onClick={() => onChange({ airingHabit: "daily" })} />
+            <OptionRow selected={data.airingHabit === "multiple"} label={t("habits.airing.multiple")} onClick={() => onChange({ airingHabit: "multiple" })} />
+          </div>
+        </div>
+
+        {/* Laundry */}
+        <div className="space-y-2">
+          <h4 className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <Shirt className="h-4 w-4 text-indigo" />
+            {t("habits.laundry")}
+          </h4>
+          <HelperText>{t("habits.laundry.help")}</HelperText>
+          <div className="space-y-1.5">
+            <OptionRow selected={data.laundryFrequency === "1_2"} label={t("habits.laundry.1_2")} onClick={() => onChange({ laundryFrequency: "1_2" })} />
+            <OptionRow selected={data.laundryFrequency === "3_4"} label={t("habits.laundry.3_4")} onClick={() => onChange({ laundryFrequency: "3_4" })} />
+            <OptionRow selected={data.laundryFrequency === "5_plus"} label={t("habits.laundry.5_plus")} onClick={() => onChange({ laundryFrequency: "5_plus" })} />
+          </div>
+        </div>
+
+        {/* Toggle questions */}
+        <div className="space-y-2">
+          <h4 className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <Lightbulb className="h-4 w-4 text-amber" />
+            {t("habits.title")}
+          </h4>
+          <div className="space-y-2">
+            <ToggleRow checked={data.usesDishwasher} label={t("habits.dishwasher")} onClick={(v) => onChange({ usesDishwasher: v })} />
+            <ToggleRow checked={data.usesDryer} label={t("habits.dryer")} onClick={(v) => onChange({ usesDryer: v })} />
+            <ToggleRow checked={data.leavesLightsOn} label={t("habits.lights")} onClick={(v) => onChange({ leavesLightsOn: v })} />
+            <ToggleRow checked={data.programmableHeating} label={t("habits.programmable")} onClick={(v) => onChange({ programmableHeating: v })} />
+          </div>
         </div>
       </div>
     </div>
