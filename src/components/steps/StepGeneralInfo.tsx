@@ -77,17 +77,8 @@ const CardOption = ({
   </button>
 );
 
-// Paris & Île-de-France postal codes
-const IDF_DEPARTMENTS = [
-  { code: "75", label: "Paris (75)" },
-  { code: "77", label: "Seine-et-Marne (77)" },
-  { code: "78", label: "Yvelines (78)" },
-  { code: "91", label: "Essonne (91)" },
-  { code: "92", label: "Hauts-de-Seine (92)" },
-  { code: "93", label: "Seine-Saint-Denis (93)" },
-  { code: "94", label: "Val-de-Marne (94)" },
-  { code: "95", label: "Val-d'Oise (95)" },
-];
+// Paris only
+const PARIS_DEPT = { code: "75", label: "Paris (75)" };
 
 const ARRONDISSEMENTS = Array.from({ length: 20 }, (_, i) => {
   const num = i + 1;
