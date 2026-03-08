@@ -18,7 +18,7 @@ import { useI18n } from "@/lib/i18n";
 
 const Questionnaire = () => {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>(DEFAULT_FORM_DATA);
   const [direction, setDirection] = useState(1);
@@ -55,10 +55,12 @@ const Questionnaire = () => {
     }
   };
 
+  
+
   const handleSubmit = () => {
     setIsCalculating(true);
     setTimeout(() => {
-      const result = calculateDPE(formData);
+      const result = calculateDPE(formData, lang);
       navigate("/resultats", { state: { result, formData } });
     }, 2000);
   };
