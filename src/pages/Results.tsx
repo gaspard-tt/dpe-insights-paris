@@ -122,20 +122,6 @@ const Results = () => {
   }
 
   const { dpeClass, energyBreakdown, weaknesses } = recalculated;
-        saving: `~${Math.round(currentAnnualBill * 0.07 / 12)} €/${t("smallwins.month")}`,
-      },
-      {
-        icon: Tv,
-        text: t("smallwins.standby"),
-        saving: `~${Math.round(occupants * 5)} €/${t("smallwins.month")}`,
-      },
-      {
-        icon: Timer,
-        text: t("smallwins.offpeak"),
-        saving: `~${Math.round(currentAnnualBill * 0.05 / 12)} €/${t("smallwins.month")}`,
-      },
-    ];
-  }, [formData, currentAnnualBill, t]);
 
   const priorityStyles = {
     high: { badge: "bg-destructive/10 text-destructive border-destructive/20", bar: "bg-destructive" },
