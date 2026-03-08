@@ -1,4 +1,3 @@
-import { useState, useMemo } from "react";
 import type { FormData, ConstructionPeriod } from "@/lib/types";
 import { HelpCircle, Home, Building2, MapPin, Search } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
