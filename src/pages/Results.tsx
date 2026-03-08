@@ -99,6 +99,11 @@ const Results = () => {
   const pdfRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
 
+  const recalculated = useMemo(() => {
+    if (!state) return null;
+    return calculateDPE(state.formData, lang);
+  }, [state, lang]);
+
   const handleExportPDF = useCallback(async () => {
     if (!pdfRef.current) return;
     setIsExporting(true);
@@ -135,11 +140,6 @@ const Results = () => {
       setIsExporting(false);
     }
   }, [recalculated?.dpeClass]);
-
-  const recalculated = useMemo(() => {
-    if (!state) return null;
-    return calculateDPE(state.formData, lang);
-  }, [state, lang]);
 
   const formData = state?.formData;
   const surfaceArea = formData?.surfaceArea || 70;
