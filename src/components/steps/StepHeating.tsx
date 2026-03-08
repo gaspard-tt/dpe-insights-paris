@@ -1,4 +1,4 @@
-import type { FormData } from "@/lib/types";
+import type { FormData, HeatingType } from "@/lib/types";
 import { HelpCircle } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
@@ -50,23 +50,83 @@ const OptionRow = ({
   </button>
 );
 
+// Multi-select checkbox row
+const CheckboxRow = ({
+  checked,
+  label,
+  onClick,
+}: {
+  checked: boolean;
+  label: string;
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`w-full rounded-lg border px-4 py-3 text-left transition-all ${
+      checked
+        ? "border-primary bg-primary/5 shadow-sm"
+        : "border-border hover:border-primary/40 hover:bg-muted/30"
+    }`}
+  >
+    <div className="flex items-start gap-3">
+      <div
+        className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 transition-colors ${
+          checked ? "border-primary bg-primary" : "border-muted-foreground/40"
+        }`}
+      >
+        {checked && <span className="text-[10px] leading-none text-primary-foreground">✓</span>}
+      </div>
+      <div className="text-sm font-medium text-foreground">{label}</div>
+    </div>
+  </button>
+);
+
 const StepHeating = ({ data, onChange }: Props) => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+
+  const heatingOptions: { value: HeatingType; labelKey: string }[] = [
+    { value: "electric_convector", labelKey: "heating.electric_convector" },
+    { value: "electric_radiant", labelKey: "heating.electric_radiant" },
+    { value: "gas_boiler", labelKey: "heating.gas_boiler" },
+    { value: "gas_condensing", labelKey: "heating.gas_condensing" },
+    { value: "fuel_boiler", labelKey: "heating.fuel_boiler" },
+    { value: "heat_pump", labelKey: "heating.heat_pump" },
+    { value: "wood", labelKey: "heating.wood" },
+  ];
+
+  const currentTypes = data.heatingTypes || [];
+
+  const toggleHeatingType = (ht: HeatingType) => {
+    if (currentTypes.includes(ht)) {
+      onChange({ heatingTypes: currentTypes.filter((t) => t !== ht) });
+    } else {
+      onChange({ heatingTypes: [...currentTypes, ht] });
+    }
+  };
 
   return (
     <div className="space-y-8">
       <div className="space-y-3">
         <h3 className="text-lg font-semibold text-foreground">{t("heating.type")}</h3>
-        <HelperText>{t("heating.type.help")}</HelperText>
+        <HelperText>
+          {t("heating.type.help")} {lang === "fr" ? "Vous pouvez en sélectionner plusieurs." : "You can select more than one."}
+        </HelperText>
         <div className="space-y-2">
-          <OptionRow selected={data.heatingType === "electric_convector"} label={t("heating.electric_convector")} onClick={() => onChange({ heatingType: "electric_convector" })} />
-          <OptionRow selected={data.heatingType === "electric_radiant"} label={t("heating.electric_radiant")} onClick={() => onChange({ heatingType: "electric_radiant" })} />
-          <OptionRow selected={data.heatingType === "gas_boiler"} label={t("heating.gas_boiler")} onClick={() => onChange({ heatingType: "gas_boiler" })} />
-          <OptionRow selected={data.heatingType === "gas_condensing"} label={t("heating.gas_condensing")} onClick={() => onChange({ heatingType: "gas_condensing" })} />
-          <OptionRow selected={data.heatingType === "fuel_boiler"} label={t("heating.fuel_boiler")} onClick={() => onChange({ heatingType: "fuel_boiler" })} />
-          <OptionRow selected={data.heatingType === "heat_pump"} label={t("heating.heat_pump")} onClick={() => onChange({ heatingType: "heat_pump" })} />
-          <OptionRow selected={data.heatingType === "wood"} label={t("heating.wood")} onClick={() => onChange({ heatingType: "wood" })} />
-          <OptionRow selected={!data.heatingType} label={t("heating.idk")} desc={t("heating.idk.desc")} onClick={() => onChange({ heatingType: undefined })} />
+          {heatingOptions.map((opt) => (
+            <CheckboxRow
+              key={opt.value}
+              checked={currentTypes.includes(opt.value)}
+              label={t(opt.labelKey)}
+              onClick={() => toggleHeatingType(opt.value)}
+            />
+          ))}
+          <OptionRow
+            selected={currentTypes.length === 0}
+            label={t("heating.idk")}
+            desc={t("heating.idk.desc")}
+            onClick={() => onChange({ heatingTypes: [] })}
+          />
         </div>
       </div>
 

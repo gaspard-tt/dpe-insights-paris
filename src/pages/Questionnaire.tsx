@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, BarChart3 } from "lucide-react";
+import { ArrowLeft, ArrowRight, BarChart3, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import WizardProgress from "@/components/WizardProgress";
 import StepGeneralInfo from "@/components/steps/StepGeneralInfo";
@@ -22,6 +22,7 @@ const Questionnaire = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>(DEFAULT_FORM_DATA);
   const [direction, setDirection] = useState(1);
+  const [isCalculating, setIsCalculating] = useState(false);
 
   const STEP_LABELS = [
     t("step.general"),
@@ -32,6 +33,11 @@ const Questionnaire = () => {
     t("step.usage"),
   ];
 
+  // Auto-scroll to top on step change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentStep]);
+
   const updateFormData = (updates: Partial<FormData>) => {
     setFormData((prev) => ({ ...prev, ...updates }));
   };
@@ -40,7 +46,6 @@ const Questionnaire = () => {
     if (currentStep < STEP_LABELS.length - 1) {
       setDirection(1);
       setCurrentStep((s) => s + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -48,13 +53,16 @@ const Questionnaire = () => {
     if (currentStep > 0) {
       setDirection(-1);
       setCurrentStep((s) => s - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleSubmit = () => {
-    const result = calculateDPE(formData);
-    navigate("/resultats", { state: { result, formData } });
+    setIsCalculating(true);
+    // Simulate calculation time for a nice loading effect
+    setTimeout(() => {
+      const result = calculateDPE(formData);
+      navigate("/resultats", { state: { result, formData } });
+    }, 2000);
   };
 
   const isLastStep = currentStep === STEP_LABELS.length - 1;
@@ -77,6 +85,41 @@ const Questionnaire = () => {
     center: { x: 0, opacity: 1 },
     exit: (dir: number) => ({ x: dir > 0 ? -80 : 80, opacity: 0 }),
   };
+
+  if (isCalculating) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto flex max-w-2xl flex-col items-center justify-center px-4 py-32 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center gap-6"
+          >
+            <div className="relative">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-foreground">
+              {t("loading.title")}
+            </h2>
+            <p className="max-w-md text-muted-foreground">
+              {t("loading.desc")}
+            </p>
+            <div className="mt-4 h-2 w-64 overflow-hidden rounded-full bg-muted">
+              <motion.div
+                className="h-full rounded-full hero-gradient"
+                initial={{ width: "0%" }}
+                animate={{ width: "100%" }}
+                transition={{ duration: 1.8, ease: "easeInOut" }}
+              />
+            </div>
+          </motion.div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -103,14 +146,18 @@ const Questionnaire = () => {
             </motion.div>
           </AnimatePresence>
 
-          <div className="mt-8 flex items-center justify-between border-t pt-6">
+          {/* Privacy note */}
+          <div className="mt-6 rounded-lg bg-muted/40 px-4 py-2.5 text-center text-xs text-muted-foreground">
+            🔒 {t("footer.privacy")}
+          </div>
+
+          <div className="mt-6 flex items-center justify-between border-t pt-6">
             <Button
               variant="ghost"
               onClick={prevStep}
               disabled={currentStep === 0}
               className="gap-2"
             >
-              <ArrowLeft className="h-4 w-4" />
               {t("wizard.prev")}
             </Button>
 
@@ -122,7 +169,6 @@ const Questionnaire = () => {
             ) : (
               <Button onClick={nextStep} className="gap-2">
                 {t("wizard.next")}
-                <ArrowRight className="h-4 w-4" />
               </Button>
             )}
           </div>
