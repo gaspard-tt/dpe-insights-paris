@@ -137,7 +137,7 @@ const Results = () => {
                       transition={{ delay: 0.3, duration: 0.7, ease: "easeOut" }}
                     />
                   </div>
-                  <p className="mt-1.5 text-[11px] text-muted-foreground">~{item.value} kWh/m²/an</p>
+                  <p className="mt-1.5 text-[11px] text-muted-foreground">~{item.value} {t("dpe.unit")}</p>
                 </div>
               );
             })}
