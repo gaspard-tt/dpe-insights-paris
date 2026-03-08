@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { AlertTriangle, ArrowLeft, CheckCircle, Info, Lightbulb, TrendingDown, Wrench, PartyPopper, Flame, Droplets, Layers, Wind, RefreshCw, Target, PiggyBank } from "lucide-react";
+import { AlertTriangle, ArrowLeft, BarChart3, CheckCircle, Info, Lightbulb, TrendingDown, Wrench, PartyPopper, Flame, Droplets, Layers, Wind, RefreshCw, Target, PiggyBank } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import DPEScale from "@/components/DPEScale";
