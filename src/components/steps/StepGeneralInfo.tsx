@@ -1,6 +1,5 @@
-import { useState, useMemo } from "react";
 import type { FormData, ConstructionPeriod } from "@/lib/types";
-import { HelpCircle, Home, Building2, MapPin, Search } from "lucide-react";
+import { HelpCircle, Home, Building2, MapPin } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { useI18n } from "@/lib/i18n";
 
@@ -77,17 +76,8 @@ const CardOption = ({
   </button>
 );
 
-// Paris & Île-de-France postal codes
-const IDF_DEPARTMENTS = [
-  { code: "75", label: "Paris (75)" },
-  { code: "77", label: "Seine-et-Marne (77)" },
-  { code: "78", label: "Yvelines (78)" },
-  { code: "91", label: "Essonne (91)" },
-  { code: "92", label: "Hauts-de-Seine (92)" },
-  { code: "93", label: "Seine-Saint-Denis (93)" },
-  { code: "94", label: "Val-de-Marne (94)" },
-  { code: "95", label: "Val-d'Oise (95)" },
-];
+// Paris only
+const PARIS_DEPT = { code: "75", label: "Paris (75)" };
 
 const ARRONDISSEMENTS = Array.from({ length: 20 }, (_, i) => {
   const num = i + 1;
@@ -97,7 +87,6 @@ const ARRONDISSEMENTS = Array.from({ length: 20 }, (_, i) => {
 
 const StepGeneralInfo = ({ data, onChange }: Props) => {
   const { t } = useI18n();
-  const [postalSearch, setPostalSearch] = useState(data.postalCode || "");
 
   const constructionPeriods: ConstructionPeriod[] = [
     "before1948",
@@ -109,19 +98,11 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
   ];
 
   const surfaceValue = data.surfaceArea || 40;
-  const isParis = data.postalCode === "75";
 
-  const filteredDepts = useMemo(() => {
-    if (!postalSearch) return IDF_DEPARTMENTS;
-    return IDF_DEPARTMENTS.filter(
-      (d) => d.code.includes(postalSearch) || d.label.toLowerCase().includes(postalSearch.toLowerCase())
-    );
-  }, [postalSearch]);
-
-  const handlePostalSelect = (code: string) => {
-    onChange({ postalCode: code, arrondissement: undefined, climateZone: "H1" });
-    setPostalSearch("");
-  };
+  // Auto-set Paris on first render
+  if (!data.postalCode) {
+    onChange({ postalCode: "75", climateZone: "H1" });
+  }
 
   return (
     <div className="space-y-8">
@@ -160,7 +141,7 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
         </div>
       </div>
 
-      {/* Location - Paris specific */}
+      {/* Location - Paris arrondissements */}
       <div className="space-y-3">
         <h3 className="flex items-center gap-2 text-lg font-semibold text-foreground">
           <MapPin className="h-5 w-5 text-rose" />
@@ -168,57 +149,29 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
         </h3>
         <HelperText>{t("general.location.help")}</HelperText>
 
-        {/* Search / Filter */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            value={postalSearch}
-            onChange={(e) => setPostalSearch(e.target.value)}
-            placeholder={t("general.location.search")}
-            className="w-full rounded-lg border border-border bg-background pl-10 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          />
+        <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5 text-sm font-medium text-primary">
+          {PARIS_DEPT.label}
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          {filteredDepts.map((dept) => (
-            <button
-              key={dept.code}
-              type="button"
-              onClick={() => handlePostalSelect(dept.code)}
-              className={`rounded-lg border px-3 py-2.5 text-left text-sm font-medium transition-all ${
-                data.postalCode === dept.code
-                  ? "border-primary bg-primary/5 text-primary shadow-sm"
-                  : "border-border text-foreground hover:border-primary/40 hover:bg-muted/30"
-              }`}
-            >
-              {dept.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Arrondissement picker if Paris */}
-        {isParis && (
-          <div className="space-y-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
-            <h4 className="text-sm font-semibold text-primary">{t("general.arrondissement")}</h4>
-            <div className="grid grid-cols-4 gap-2">
-              {ARRONDISSEMENTS.map((arr) => (
-                <button
-                  key={arr.value}
-                  type="button"
-                  onClick={() => onChange({ arrondissement: arr.value })}
-                  className={`rounded-lg border px-2 py-2 text-center text-xs font-medium transition-all ${
-                    data.arrondissement === arr.value
-                      ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                      : "border-border bg-card text-foreground hover:border-primary/40"
-                  }`}
-                >
-                  {arr.value}{arr.value === "1" ? "er" : "e"}
-                </button>
-              ))}
-            </div>
+        <div className="space-y-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
+          <h4 className="text-sm font-semibold text-primary">{t("general.arrondissement")}</h4>
+          <div className="grid grid-cols-4 gap-2">
+            {ARRONDISSEMENTS.map((arr) => (
+              <button
+                key={arr.value}
+                type="button"
+                onClick={() => onChange({ arrondissement: arr.value })}
+                className={`rounded-lg border px-2 py-2 text-center text-xs font-medium transition-all ${
+                  data.arrondissement === arr.value
+                    ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                    : "border-border bg-card text-foreground hover:border-primary/40"
+                }`}
+              >
+                {arr.value}{arr.value === "1" ? "er" : "e"}
+              </button>
+            ))}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Construction period */}
