@@ -88,7 +88,6 @@ const ARRONDISSEMENTS = Array.from({ length: 20 }, (_, i) => {
 
 const StepGeneralInfo = ({ data, onChange }: Props) => {
   const { t } = useI18n();
-  const [postalSearch, setPostalSearch] = useState(data.postalCode || "");
 
   const constructionPeriods: ConstructionPeriod[] = [
     "before1948",
@@ -100,19 +99,11 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
   ];
 
   const surfaceValue = data.surfaceArea || 40;
-  const isParis = data.postalCode === "75";
 
-  const filteredDepts = useMemo(() => {
-    if (!postalSearch) return IDF_DEPARTMENTS;
-    return IDF_DEPARTMENTS.filter(
-      (d) => d.code.includes(postalSearch) || d.label.toLowerCase().includes(postalSearch.toLowerCase())
-    );
-  }, [postalSearch]);
-
-  const handlePostalSelect = (code: string) => {
-    onChange({ postalCode: code, arrondissement: undefined, climateZone: "H1" });
-    setPostalSearch("");
-  };
+  // Auto-set Paris on first render
+  if (!data.postalCode) {
+    onChange({ postalCode: "75", climateZone: "H1" });
+  }
 
   return (
     <div className="space-y-8">
