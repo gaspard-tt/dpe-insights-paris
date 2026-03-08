@@ -24,7 +24,7 @@ const Results = () => {
         <Header />
         <main className="container mx-auto flex max-w-2xl flex-col items-center justify-center px-4 py-20 text-center">
           <AlertTriangle className="mb-4 h-12 w-12 text-muted-foreground" />
-          <h1 className="mb-2 font-serif text-2xl font-bold text-foreground">
+          <h1 className="mb-2 text-2xl font-bold text-foreground">
             {t("results.none.title")}
           </h1>
           <p className="mb-6 text-muted-foreground">
@@ -79,7 +79,7 @@ const Results = () => {
         <motion.section {...fadeInUp} transition={{ delay: 0 }} className="mb-10">
           <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
             <div className="hero-gradient px-6 py-5 sm:px-8">
-              <h1 className="font-serif text-2xl font-bold text-primary-foreground">
+              <h1 className="text-2xl font-bold text-primary-foreground">
                 {t("results.title")}
               </h1>
               <p className="mt-1 text-sm text-primary-foreground/80">
@@ -127,7 +127,7 @@ const Results = () => {
 
         {/* Energy Breakdown */}
         <motion.section {...fadeInUp} transition={{ delay: 0.1 }} className="mb-10">
-          <h2 className="mb-4 flex items-center gap-2 font-serif text-xl font-bold text-foreground">
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-foreground">
             <TrendingDown className="h-5 w-5 text-primary" />
             {t("results.breakdown")}
           </h2>
@@ -160,7 +160,7 @@ const Results = () => {
         {/* Weaknesses */}
         {weaknesses.length > 0 && (
           <motion.section {...fadeInUp} transition={{ delay: 0.2 }} className="mb-10">
-            <h2 className="mb-4 flex items-center gap-2 font-serif text-xl font-bold text-foreground">
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-foreground">
               <AlertTriangle className="h-5 w-5 text-destructive" />
               {t("results.weaknesses")}
             </h2>
@@ -201,7 +201,7 @@ const Results = () => {
 
         {/* Recommendations */}
         <motion.section {...fadeInUp} transition={{ delay: 0.3 }} className="mb-10">
-          <h2 className="mb-4 flex items-center gap-2 font-serif text-xl font-bold text-foreground">
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-foreground">
             <Wrench className="h-5 w-5 text-primary" />
             {t("results.recommendations")}
           </h2>
@@ -267,7 +267,7 @@ const Results = () => {
         <motion.section {...fadeInUp} transition={{ delay: 0.4 }} className="mb-10">
           <div className="overflow-hidden rounded-2xl border bg-card">
             <div className="bg-secondary/40 px-6 py-5 sm:px-8">
-              <h2 className="flex items-center gap-2 font-serif text-xl font-bold text-foreground">
+              <h2 className="flex items-center gap-2 text-xl font-bold text-foreground">
                 <CheckCircle className="h-5 w-5 text-accent" />
                 {t("results.edu.title")}
               </h2>
@@ -275,7 +275,7 @@ const Results = () => {
             <div className="space-y-5 p-6 sm:p-8">
               {[1, 2, 3].map((n) => (
                 <div key={n}>
-                  <h3 className="font-serif text-base font-semibold text-foreground">
+                  <h3 className="text-base font-semibold text-foreground">
                     {t(`results.edu.${n}.title`)}
                   </h3>
                   <p className="mt-1 text-sm leading-relaxed text-muted-foreground">

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, ClipboardList, BarChart3, Languages } from "lucide-react";
+import { Home, ClipboardList, BarChart3, Languages, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 
@@ -18,9 +18,9 @@ const Header = () => {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg hero-gradient">
-            <Home className="h-5 w-5 text-primary-foreground" />
+            <Zap className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="font-serif text-xl font-bold text-foreground">
+          <span className="text-xl font-bold text-foreground">
             {t("app.name")}
           </span>
         </Link>
