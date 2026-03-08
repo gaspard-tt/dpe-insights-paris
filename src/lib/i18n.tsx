@@ -504,6 +504,11 @@ const translations: Record<Language, Record<string, string>> = {
     "currentdpe.help": "If you have an official DPE for your home, select the corresponding class. This will allow us to compare our estimate with your actual diagnostic in the results.",
     "currentdpe.class": "Class",
     "currentdpe.idk": "I don't know",
+    "currentdpe.bill.title": "Your annual energy bill",
+    "currentdpe.bill.help": "If you know your annual electricity/gas bill, enter it here. This helps us calculate your return on investment more accurately.",
+    "currentdpe.bill.avg": "Paris average: ~€1,200/yr",
+    "currentdpe.bill.idk": "I don't know",
+    "currentdpe.bill.idk.tap": "Tap to enter your bill",
 
     // StepOccupancy
     "occupancy.thermostat": "Winter thermostat setting",
