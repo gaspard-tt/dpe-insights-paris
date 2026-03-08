@@ -8,8 +8,8 @@ interface Props {
 }
 
 const HelperText = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-start gap-2 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
-    <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+  <div className="flex items-start gap-2 rounded-lg bg-primary/5 p-3 text-xs text-muted-foreground">
+    <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
     <span>{children}</span>
   </div>
 );
@@ -70,7 +70,9 @@ const StepEnergy = ({ data, onChange }: Props) => {
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-foreground">{t("energy.title")}</h3>
-        <HelperText>{t("energy.help")}</HelperText>
+        <div className="mt-2">
+          <HelperText>{t("energy.help")}</HelperText>
+        </div>
       </div>
 
       <div className="space-y-2">

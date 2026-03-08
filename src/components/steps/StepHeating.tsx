@@ -8,8 +8,8 @@ interface Props {
 }
 
 const HelperText = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-start gap-2 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
-    <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+  <div className="flex items-start gap-2 rounded-lg bg-primary/5 p-3 text-xs text-muted-foreground">
+    <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
     <span>{children}</span>
   </div>
 );
@@ -50,7 +50,6 @@ const OptionRow = ({
   </button>
 );
 
-// Multi-select checkbox row
 const CheckboxRow = ({
   checked,
   label,
@@ -83,7 +82,7 @@ const CheckboxRow = ({
 );
 
 const StepHeating = ({ data, onChange }: Props) => {
-  const { t, lang } = useI18n();
+  const { t } = useI18n();
 
   const heatingOptions: { value: HeatingType; labelKey: string }[] = [
     { value: "electric_convector", labelKey: "heating.electric_convector" },
@@ -110,7 +109,7 @@ const StepHeating = ({ data, onChange }: Props) => {
       <div className="space-y-3">
         <h3 className="text-lg font-semibold text-foreground">{t("heating.type")}</h3>
         <HelperText>
-          {t("heating.type.help")} {lang === "fr" ? "Vous pouvez en sélectionner plusieurs." : "You can select more than one."}
+          {t("heating.type.help")} {t("heating.multi")}
         </HelperText>
         <div className="space-y-2">
           {heatingOptions.map((opt) => (

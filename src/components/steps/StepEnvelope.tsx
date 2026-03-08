@@ -12,8 +12,8 @@ interface Props {
 }
 
 const HelperText = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-start gap-2 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
-    <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+  <div className="flex items-start gap-2 rounded-lg bg-primary/5 p-3 text-xs text-muted-foreground">
+    <HelpCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
     <span>{children}</span>
   </div>
 );
