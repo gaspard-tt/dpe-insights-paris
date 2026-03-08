@@ -814,6 +814,8 @@ const translations: Record<Language, Record<string, string>> = {
     "results.potential.annual_saving": "Estimated saving",
     "results.potential.new_class": "Target class",
     "results.potential.value_gain": "Estimated property value gain",
+    "results.potential.monthly_saving": "Monthly saving",
+    "results.potential.property_value": "of property value",
     "results.next_steps.title": "Next steps",
     "results.next_steps.1": "1. Contact the Agence Parisienne du Climat (free)",
     "results.next_steps.2": "2. Get a quote from a certified (RGE) contractor",
