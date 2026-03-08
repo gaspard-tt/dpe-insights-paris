@@ -55,10 +55,12 @@ const Questionnaire = () => {
     }
   };
 
+  const { lang } = useI18n();
+
   const handleSubmit = () => {
     setIsCalculating(true);
     setTimeout(() => {
-      const result = calculateDPE(formData);
+      const result = calculateDPE(formData, lang);
       navigate("/resultats", { state: { result, formData } });
     }, 2000);
   };
