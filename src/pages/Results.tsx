@@ -96,6 +96,45 @@ const Results = () => {
   const { t, lang } = useI18n();
   const state = location.state as { result: DPEResult; formData: FormData } | null;
   const recRefs = useRef<Record<string, HTMLElement | null>>({});
+  const pdfRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportPDF = useCallback(async () => {
+    if (!pdfRef.current) return;
+    setIsExporting(true);
+    try {
+      const canvas = await html2canvas(pdfRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pdfWidth - 20;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 10;
+
+      pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight - 20;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight + 10;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight - 20;
+      }
+
+      pdf.save(`diagnostic-dpe-${recalculated?.dpeClass || "resultat"}.pdf`);
+    } catch (err) {
+      console.error("PDF export failed:", err);
+    } finally {
+      setIsExporting(false);
+    }
+  }, [recalculated?.dpeClass]);
 
   const recalculated = useMemo(() => {
     if (!state) return null;
