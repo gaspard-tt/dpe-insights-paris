@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   AlertTriangle, ArrowRight, BarChart3, CheckCircle, 
@@ -10,6 +11,7 @@ import Header from "@/components/Header";
 import DPEScale from "@/components/DPEScale";
 import type { DPEResult, FormData } from "@/lib/types";
 import { useI18n } from "@/lib/i18n";
+import { calculateDPE } from "@/lib/dpe-calculator";
 
 const fadeIn = {
   initial: { opacity: 0, y: 16 },
@@ -19,10 +21,16 @@ const fadeIn = {
 const Results = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const state = location.state as { result: DPEResult; formData: FormData } | null;
 
-  if (!state) {
+  // Recalculate when language changes so all text is properly translated
+  const recalculated = useMemo(() => {
+    if (!state) return null;
+    return calculateDPE(state.formData, lang);
+  }, [state, lang]);
+
+  if (!state || !recalculated) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -38,8 +46,7 @@ const Results = () => {
     );
   }
 
-  const { result } = state;
-  const { dpeClass, consumption, energyBreakdown, weaknesses, recommendations } = result;
+  const { dpeClass, consumption, energyBreakdown, weaknesses, recommendations } = recalculated;
 
   const priorityStyles = {
     high: { badge: "bg-destructive/10 text-destructive border-destructive/20", bar: "bg-destructive" },
