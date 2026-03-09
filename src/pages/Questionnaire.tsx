@@ -94,6 +94,18 @@ const Questionnaire = () => {
     [currentStep, formData, t]
   );
 
+  // Live energy cost estimate
+  const energyEstimate = useMemo(() => {
+    if (!formData.surfaceArea || !formData.constructionPeriod) return null;
+    try {
+      const result = calculateDPE(formData, lang);
+      const annual = Math.round(result.consumption * formData.surfaceArea * 0.21);
+      return annual > 0 ? annual : null;
+    } catch {
+      return null;
+    }
+  }, [formData, lang]);
+
   const nextStep = () => {
     if (validationError) {
       setShowValidation(true);
