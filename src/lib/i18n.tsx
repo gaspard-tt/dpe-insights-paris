@@ -508,6 +508,12 @@ const translations: Record<Language, Record<string, string>> = {
     "general.arrondissement.help": "Which Paris arrondissement do you live in? This helps us tailor local recommendations.",
     "general.construction": "Construction period",
     "general.construction.help": "When was your building constructed? Check your lease, deed of sale, or sometimes the building plaque. Insulation standards have changed a lot over time.",
+    "general.period.before1948": "Before 1948",
+    "general.period.1948-1974": "1948 – 1974",
+    "general.period.1975-1988": "1975 – 1988",
+    "general.period.1989-2000": "1989 – 2000",
+    "general.period.2001-2012": "2001 – 2012",
+    "general.period.after2012": "After 2012",
     "general.idk": "Not sure? Check your lease or DPE certificate",
     "general.idk.desc": "We'll use a conservative estimate",
 
