@@ -130,15 +130,15 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
             </span>
           </div>
           <Slider
-            value={data.surfaceArea ? [data.surfaceArea] : [10]}
+            value={data.surfaceArea ? [data.surfaceArea] : [5]}
             onValueChange={([v]) => onChange({ surfaceArea: v })}
-            min={10}
+            min={5}
             max={300}
-            step={5}
+            step={1}
             className={`w-full ${!data.surfaceArea ? "opacity-40" : ""}`}
           />
           <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-            <span>10 m²</span>
+            <span>5 m²</span>
             <span className="text-primary font-medium">{t("general.paris_avg")}</span>
             <span>300 m²</span>
           </div>
@@ -173,7 +173,7 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
         <HelperText>{t("general.construction.help")}</HelperText>
         <div className="space-y-2">
           {constructionPeriods.map((p) => (
-            <OptionRow key={p} selected={data.constructionPeriod === p} label={p.replace("-", " – ")} onClick={() => onChange({ constructionPeriod: p })} />
+            <OptionRow key={p} selected={data.constructionPeriod === p} label={t(`general.period.${p}`)} onClick={() => onChange({ constructionPeriod: p })} />
           ))}
         </div>
       </div>

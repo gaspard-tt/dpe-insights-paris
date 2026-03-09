@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, BarChart3, Loader2, Lock, AlertCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, BarChart3, Loader2, Lock, AlertCircle, Euro } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import WizardProgress from "@/components/WizardProgress";
 import FloatingHelp from "@/components/FloatingHelp";
@@ -93,6 +93,18 @@ const Questionnaire = () => {
     () => validateStep(currentStep, formData, t),
     [currentStep, formData, t]
   );
+
+  // Live energy cost estimate
+  const energyEstimate = useMemo(() => {
+    if (!formData.surfaceArea || !formData.constructionPeriod) return null;
+    try {
+      const result = calculateDPE(formData, lang);
+      const annual = Math.round(result.consumption * formData.surfaceArea * 0.21);
+      return annual > 0 ? annual : null;
+    } catch {
+      return null;
+    }
+  }, [formData, lang]);
 
   const nextStep = () => {
     if (validationError) {
@@ -214,8 +226,27 @@ const Questionnaire = () => {
             </motion.div>
           )}
 
+          {/* Energy estimate preview */}
+          {energyEstimate && currentStep >= 2 && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-4 py-3"
+            >
+              <div className="flex items-center gap-2">
+                <Euro className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium text-foreground">{t("questionnaire.energy_preview")}</span>
+              </div>
+              <div className="text-right">
+                <span className="text-lg font-bold text-primary">~{energyEstimate.toLocaleString()} €</span>
+                <span className="text-xs text-muted-foreground ml-1">/{t("questionnaire.energy_preview.year")}</span>
+                <span className="text-xs text-muted-foreground ml-2">({Math.round(energyEstimate / 12)} €/{t("questionnaire.energy_preview.month")})</span>
+              </div>
+            </motion.div>
+          )}
+
           {/* Privacy note */}
-          <div className="mt-6 flex items-center justify-center gap-1.5 rounded-lg bg-muted/40 px-4 py-2.5 text-center text-xs text-muted-foreground">
+          <div className="mt-4 flex items-center justify-center gap-1.5 rounded-lg bg-muted/40 px-4 py-2.5 text-center text-xs text-muted-foreground">
             <Lock className="h-3 w-3" />
             {t("footer.privacy")}
           </div>

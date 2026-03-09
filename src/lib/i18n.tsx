@@ -99,6 +99,12 @@ const translations: Record<Language, Record<string, string>> = {
     "general.arrondissement.help": "Dans quel arrondissement de Paris habitez-vous ? Cela nous aide à adapter les recommandations locales.",
     "general.construction": "Période de construction",
     "general.construction.help": "Quand votre immeuble a-t-il été construit ? Vous trouverez cette info sur votre bail, l'acte de propriété ou parfois sur la plaque de l'immeuble. Les normes d'isolation ont beaucoup changé au fil du temps.",
+    "general.period.before1948": "Avant 1948",
+    "general.period.1948-1974": "1948 – 1974",
+    "general.period.1975-1988": "1975 – 1988",
+    "general.period.1989-2000": "1989 – 2000",
+    "general.period.2001-2012": "2001 – 2012",
+    "general.period.after2012": "Après 2012",
     "general.idk": "Pas sûr ? Vérifiez votre bail ou votre DPE",
     "general.idk.desc": "On utilisera une estimation prudente",
 
@@ -419,6 +425,44 @@ const translations: Record<Language, Record<string, string>> = {
     "results.next_steps.2": "2. Demandez un devis à un artisan RGE",
     "results.next_steps.3": "3. Vérifiez vos aides sur france-renov.gouv.fr",
     "results.next_steps.4": "4. Faites réaliser un DPE officiel (~150 €)",
+
+    // Results sidebar nav
+    "results.nav.overview": "Vue d'ensemble",
+    "results.nav.energy": "Contrat énergie",
+    "results.nav.habits": "Changements d'habitudes",
+    "results.nav.renovations": "Travaux de rénovation",
+    "results.nav.nextsteps": "Prochaines étapes",
+
+    // Energy subscription section
+    "results.energy_sub.title": "Optimiser votre contrat d'énergie",
+    "results.energy_sub.subtitle": "Sans travaux, un simple changement d'abonnement peut réduire votre facture.",
+    "results.energy_sub.current": "Votre dépense actuelle estimée",
+    "results.energy_sub.optimized": "Avec un contrat optimisé",
+    "results.energy_sub.saving": "Économie potentielle",
+    "results.energy_sub.tip1": "Comparez les offres sur energie-info.fr (service public gratuit)",
+    "results.energy_sub.tip2": "Optez pour un tarif heures creuses si vous pouvez décaler vos consommations",
+    "results.energy_sub.tip3": "Vérifiez que votre puissance souscrite n'est pas surdimensionnée",
+    "results.energy_sub.per_year": "/an",
+    "results.energy_sub.per_month": "/mois",
+
+    // Habits section
+    "results.habits.title": "Changements d'habitudes",
+    "results.habits.subtitle": "Des gestes simples pour réduire votre facture sans aucun investissement.",
+    "results.habits.total_saving": "Économie totale estimée",
+
+    // Renovations section enhanced
+    "results.reno.co2_saved": "CO₂ évité",
+    "results.reno.co2_unit": "kg/an",
+    "results.reno.roi_pct": "Rendement",
+    "results.reno.total_investment": "Investissement total estimé",
+    "results.reno.total_annual_saving": "Économie annuelle totale",
+    "results.reno.total_co2": "CO₂ évité par an",
+    "results.reno.global_payback": "Rentabilisé en",
+
+    // Questionnaire energy preview
+    "questionnaire.energy_preview": "Dépense énergie estimée",
+    "questionnaire.energy_preview.year": "par an",
+    "questionnaire.energy_preview.month": "par mois",
   },
   en: {
     // Header
@@ -502,6 +546,12 @@ const translations: Record<Language, Record<string, string>> = {
     "general.arrondissement.help": "Which Paris arrondissement do you live in? This helps us tailor local recommendations.",
     "general.construction": "Construction period",
     "general.construction.help": "When was your building constructed? Check your lease, deed of sale, or sometimes the building plaque. Insulation standards have changed a lot over time.",
+    "general.period.before1948": "Before 1948",
+    "general.period.1948-1974": "1948 – 1974",
+    "general.period.1975-1988": "1975 – 1988",
+    "general.period.1989-2000": "1989 – 2000",
+    "general.period.2001-2012": "2001 – 2012",
+    "general.period.after2012": "After 2012",
     "general.idk": "Not sure? Check your lease or DPE certificate",
     "general.idk.desc": "We'll use a conservative estimate",
 
@@ -821,6 +871,44 @@ const translations: Record<Language, Record<string, string>> = {
     "results.next_steps.2": "2. Get a quote from a certified (RGE) contractor",
     "results.next_steps.3": "3. Check your eligible aids on france-renov.gouv.fr",
     "results.next_steps.4": "4. Get an official DPE assessment (~€150)",
+
+    // Results sidebar nav
+    "results.nav.overview": "Overview",
+    "results.nav.energy": "Energy contract",
+    "results.nav.habits": "Habit changes",
+    "results.nav.renovations": "Renovation options",
+    "results.nav.nextsteps": "Next steps",
+
+    // Energy subscription section
+    "results.energy_sub.title": "Optimise your energy contract",
+    "results.energy_sub.subtitle": "No renovation needed — a simple contract switch can lower your bill.",
+    "results.energy_sub.current": "Your estimated current spend",
+    "results.energy_sub.optimized": "With an optimised contract",
+    "results.energy_sub.saving": "Potential saving",
+    "results.energy_sub.tip1": "Compare offers on energie-info.fr (free public service)",
+    "results.energy_sub.tip2": "Choose an off-peak tariff if you can shift your usage",
+    "results.energy_sub.tip3": "Check your subscribed power isn't oversized",
+    "results.energy_sub.per_year": "/yr",
+    "results.energy_sub.per_month": "/mo",
+
+    // Habits section
+    "results.habits.title": "Habit changes",
+    "results.habits.subtitle": "Simple actions to lower your bill with zero investment.",
+    "results.habits.total_saving": "Total estimated saving",
+
+    // Renovations section enhanced
+    "results.reno.co2_saved": "CO₂ avoided",
+    "results.reno.co2_unit": "kg/yr",
+    "results.reno.roi_pct": "Return",
+    "results.reno.total_investment": "Total estimated investment",
+    "results.reno.total_annual_saving": "Total annual saving",
+    "results.reno.total_co2": "CO₂ avoided per year",
+    "results.reno.global_payback": "Pays back in",
+
+    // Questionnaire energy preview
+    "questionnaire.energy_preview": "Estimated energy spend",
+    "questionnaire.energy_preview.year": "per year",
+    "questionnaire.energy_preview.month": "per month",
   },
 };
 
