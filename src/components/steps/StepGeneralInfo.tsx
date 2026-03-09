@@ -173,7 +173,7 @@ const StepGeneralInfo = ({ data, onChange }: Props) => {
         <HelperText>{t("general.construction.help")}</HelperText>
         <div className="space-y-2">
           {constructionPeriods.map((p) => (
-            <OptionRow key={p} selected={data.constructionPeriod === p} label={p.replace("-", " – ")} onClick={() => onChange({ constructionPeriod: p })} />
+            <OptionRow key={p} selected={data.constructionPeriod === p} label={t(`general.period.${p}`)} onClick={() => onChange({ constructionPeriod: p })} />
           ))}
         </div>
       </div>
