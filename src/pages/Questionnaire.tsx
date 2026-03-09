@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, BarChart3, Loader2, Lock, AlertCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, BarChart3, Loader2, Lock, AlertCircle, Euro } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import WizardProgress from "@/components/WizardProgress";
 import FloatingHelp from "@/components/FloatingHelp";
