@@ -99,6 +99,12 @@ const translations: Record<Language, Record<string, string>> = {
     "general.arrondissement.help": "Dans quel arrondissement de Paris habitez-vous ? Cela nous aide à adapter les recommandations locales.",
     "general.construction": "Période de construction",
     "general.construction.help": "Quand votre immeuble a-t-il été construit ? Vous trouverez cette info sur votre bail, l'acte de propriété ou parfois sur la plaque de l'immeuble. Les normes d'isolation ont beaucoup changé au fil du temps.",
+    "general.period.before1948": "Avant 1948",
+    "general.period.1948-1974": "1948 – 1974",
+    "general.period.1975-1988": "1975 – 1988",
+    "general.period.1989-2000": "1989 – 2000",
+    "general.period.2001-2012": "2001 – 2012",
+    "general.period.after2012": "Après 2012",
     "general.idk": "Pas sûr ? Vérifiez votre bail ou votre DPE",
     "general.idk.desc": "On utilisera une estimation prudente",
 
