@@ -871,6 +871,44 @@ const translations: Record<Language, Record<string, string>> = {
     "results.next_steps.2": "2. Get a quote from a certified (RGE) contractor",
     "results.next_steps.3": "3. Check your eligible aids on france-renov.gouv.fr",
     "results.next_steps.4": "4. Get an official DPE assessment (~€150)",
+
+    // Results sidebar nav
+    "results.nav.overview": "Overview",
+    "results.nav.energy": "Energy contract",
+    "results.nav.habits": "Habit changes",
+    "results.nav.renovations": "Renovation options",
+    "results.nav.nextsteps": "Next steps",
+
+    // Energy subscription section
+    "results.energy_sub.title": "Optimise your energy contract",
+    "results.energy_sub.subtitle": "No renovation needed — a simple contract switch can lower your bill.",
+    "results.energy_sub.current": "Your estimated current spend",
+    "results.energy_sub.optimized": "With an optimised contract",
+    "results.energy_sub.saving": "Potential saving",
+    "results.energy_sub.tip1": "Compare offers on energie-info.fr (free public service)",
+    "results.energy_sub.tip2": "Choose an off-peak tariff if you can shift your usage",
+    "results.energy_sub.tip3": "Check your subscribed power isn't oversized",
+    "results.energy_sub.per_year": "/yr",
+    "results.energy_sub.per_month": "/mo",
+
+    // Habits section
+    "results.habits.title": "Habit changes",
+    "results.habits.subtitle": "Simple actions to lower your bill with zero investment.",
+    "results.habits.total_saving": "Total estimated saving",
+
+    // Renovations section enhanced
+    "results.reno.co2_saved": "CO₂ avoided",
+    "results.reno.co2_unit": "kg/yr",
+    "results.reno.roi_pct": "Return",
+    "results.reno.total_investment": "Total estimated investment",
+    "results.reno.total_annual_saving": "Total annual saving",
+    "results.reno.total_co2": "CO₂ avoided per year",
+    "results.reno.global_payback": "Pays back in",
+
+    // Questionnaire energy preview
+    "questionnaire.energy_preview": "Estimated energy spend",
+    "questionnaire.energy_preview.year": "per year",
+    "questionnaire.energy_preview.month": "per month",
   },
 };
 
